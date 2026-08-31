@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, Check, ChevronDown, Clock, Minus, Plus, ShoppingBasket, Truck } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, Clock, Minus, Plus, ShoppingBasket, Truck } from "lucide-react";
 import { useState } from "react";
 import { useBooking } from "@/booking/BookingContext";
 import {
@@ -504,10 +504,9 @@ function SummaryBar({
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export function ServiceSelector({
-  onBack,
   onNext,
 }: {
-  onBack: () => void;
+  onBack?: () => void;
   onNext: () => void;
 }) {
   const { qtyOf, setQty, itemCount, subtotal, deliveryFee, total } = useBooking();
@@ -579,20 +578,12 @@ export function ServiceSelector({
       />
 
       {/* Navigation buttons */}
-      <div className="mt-4 flex items-center gap-3">
-        <button
-          type="button"
-          onClick={onBack}
-          className="btn-ghost flex-none"
-        >
-          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-          Back
-        </button>
+      <div className="mt-5 flex items-center justify-end">
         <button
           type="button"
           onClick={onNext}
           disabled={itemCount === 0}
-          className="btn-primary group flex-1 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
+          className="btn-primary group w-full sm:w-auto px-8 py-3.5 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
         >
           Next: Choose Time
           <ArrowRight

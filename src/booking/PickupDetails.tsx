@@ -1,12 +1,16 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, Building2, Loader2, MapPin, Navigation, Phone, StickyNote, User } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useState, type FormEvent, type ReactNode } from "react";
 import { useBooking } from "@/booking/BookingContext";
 import { cn } from "@/utils/cn";
 
 type Errors = Partial<
   Record<"name" | "phone" | "flat" | "street" | "city" | "pincode", string>
 >;
+
+function digitOnly(v: string) {
+  return v.replace(/\D/g, "").slice(0, 10);
+}
 
 /** Assembles the full address string from structured sub-fields */
 function buildAddress(flat: string, street: string, landmark: string, city: string) {
@@ -319,14 +323,8 @@ export function PickupDetails({
         </div>
       </motion.div>
 
-      <div className="mt-8 flex flex-wrap items-center gap-3">
-        {onBack && (
-          <button type="button" onClick={onBack} className="btn-ghost">
-            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-            Back
-          </button>
-        )}
-        <button type="submit" className="btn-primary group">
+      <div className="mt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3.5">
+        <button type="submit" className="btn-primary group w-full sm:w-auto px-7 py-3.5">
           Next: Select Services
           <ArrowRight
             className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1.5"

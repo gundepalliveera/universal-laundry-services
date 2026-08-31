@@ -110,23 +110,17 @@ export function BookingPage({ onExit }: { onExit: () => void }) {
                     <p className="mt-1.5 text-[14px] text-navy-900/60">{meta.sub}</p>
                   </header>
 
-                  {/* Step 1 — Back exits booking flow via X button or Back button */}
-                  {step === 0 && <PickupDetails onNext={() => go(1)} onBack={onExit} />}
+                  {/* Step 1 */}
+                  {step === 0 && <PickupDetails onNext={() => go(1)} />}
 
-                  {/* Step 2 → Back goes to Step 1 */}
-                  {step === 1 && (
-                    <ServiceSelector onBack={() => go(0)} onNext={() => go(2)} />
-                  )}
+                  {/* Step 2 */}
+                  {step === 1 && <ServiceSelector onNext={() => go(2)} />}
 
-                  {/* Step 3 → Back goes to Step 2 */}
-                  {step === 2 && (
-                    <TimeSelector onBack={() => go(1)} onNext={() => go(3)} />
-                  )}
+                  {/* Step 3 */}
+                  {step === 2 && <TimeSelector onNext={() => go(3)} />}
 
-                  {/* Step 4 → Back goes to Step 3 */}
-                  {step === 3 && (
-                    <OrderSummary onBack={() => go(2)} onEdit={go} />
-                  )}
+                  {/* Step 4 */}
+                  {step === 3 && <OrderSummary onEdit={go} />}
                 </div>
               </motion.div>
             </AnimatePresence>

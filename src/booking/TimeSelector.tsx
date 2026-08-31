@@ -1,6 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ArrowLeft,
   ArrowRight,
   CalendarDays,
   Check,
@@ -56,10 +55,9 @@ const slotMetadata: Record<
 };
 
 export function TimeSelector({
-  onBack,
   onNext,
 }: {
-  onBack: () => void;
+  onBack?: () => void;
   onNext: () => void;
 }) {
   const { date, slot, setDate, setSlot, pickup } = useBooking();
@@ -304,7 +302,7 @@ export function TimeSelector({
       </motion.div>
 
       {/* ── 4. Bottom Selection Summary & Navigation Bar ─────────────────── */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 rounded-2xl sm:rounded-3xl border border-ice-200 bg-ice-50/70 p-4 sm:p-5">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3.5 sm:gap-4 rounded-2xl sm:rounded-3xl border border-ice-200 bg-ice-50/70 p-4 sm:p-5">
         <p className="text-[13.5px] sm:text-[14px] font-semibold text-navy-900/75 text-center sm:text-left">
           {date && slot ? (
             <>
@@ -317,24 +315,18 @@ export function TimeSelector({
             "Pick a date and a time slot to continue"
           )}
         </p>
-        <div className="flex w-full sm:w-auto items-center justify-end gap-2.5 sm:gap-3">
-          <button type="button" onClick={onBack} className="btn-ghost flex-none">
-            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-            Back
-          </button>
-          <button
-            type="button"
-            onClick={onNext}
-            disabled={!date || !slot}
-            className="btn-primary group flex-1 sm:flex-none disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
-          >
-            Next: Order Summary
-            <ArrowRight
-              className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1.5"
-              aria-hidden="true"
-            />
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={onNext}
+          disabled={!date || !slot}
+          className="btn-primary group w-full sm:w-auto px-7 py-3.5 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
+        >
+          Next: Order Summary
+          <ArrowRight
+            className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1.5"
+            aria-hidden="true"
+          />
+        </button>
       </div>
     </div>
   );

@@ -1,6 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  ArrowLeft,
   CalendarDays,
   CheckCircle2,
   Clock,
@@ -11,12 +10,12 @@ import {
   Truck,
   User,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { useBooking } from "@/booking/BookingContext";
 import { WaterAnimation } from "@/components/WaterAnimation";
 import { inr, getPickupDays, serviceMap, WHATSAPP_NUMBER } from "@/data/site";
 
-export function OrderSummary({ onBack, onEdit }: { onBack: () => void; onEdit: (s: number) => void }) {
+export function OrderSummary({ onEdit }: { onBack?: () => void; onEdit: (s: number) => void }) {
   const { pickup, cart, date, slot, notes, total, itemCount } =
     useBooking();
   const [placing, setPlacing] = useState(false);
@@ -387,27 +386,23 @@ export function OrderSummary({ onBack, onEdit }: { onBack: () => void; onEdit: (
                     </div>
                   </div>
 
-                  <div className="mt-6 flex flex-wrap items-center gap-3">
-                    <button type="button" onClick={onBack} className="btn-ghost">
-                      <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-                      Back
-                    </button>
+                  <div className="mt-6">
                     <button
                       type="button"
                       onClick={confirm}
                       disabled={lines.length === 0}
-                      className="btn-green group flex-1 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100 sm:flex-none"
+                      className="btn-green group w-full py-4 text-base font-bold shadow-[0_16px_34px_-14px_rgba(107,179,63,0.8)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
                     >
                       Confirm Order
                       <CheckCircle2
-                        className="h-4.5 w-4.5 transition-transform duration-300 group-hover:scale-110"
+                        className="h-5 w-5 transition-transform duration-300 group-hover:scale-110"
                         aria-hidden="true"
                       />
                     </button>
                   </div>
 
                   <p className="mt-5 flex items-center justify-center gap-2 text-[13px] font-semibold text-navy-900/55">
-                    <Lock className="h-4 w-4 text-leaf-600" aria-hidden="true" />
+                    <ShieldCheck className="h-4 w-4 text-leaf-600" aria-hidden="true" />
                     Your order is safe and secure
                   </p>
                 </>
