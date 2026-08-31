@@ -81,12 +81,6 @@ export const deliveryTiers: DeliveryTier[] = [
   },
 ];
 
-export const deliveryTierMap: Record<DeliveryTierId, DeliveryTier> = {
-  "72hr": deliveryTiers[0],
-  "24hr": deliveryTiers[1],
-  "12hr": deliveryTiers[2],
-};
-
 export const services: Service[] = [
 
   {
