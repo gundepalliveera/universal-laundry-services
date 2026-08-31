@@ -44,7 +44,7 @@ export function BookingPage({ onExit }: { onExit: () => void }) {
   return (
     <main
       id="booking"
-      className="relative overflow-x-clip pt-[104px] pb-20 md:pt-[132px]"
+      className="relative overflow-x-clip pt-3 sm:pt-4 md:pt-6 pb-16"
     >
       <div
         aria-hidden="true"
@@ -57,7 +57,7 @@ export function BookingPage({ onExit }: { onExit: () => void }) {
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          className="card-soft relative overflow-hidden p-6 sm:p-8"
+          className="card-soft relative overflow-hidden p-4 sm:p-6"
         >
           <div
             aria-hidden="true"
@@ -69,7 +69,7 @@ export function BookingPage({ onExit }: { onExit: () => void }) {
             type="button"
             onClick={() => (step === 0 ? onExit() : go(step - 1))}
             aria-label={step === 0 ? "Exit booking" : `Back to step ${step}`}
-            className="mb-5 inline-flex items-center gap-2 text-[13.5px] font-bold text-navy-700 transition-all duration-200 hover:gap-3 hover:text-navy-900"
+            className="mb-3 sm:mb-4 inline-flex items-center gap-2 text-[13.5px] font-bold text-navy-700 transition-all duration-200 hover:gap-3 hover:text-navy-900"
           >
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />
             Back
@@ -80,7 +80,7 @@ export function BookingPage({ onExit }: { onExit: () => void }) {
             type="button"
             onClick={onExit}
             aria-label="Close booking and return to home"
-            className="absolute top-5 right-5 flex h-9 w-9 items-center justify-center rounded-full border border-ice-200 bg-white text-navy-500 shadow-sm transition-all duration-200 hover:border-navy-300 hover:text-navy-800 hover:scale-105 sm:top-7 sm:right-7"
+            className="absolute top-4 right-4 sm:top-5 sm:right-5 flex h-9 w-9 items-center justify-center rounded-full border border-ice-200 bg-white text-navy-500 shadow-sm transition-all duration-200 hover:border-navy-300 hover:text-navy-800 hover:scale-105"
           >
             <X className="h-4 w-4" aria-hidden="true" />
           </button>
@@ -88,7 +88,7 @@ export function BookingPage({ onExit }: { onExit: () => void }) {
           <BookingStepper step={step} onStepClick={go} />
         </motion.div>
 
-        <div className="mt-7 grid gap-6 lg:grid-cols-[1fr_336px]">
+        <div className="mt-4 sm:mt-6 grid gap-5 sm:gap-6 lg:grid-cols-[1fr_336px]">
           <div>
             <AnimatePresence mode="wait">
               <motion.div
@@ -98,16 +98,16 @@ export function BookingPage({ onExit }: { onExit: () => void }) {
                 exit={{ opacity: 0, x: dir * -36, scale: 0.99 }}
                 transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
               >
-                <div className="card-soft p-6 sm:p-8">
-                  <header className="mb-7">
+                <div className="card-soft p-5 sm:p-7">
+                  <header className="mb-6">
                     <span className="eyebrow">
                       <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
                       Step {step + 1} of 4
                     </span>
-                    <h1 className="mt-3 text-2xl font-extrabold text-navy-950 sm:text-[28px]">
+                    <h1 className="mt-2.5 text-2xl font-extrabold text-navy-950 sm:text-[28px]">
                       {meta.title}
                     </h1>
-                    <p className="mt-2 text-[14px] text-navy-900/60">{meta.sub}</p>
+                    <p className="mt-1.5 text-[14px] text-navy-900/60">{meta.sub}</p>
                   </header>
 
                   {/* Step 1 — Back exits booking flow via X button or Back button */}

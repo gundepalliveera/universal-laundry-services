@@ -180,10 +180,10 @@ export const serviceMap: Record<ServiceId, Service> = services.reduce(
 export type CartLine = { id: ServiceId; qty: number };
 
 export const defaultCart: CartLine[] = [
-  { id: "wash-fold", qty: 5 },
-  { id: "wash-steam-iron", qty: 3 },
-  { id: "premium-wash", qty: 2 },
-  { id: "shoe-cleaning", qty: 1 },
+  { id: "wash-fold", qty: 0 },
+  { id: "wash-steam-iron", qty: 0 },
+  { id: "premium-wash", qty: 0 },
+  { id: "shoe-cleaning", qty: 0 },
   { id: "bag-cleaning", qty: 0 },
   { id: "dry-cleaning", qty: 0 },
 ];

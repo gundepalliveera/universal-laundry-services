@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, Check, ChevronDown, Clock, Minus, Plus, ShoppingBasket } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, ChevronDown, Clock, Minus, Plus, ShoppingBasket, Truck } from "lucide-react";
 import { useState } from "react";
 import { useBooking } from "@/booking/BookingContext";
 import {
@@ -526,6 +526,12 @@ export function ServiceSelector({
 
   return (
     <div>
+      {/* Promotional Notice */}
+      <div className="mb-4 sm:mb-5 flex items-center gap-2.5 rounded-2xl border border-leaf-200 bg-leaf-50/80 px-3.5 py-2.5 text-[12.5px] sm:text-[13.5px] font-semibold text-leaf-800 shadow-sm">
+        <Truck className="h-4 w-4 shrink-0 text-leaf-600" aria-hidden="true" />
+        <span>Enjoy free pickup and delivery on orders above ₹300.</span>
+      </div>
+
       {/* Delivery tier selector */}
       <DeliveryTabs selected={tierId} onSelect={setTierId} />
 

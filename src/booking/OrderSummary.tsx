@@ -4,7 +4,6 @@ import {
   CalendarDays,
   CheckCircle2,
   Clock,
-  Lock,
   MapPin,
   Pencil,
   Phone,
@@ -12,7 +11,7 @@ import {
   Truck,
   User,
 } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 import { useBooking } from "@/booking/BookingContext";
 import { WaterAnimation } from "@/components/WaterAnimation";
 import { inr, getPickupDays, serviceMap, WHATSAPP_NUMBER } from "@/data/site";

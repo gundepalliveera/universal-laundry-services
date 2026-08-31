@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, Building2, Loader2, MapPin, Navigation, Phone, StickyNote, User } from "lucide-react";
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { useBooking } from "@/booking/BookingContext";
 import { cn } from "@/utils/cn";
 
@@ -27,10 +27,6 @@ export function PickupDetails({
   const [shake, setShake] = useState(0);
   const [locating, setLocating] = useState(false);
   const [locError, setLocError] = useState<string | null>(null);
-
-  function digitOnly(v: string) {
-    return v.replace(/\D/g, "").slice(0, 10);
-  }
 
   const validate = () => {
     const e: Errors = {};

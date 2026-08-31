@@ -33,24 +33,9 @@
   --color-ice-200: #dfeafe;
   --color-ice-300: #c7dbfd;
 
-  --animate-float-slow: floaty 7s ease-in-out infinite;
-  --animate-float-slower: floaty 10s ease-in-out infinite;
   --animate-bubble-up: bubbleUp 11s linear infinite;
   --animate-shimmer: shimmer 1.7s linear infinite;
-  --animate-spin-slow: spin 22s linear infinite;
-  --animate-wave: wave 14s linear infinite;
   --animate-drop: droplet 6s ease-in infinite;
-  --animate-pulse-ring: pulseRing 2.6s ease-out infinite;
-}
-
-@keyframes floaty {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) rotate(0deg);
-  }
-  50% {
-    transform: translate3d(0, -14px, 0) rotate(-1.2deg);
-  }
 }
 
 @keyframes bubbleUp {
@@ -90,26 +75,6 @@
   }
   100% {
     background-position: 180% 0;
-  }
-}
-
-@keyframes wave {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-@keyframes pulseRing {
-  0% {
-    transform: scale(0.85);
-    opacity: 0.55;
-  }
-  100% {
-    transform: scale(1.6);
-    opacity: 0;
   }
 }
 
@@ -198,10 +163,6 @@
     );
     background-size: 220% 100%;
     animation: var(--animate-shimmer);
-  }
-
-  .section-pad {
-    @apply px-5 py-16 sm:px-8 md:py-24;
   }
 
   .shell {
