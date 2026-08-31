@@ -1,0 +1,6 @@
+# Robots.txt for Universal Laundry Services (Hyderabad)
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://www.universallaundryservices.in/sitemap.xml

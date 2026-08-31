@@ -1,0 +1,161 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+  <defs>
+    <!-- Clip path for circular badge -->
+    <clipPath id="badge-clip">
+      <circle cx="250" cy="250" r="236" />
+    </clipPath>
+  </defs>
+
+  <!-- Background Circle Fill -->
+  <circle cx="250" cy="250" r="236" fill="#ffffff" />
+
+  <!-- Outer Blue Ring -->
+  <circle cx="250" cy="250" r="226" fill="none" stroke="#004ea8" stroke-width="20" />
+
+  <!-- Inner Green Ring -->
+  <circle cx="250" cy="250" r="210" fill="none" stroke="#5da92b" stroke-width="4.5" />
+
+  <!-- GRAPHIC / ICON CONTENT -->
+  <!-- Top Blue Swirling Crescent Wave Arc -->
+  <path
+    d="M 172 195 C 160 140 200 76 270 76 C 308 76 342 98 356 128 C 342 108 308 92 270 92 C 215 92 178 140 188 195 Z"
+    fill="#0058b8"
+  />
+
+  <!-- Washing Machine -->
+  <g transform="translate(208, 114)">
+    <!-- Machine Body -->
+    <rect x="0" y="0" width="88" height="108" rx="8" fill="#082b5e" />
+    
+    <!-- Top Control Panel Dots -->
+    <circle cx="15" cy="18" r="3.5" fill="#ffffff" />
+    <circle cx="27" cy="18" r="3.5" fill="#ffffff" />
+    <circle cx="39" cy="18" r="3.5" fill="#ffffff" />
+    <circle cx="51" cy="18" r="3.5" fill="#ffffff" />
+    <circle cx="63" cy="18" r="3.5" fill="#ffffff" />
+    <circle cx="75" cy="18" r="3.5" fill="#ffffff" />
+
+    <!-- Machine Window Outer Ring -->
+    <circle cx="44" cy="62" r="27" fill="#ffffff" />
+    <!-- Machine Window Inner Blue -->
+    <circle cx="44" cy="62" r="21" fill="#0288d1" />
+    <!-- Window Water Wave -->
+    <path
+      d="M 24 64 Q 34 52, 44 64 T 64 64 A 21 21 0 0 1 24 64 Z"
+      fill="#01579b"
+    />
+    <!-- Glass Highlight Reflection -->
+    <path
+      d="M 30 52 A 16 16 0 0 1 54 48"
+      fill="none"
+      stroke="#ffffff"
+      stroke-width="3"
+      stroke-linecap="round"
+      opacity="0.8"
+    />
+  </g>
+
+  <!-- Green Folded Clothes / Pile in Basket -->
+  <g transform="translate(290, 160)">
+    <ellipse cx="28" cy="12" rx="20" ry="14" fill="#69b832" />
+    <ellipse cx="50" cy="16" rx="16" ry="12" fill="#7bc43d" />
+    <ellipse cx="14" cy="18" rx="14" ry="10" fill="#5ba728" />
+  </g>
+
+  <!-- Bubbles Rising -->
+  <circle cx="330" cy="130" r="10" fill="#38bdf8" />
+  <circle cx="348" cy="148" r="7.5" fill="#38bdf8" />
+  <circle cx="318" cy="152" r="6" fill="#38bdf8" />
+  <circle cx="338" cy="165" r="4.5" fill="#38bdf8" />
+  <circle cx="362" cy="160" r="6" fill="#38bdf8" />
+  <circle cx="352" cy="124" r="3.5" fill="#38bdf8" />
+
+  <!-- Laundry Basket -->
+  <g transform="translate(295, 178)">
+    <!-- Basket Rim -->
+    <rect x="0" y="0" width="68" height="9" rx="3.5" fill="#082b5e" />
+    <!-- Basket Body -->
+    <polygon points="4,9 64,9 56,48 12,48" fill="#082b5e" />
+    <!-- Basket Grid Holes (White Dots) -->
+    <!-- Row 1 -->
+    <circle cx="18" cy="18" r="2.2" fill="#ffffff" />
+    <circle cx="25" cy="18" r="2.2" fill="#ffffff" />
+    <circle cx="32" cy="18" r="2.2" fill="#ffffff" />
+    <circle cx="39" cy="18" r="2.2" fill="#ffffff" />
+    <circle cx="46" cy="18" r="2.2" fill="#ffffff" />
+    <circle cx="53" cy="18" r="2.2" fill="#ffffff" />
+    <!-- Row 2 -->
+    <circle cx="20" cy="27" r="2.2" fill="#ffffff" />
+    <circle cx="27" cy="27" r="2.2" fill="#ffffff" />
+    <circle cx="34" cy="27" r="2.2" fill="#ffffff" />
+    <circle cx="41" cy="27" r="2.2" fill="#ffffff" />
+    <circle cx="48" cy="27" r="2.2" fill="#ffffff" />
+    <!-- Row 3 -->
+    <circle cx="22" cy="36" r="2.2" fill="#ffffff" />
+    <circle cx="29" cy="36" r="2.2" fill="#ffffff" />
+    <circle cx="36" cy="36" r="2.2" fill="#ffffff" />
+    <circle cx="43" cy="36" r="2.2" fill="#ffffff" />
+    <circle cx="50" cy="36" r="2.2" fill="#ffffff" />
+  </g>
+
+  <!-- Swooshing Water Waves Under Machine & Basket -->
+  <path
+    d="M 166 198 C 210 216 260 220 376 230 C 310 248 230 246 178 220 C 170 212 165 204 166 198 Z"
+    fill="#0050a8"
+  />
+  <path
+    d="M 190 222 C 240 238 290 236 384 232 C 340 252 260 256 198 238 C 192 232 188 226 190 222 Z"
+    fill="#0288d1"
+  />
+
+  <!-- TYPOGRAPHY -->
+  <!-- "UNIVERSAL" -->
+  <text
+    x="250"
+    y="298"
+    font-family="'Poppins', 'Arial Black', -apple-system, sans-serif"
+    font-size="44"
+    font-weight="900"
+    letter-spacing="1.5"
+    fill="#082b5e"
+    text-anchor="middle"
+  >UNIVERSAL</text>
+
+  <!-- "LAUNDRY SERVICES" -->
+  <text
+    x="250"
+    y="330"
+    font-family="'Poppins', 'Arial Black', -apple-system, sans-serif"
+    font-size="25"
+    font-weight="800"
+    letter-spacing="2"
+    fill="#0066cc"
+    text-anchor="middle"
+  >LAUNDRY SERVICES</text>
+
+  <!-- Subtitle: "— 🌿 Fresh Clothes, Happy Life 🌿 —" -->
+  <g transform="translate(0, 344)">
+    <!-- Left line -->
+    <line x1="126" y1="9" x2="160" y2="9" stroke="#5da92b" stroke-width="1.8" />
+    
+    <!-- Left Leaf -->
+    <path d="M 166 11 C 166 7 172 4 176 9 C 176 13 170 15 166 11 Z" fill="#5da92b" />
+    
+    <!-- Text -->
+    <text
+      x="250"
+      y="14"
+      font-family="'Inter', -apple-system, sans-serif"
+      font-size="16.5"
+      font-weight="700"
+      fill="#5da92b"
+      text-anchor="middle"
+    >Fresh Clothes, Happy Life</text>
+    
+    <!-- Right Leaf -->
+    <path d="M 334 11 C 334 7 328 4 324 9 C 324 13 330 15 334 11 Z" fill="#5da92b" />
+
+    <!-- Right line -->
+    <line x1="340" y1="9" x2="374" y2="9" stroke="#5da92b" stroke-width="1.8" />
+  </g>
+</svg>
