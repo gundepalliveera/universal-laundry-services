@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useState, lazy, Suspense } from "react";
-import { BookingProvider, useBooking } from "@/booking/BookingContext";
+import { BookingProvider } from "@/booking/BookingContext";
 import { Hero } from "@/components/Hero";
 import { Navbar } from "@/components/Navbar";
 import { applySeoMetadata } from "@/data/seo";
@@ -44,26 +44,30 @@ function HomeView({
 }
 
 function MainLayout() {
-  const [view, setView] = useState<"home" | "booking">("home");
   const [active, setActive] = useState("home");
   const [activeService, setActiveService] = useState<string | null>(null);
-  const { setStep, reset } = useBooking();
   const navigate = useNavigate();
   const location = useLocation();
+  const isBooking = location.pathname.startsWith("/book");
 
-  // Apply dynamic SEO metadata on section / view changes
+  // Redirect legacy /#book hash link to /book route
   useEffect(() => {
-    if (location.pathname === "/") {
-      if (view === "booking") {
-        applySeoMetadata("booking");
-      } else {
-        applySeoMetadata(active);
-      }
+    if (location.hash === "#book") {
+      navigate("/book", { replace: true });
     }
-  }, [view, active, location.pathname]);
+  }, [location.hash, navigate]);
+
+  // Apply dynamic SEO metadata on section / route changes
+  useEffect(() => {
+    if (isBooking) {
+      applySeoMetadata("booking");
+    } else if (location.pathname === "/") {
+      applySeoMetadata(active);
+    }
+  }, [isBooking, active, location.pathname]);
 
   useEffect(() => {
-    if (location.pathname !== "/" || view !== "home") return;
+    if (location.pathname !== "/") return;
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries
@@ -78,7 +82,7 @@ function MainLayout() {
       if (el) observer.observe(el);
     });
     return () => observer.disconnect();
-  }, [view, location.pathname]);
+  }, [location.pathname]);
 
   const scrollTo = useCallback((id: string) => {
     const el = document.getElementById(id);
@@ -93,24 +97,16 @@ function MainLayout() {
         navigate("/");
         setTimeout(() => scrollTo(id), 100);
       } else {
-        if (view !== "home") {
-          setView("home");
-          setTimeout(() => scrollTo(id), 90);
-        } else {
-          scrollTo(id);
-        }
+        scrollTo(id);
       }
     },
-    [view, scrollTo, navigate, location.pathname],
+    [scrollTo, navigate, location.pathname],
   );
 
   const handleBook = useCallback(() => {
-    reset();
-    setStep(0);
-    if (location.pathname !== "/") navigate("/");
-    setView("booking");
+    navigate("/book");
     window.scrollTo({ top: 0, behavior: "auto" });
-  }, [reset, setStep, navigate, location.pathname]);
+  }, [navigate]);
 
   const handleOpenService = useCallback((slug: string) => {
     setActiveService(slug);
@@ -118,8 +114,8 @@ function MainLayout() {
 
   const handleCloseService = useCallback(() => {
     setActiveService(null);
-    if (view === "home" && location.pathname === "/") applySeoMetadata(active);
-  }, [view, active, location.pathname]);
+    if (location.pathname === "/") applySeoMetadata(active);
+  }, [active, location.pathname]);
 
   return (
     <div className="min-h-screen overflow-x-clip bg-white pb-[88px] lg:pb-0">
@@ -132,7 +128,7 @@ function MainLayout() {
 
       <Navbar
         active={location.pathname === "/" ? active : ""}
-        view={location.pathname === "/" ? view : "home"}
+        view={isBooking ? "booking" : "home"}
         onNavigate={handleNavigate}
         onBook={handleBook}
       />
@@ -142,29 +138,43 @@ function MainLayout() {
           <Route
             path="/"
             element={
-              <AnimatePresence mode="wait">
-                {view === "home" ? (
-                  <motion.div
-                    key="home"
-                    initial={{ opacity: 0, y: 18 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -14, scale: 0.995 }}
-                    transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                  >
-                    <HomeView onBook={handleBook} onOpenService={handleOpenService} />
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="booking"
-                    initial={{ opacity: 0, y: 22, scale: 0.99 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -14, scale: 0.995 }}
-                    transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                  >
-                    <BookingPage onExit={() => handleNavigate("home")} />
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <motion.div
+                key="home"
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -14, scale: 0.995 }}
+                transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <HomeView onBook={handleBook} onOpenService={handleOpenService} />
+              </motion.div>
+            }
+          />
+          <Route
+            path="/book"
+            element={
+              <motion.div
+                key="booking"
+                initial={{ opacity: 0, y: 22, scale: 0.99 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -14, scale: 0.995 }}
+                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <BookingPage onExit={() => handleNavigate("home")} />
+              </motion.div>
+            }
+          />
+          <Route
+            path="/book/step-:stepNum"
+            element={
+              <motion.div
+                key="booking-step"
+                initial={{ opacity: 0, y: 22, scale: 0.99 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -14, scale: 0.995 }}
+                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <BookingPage onExit={() => handleNavigate("home")} />
+              </motion.div>
             }
           />
           <Route path="/areas" element={<AreaDirectory />} />
@@ -189,7 +199,7 @@ function MainLayout() {
       </Suspense>
 
       {/* Floating Mobile Bottom Navigation (<1024px) */}
-      {location.pathname === "/" && view === "home" && (
+      {location.pathname === "/" && (
         <Suspense fallback={null}>
           <MobileBottomNav active={active} onNavigate={handleNavigate} onBook={handleBook} />
         </Suspense>

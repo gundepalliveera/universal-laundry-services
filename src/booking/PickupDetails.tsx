@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, Building2, Loader2, MapPin, Navigation, Phone, StickyNote, User } from "lucide-react";
+import { ArrowRight, Building2, Loader2, MapPin, Navigation, Phone, StickyNote, User } from "lucide-react";
 import { useState, type FormEvent, type ReactNode } from "react";
 import { useBooking } from "@/booking/BookingContext";
 import { cn } from "@/utils/cn";
@@ -21,7 +21,6 @@ function buildAddress(flat: string, street: string, landmark: string, city: stri
 
 export function PickupDetails({
   onNext,
-  onBack,
 }: {
   onNext: () => void;
   onBack?: () => void;

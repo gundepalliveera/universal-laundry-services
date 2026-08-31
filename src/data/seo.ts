@@ -76,7 +76,7 @@ const routeSeoMap: Record<string, SeoRouteMeta> = {
     title: "Book Laundry Pickup Online | Universal Laundry Services Hyderabad",
     description:
       "Schedule your laundry pickup in Hyderabad in under 2 minutes. Select services, choose date & time slot, and enjoy doorstep delivery.",
-    canonical: `${SITE_URL}/#book`,
+    canonical: `${SITE_URL}/book`,
     h1: "Schedule Laundry Pickup & Delivery in Hyderabad",
   },
 };

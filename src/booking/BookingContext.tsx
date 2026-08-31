@@ -2,6 +2,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
@@ -71,6 +72,8 @@ type Ctx = {
 
 const BookingContext = createContext<Ctx | null>(null);
 
+const STORAGE_KEY = "uls_booking_state_v1";
+
 const initial: BookingState = {
   step: 0,
   pickup: emptyPickup,
@@ -80,8 +83,46 @@ const initial: BookingState = {
   notes: "",
 };
 
+function loadSavedState(): BookingState {
+  if (typeof window === "undefined") return initial;
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === "object") {
+        return {
+          step: typeof parsed.step === "number" ? Math.max(0, Math.min(3, parsed.step)) : 0,
+          pickup:
+            parsed.pickup && typeof parsed.pickup === "object"
+              ? { ...emptyPickup, ...parsed.pickup }
+              : emptyPickup,
+          cart:
+            Array.isArray(parsed.cart) && parsed.cart.length > 0
+              ? parsed.cart
+              : defaultCart,
+          date: typeof parsed.date === "string" ? parsed.date : null,
+          slot: typeof parsed.slot === "string" ? parsed.slot : null,
+          notes: typeof parsed.notes === "string" ? parsed.notes : "",
+        };
+      }
+    }
+  } catch {
+    // fallback
+  }
+  return initial;
+}
+
 export function BookingProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<BookingState>(initial);
+  const [state, setState] = useState<BookingState>(loadSavedState);
+
+  // Sync state to sessionStorage whenever it changes
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch {
+      // ignore
+    }
+  }, [state]);
 
   const setQty = useCallback((id: ServiceId, qty: number) => {
     setState((prev) => ({
@@ -90,6 +131,15 @@ export function BookingProvider({ children }: { children: ReactNode }) {
         l.id === id ? { ...l, qty: Math.max(0, Math.min(99, qty)) } : l,
       ),
     }));
+  }, []);
+
+  const reset = useCallback(() => {
+    try {
+      sessionStorage.removeItem(STORAGE_KEY);
+    } catch {
+      // ignore
+    }
+    setState(initial);
   }, []);
 
   const value = useMemo<Ctx>(() => {
@@ -114,9 +164,9 @@ export function BookingProvider({ children }: { children: ReactNode }) {
       setDate: (date) => setState((p) => ({ ...p, date })),
       setSlot: (slot) => setState((p) => ({ ...p, slot })),
       setNotes: (notes) => setState((p) => ({ ...p, notes })),
-      reset: () => setState(initial),
+      reset,
     };
-  }, [state, setQty]);
+  }, [state, setQty, reset]);
 
   return <BookingContext.Provider value={value}>{children}</BookingContext.Provider>;
 }

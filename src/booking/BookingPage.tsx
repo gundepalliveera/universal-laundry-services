@@ -8,7 +8,8 @@ import { TimeSelector } from "@/booking/TimeSelector";
 import { OrderSummary } from "@/booking/OrderSummary";
 import { WaterAnimation } from "@/components/WaterAnimation";
 import { inr, serviceMap } from "@/data/site";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams, useParams } from "react-router-dom";
 
 const stepMeta = [
   {
@@ -32,10 +33,30 @@ const stepMeta = [
 export function BookingPage({ onExit }: { onExit: () => void }) {
   const { step, setStep, subtotal, deliveryFee, total, cart } = useBooking();
   const [dir, setDir] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const params = useParams<{ stepNum?: string }>();
+
+  // Determine target step from URL param (path /book/step-2 or query /book?step=2)
+  useEffect(() => {
+    const rawStep = params.stepNum || searchParams.get("step");
+    if (rawStep) {
+      const parsed = parseInt(rawStep, 10);
+      if (!isNaN(parsed) && parsed >= 1 && parsed <= 4) {
+        const target = parsed - 1;
+        if (target !== step) {
+          setStep(target);
+        }
+      }
+    } else {
+      // Sync current step to query params so refresh preserves it
+      setSearchParams({ step: (step + 1).toString() }, { replace: true });
+    }
+  }, [params.stepNum, searchParams, step, setStep, setSearchParams]);
 
   const go = (next: number) => {
     setDir(next > step ? 1 : -1);
     setStep(next);
+    setSearchParams({ step: (next + 1).toString() }, { replace: true });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
