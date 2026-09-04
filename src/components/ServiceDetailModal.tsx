@@ -118,7 +118,7 @@ export function ServiceDetailView({
             <div className="flex items-center gap-2 rounded-xl bg-leaf-50 px-3.5 py-2">
               <Truck className="h-4 w-4 text-leaf-600" aria-hidden="true" />
               <span className="text-xs font-bold text-leaf-700">
-                Free Pickup above ₹300
+                Free Pickup above ₹399
               </span>
             </div>
           </div>
@@ -203,7 +203,7 @@ export function ServiceDetailView({
             <a
               href={`https://wa.me/91${contactInfo.whatsapp}?text=Hi%2C%20I%20want%20to%20book%20${encodeURIComponent(service.title)}%20service%20in%20Hyderabad`}
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
               className="btn-ghost w-full sm:w-auto py-3 text-xs font-bold flex items-center justify-center gap-2"
             >
               <MessageCircle className="h-4 w-4 text-leaf-600" aria-hidden="true" />

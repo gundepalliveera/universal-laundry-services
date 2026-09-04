@@ -4,6 +4,7 @@ import {
   CheckCircle2,
   Clock,
   MapPin,
+  Navigation,
   Pencil,
   Phone,
   ShieldCheck,
@@ -13,21 +14,36 @@ import {
 import { useState, type ReactNode } from "react";
 import { useBooking } from "@/booking/BookingContext";
 import { WaterAnimation } from "@/components/WaterAnimation";
-import { inr, getPickupDays, serviceMap, WHATSAPP_NUMBER } from "@/data/site";
+import { inr, formatPickupDate, serviceMap, servicePrices, WHATSAPP_NUMBER } from "@/data/site";
+import { cn } from "@/utils/cn";
 
 export function OrderSummary({ onEdit }: { onBack?: () => void; onEdit: (s: number) => void }) {
-  const { pickup, cart, date, slot, notes, total, itemCount } =
-    useBooking();
+  const {
+    pickup,
+    cart,
+    date,
+    slot,
+    notes,
+    total,
+    subtotal,
+    discount,
+    deliveryFee,
+    itemCount,
+    selectedDuration,
+    setSelectedDuration,
+    setQty,
+    orderConfirmed,
+    setOrderConfirmed,
+  } = useBooking();
   const [placing, setPlacing] = useState(false);
-  const [placed, setPlaced] = useState(false);
   const [orderId] = useState(
     () => `ULS-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 8999)}`,
   );
-  const days = getPickupDays(7);
-  const dayLabel = days.find((d) => d.key === date)?.label ?? "—";
+  const dateInfo = formatPickupDate(date);
+  const dayLabel = dateInfo.shortWithDay;
 
   // Declare lines before confirm() so the closure always has access to it
-  const lines = cart.filter((l) => l.qty > 0);
+  const lines = cart.filter((l) => (Number(l.qty) || 0) > 0);
 
   // Pre-compute weight string used in both confirm() and the WhatsApp button
   const computeWeightString = () => {
@@ -35,8 +51,9 @@ export function OrderSummary({ onEdit }: { onBack?: () => void; onEdit: (s: numb
     let totalPieces = 0;
     lines.forEach((l) => {
       const s = serviceMap[l.id];
-      if (s.unit.toLowerCase() === "kg") totalKg += l.qty;
-      else totalPieces += l.qty;
+      const qty = Number(l.qty) || 0;
+      if (s.unit.toLowerCase() === "kg") totalKg += qty;
+      else totalPieces += qty;
     });
     const parts = [];
     if (totalKg > 0) parts.push(`${totalKg} kg`);
@@ -44,20 +61,32 @@ export function OrderSummary({ onEdit }: { onBack?: () => void; onEdit: (s: numb
     return parts.length > 0 ? parts.join(" + ") : "—";
   };
 
+  const handleEdit = (s: number) => {
+    setOrderConfirmed(false);
+    onEdit(s);
+  };
+
   const confirm = () => {
     setPlacing(true);
     setTimeout(() => {
       setPlacing(false);
-      setPlaced(true);
+      setOrderConfirmed(true);
       // Build WhatsApp message
       const lineDetails = lines
         .map((l) => {
           const s = serviceMap[l.id];
-          return `• ${s.name} — ${l.qty} ${l.qty === 1 ? s.unit : s.unitPlural}`;
+          const itemDuration = l.duration || selectedDuration || "72 Hours";
+          const rate = servicePrices[itemDuration]?.[s.name] ?? s.price;
+          const qty = Number(l.qty) || 0;
+          const serviceTotal = qty * rate;
+          return `• ${s.name} (${itemDuration}) — ${qty} ${qty === 1 ? s.unit : s.unitPlural} × ₹${rate} = ₹${serviceTotal}`;
         })
         .join("\n");
       const addressString = `${pickup.address}${pickup.pincode ? ", " + pickup.pincode : ""}`;
-      const locationLink = `https://maps.google.com/?q=${encodeURIComponent(addressString)}`;
+      const locationLink =
+        pickup.latitude !== undefined && pickup.longitude !== undefined
+          ? `https://maps.google.com/?q=${pickup.latitude},${pickup.longitude}`
+          : `https://maps.google.com/?q=${encodeURIComponent(addressString)}`;
       const weightString = computeWeightString();
 
       const msg = [
@@ -65,6 +94,9 @@ export function OrderSummary({ onEdit }: { onBack?: () => void; onEdit: (s: numb
         `*Phone number:* +91 ${pickup.phone}`,
         `*Address:* ${addressString}`,
         `*Location Link:* ${locationLink}`,
+        ...(pickup.distanceKm !== undefined
+          ? [`*Distance from Hub:* ${pickup.distanceKm} KM (${pickup.serviceAvailable ? "Service Available" : "Service Not Available"})`]
+          : []),
         `*Type of service:*`,
         lineDetails,
         "",
@@ -74,17 +106,22 @@ export function OrderSummary({ onEdit }: { onBack?: () => void; onEdit: (s: numb
         `*Pick up date:* ${dayLabel}`,
         `*Time slot:* ${slot ?? "—"}`,
         "",
-        `Minimum order above ₹300 for free pick up and delivery.`,
-        `Only Hyderabad city location acceptable.`
+        `*Subtotal:* ${inr(subtotal)}`,
+        ...(discount > 0 ? [`*10% Discount:* -${inr(discount)}`] : []),
+        `*Pickup & Delivery:* ${deliveryFee === 0 ? "FREE" : inr(deliveryFee)}`,
+        `*TOTAL:* ${inr(total)}`,
+        "",
+        `Minimum order above ₹399 for free pick up and delivery.`,
+        `Only Hyderabad city location acceptable.`,
       ].join("\n");
       const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
-      window.open(waUrl, "_blank", "noreferrer");
+      window.open(waUrl, "_blank", "noopener,noreferrer");
     }, 1700);
   };
 
   return (
     <AnimatePresence mode="wait">
-      {placed ? (
+      {orderConfirmed ? (
         <motion.div
           key="confirmed"
           initial={{ opacity: 0, scale: 0.96 }}
@@ -173,12 +210,24 @@ export function OrderSummary({ onEdit }: { onBack?: () => void; onEdit: (s: numb
                 [
                   `*First name:* ${pickup.name}`,
                   `*Phone number:* +91 ${pickup.phone}`,
-                  `*Address:* https://maps.google.com/?q=${encodeURIComponent(`${pickup.address}${pickup.pincode ? ", " + pickup.pincode : ""}`)}`,
+                  `*Address:* ${pickup.address}${pickup.pincode ? ", " + pickup.pincode : ""}`,
+                  `*Location Link:* ${
+                    pickup.latitude !== undefined && pickup.longitude !== undefined
+                      ? `https://maps.google.com/?q=${pickup.latitude},${pickup.longitude}`
+                      : `https://maps.google.com/?q=${encodeURIComponent(`${pickup.address}${pickup.pincode ? ", " + pickup.pincode : ""}`)}`
+                  }`,
+                  ...(pickup.distanceKm !== undefined
+                    ? [`*Distance from Hub:* ${pickup.distanceKm} KM (${pickup.serviceAvailable ? "Service Available" : "Service Not Available"})`]
+                    : []),
                   `*Type of service:*`,
                   lines
                     .map((l) => {
                       const s = serviceMap[l.id];
-                      return `• ${s.name} — ${l.qty} ${l.qty === 1 ? s.unit : s.unitPlural} × ${inr(s.price)} = ${inr(s.price * l.qty)}`;
+                      const itemDuration = l.duration || selectedDuration || "72 Hours";
+                      const rate = servicePrices[itemDuration]?.[s.name] ?? s.price;
+                      const qty = Number(l.qty) || 0;
+                      const serviceTotal = qty * rate;
+                      return `• ${s.name} (${itemDuration}) — ${qty} ${qty === 1 ? s.unit : s.unitPlural} × ₹${rate} = ₹${serviceTotal}`;
                     })
                     .join("\n"),
                   "",
@@ -188,12 +237,17 @@ export function OrderSummary({ onEdit }: { onBack?: () => void; onEdit: (s: numb
                   `*Pick up date:* ${dayLabel}`,
                   `*Time slot:* ${slot ?? "—"}`,
                   "",
-                  `Minimum order above ₹300 for free pick up and delivery.`,
-                  `Only Hyderabad city location acceptable.`
+                  `*Subtotal:* ${inr(subtotal)}`,
+                  ...(discount > 0 ? [`*10% Discount:* -${inr(discount)}`] : []),
+                  `*Pickup & Delivery:* ${deliveryFee === 0 ? "FREE" : inr(deliveryFee)}`,
+                  `*TOTAL:* ${inr(total)}`,
+                  "",
+                  `Minimum order above ₹399 for free pick up and delivery.`,
+                  `Only Hyderabad city location acceptable.`,
                 ].join("\n"),
               )}`}
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
               className="btn-green group inline-flex items-center gap-2 px-6 py-3 text-sm font-bold shadow-lg"
             >
               <span>Open Order on WhatsApp (9494913323)</span>
@@ -235,7 +289,7 @@ export function OrderSummary({ onEdit }: { onBack?: () => void; onEdit: (s: numb
                 </h3>
                 <button
                   type="button"
-                  onClick={() => onEdit(0)}
+                  onClick={() => handleEdit(0)}
                   className="inline-flex items-center gap-1.5 rounded-full border border-ice-200 bg-ice-50 px-3 py-1.5 text-[12.5px] font-bold text-navy-700 transition-all duration-300 hover:scale-105 hover:border-navy-300 hover:bg-white"
                 >
                   <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
@@ -251,6 +305,13 @@ export function OrderSummary({ onEdit }: { onBack?: () => void; onEdit: (s: numb
                   value={pickup.address}
                 />
                 <Row icon={<MapPin className="h-4 w-4" aria-hidden="true" />} label="Pincode" value={pickup.pincode} />
+                {pickup.distanceKm !== undefined && (
+                  <Row
+                    icon={<Navigation className="h-4 w-4" aria-hidden="true" />}
+                    label="Hub distance"
+                    value={`${pickup.distanceKm} KM (${pickup.serviceAvailable ? "Service Available" : "Service Not Available"})`}
+                  />
+                )}
                 {notes ? (
                   <Row
                     icon={<CalendarDays className="h-4 w-4" aria-hidden="true" />}
@@ -269,7 +330,7 @@ export function OrderSummary({ onEdit }: { onBack?: () => void; onEdit: (s: numb
                 </h3>
                 <button
                   type="button"
-                  onClick={() => onEdit(2)}
+                  onClick={() => handleEdit(2)}
                   className="inline-flex items-center gap-1.5 rounded-full border border-ice-200 bg-ice-50 px-3 py-1.5 text-[12.5px] font-bold text-navy-700 transition-all duration-300 hover:scale-105 hover:border-navy-300 hover:bg-white"
                 >
                   <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
@@ -278,22 +339,34 @@ export function OrderSummary({ onEdit }: { onBack?: () => void; onEdit: (s: numb
               </div>
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
                 <div className="rounded-2xl border border-ice-200 bg-ice-50/70 p-4">
-                  <p className="text-[11.5px] font-semibold tracking-wide text-navy-900/45 uppercase">
-                    Date
+                  <div className="flex items-center justify-between">
+                    <p className="text-[11.5px] font-semibold tracking-wide text-navy-900/45 uppercase">
+                      Pickup Date
+                    </p>
+                    {dateInfo.relativeTag && (
+                      <span className="rounded-full bg-leaf-50 px-2 py-0.5 text-[10px] font-bold text-leaf-700 border border-leaf-200">
+                        {dateInfo.relativeTag}
+                      </span>
+                    )}
+                  </div>
+                  <p className="mt-1 text-[14.5px] font-bold text-navy-900">
+                    {dateInfo.dateOnly}
                   </p>
-                  <p className="mt-1 text-[14.5px] font-bold text-navy-900">{dayLabel}</p>
+                  <p className="mt-0.5 text-[12px] text-navy-900/55">
+                    {dateInfo.shortWithDay}
+                  </p>
                 </div>
                 <div className="rounded-2xl border border-ice-200 bg-ice-50/70 p-4">
                   <p className="flex items-center gap-1.5 text-[11.5px] font-semibold tracking-wide text-navy-900/45 uppercase">
                     <Clock className="h-3.5 w-3.5" aria-hidden="true" />
-                    Time slot
+                    Pickup Time
                   </p>
                   <p className="mt-1 text-[14.5px] font-bold text-navy-900">{slot ?? "—"}</p>
                 </div>
               </div>
               <p className="mt-4 flex items-center gap-2 text-[12.5px] text-navy-900/55">
                 <Truck className="h-4 w-4 text-leaf-600" aria-hidden="true" />
-                Free pickup & delivery above ₹300 · Delivery in {lines.length ? "72–96 hrs" : "—"}
+                Turnaround: {selectedDuration} · Free pickup & delivery above ₹399
               </p>
             </div>
           </div>
@@ -305,10 +378,57 @@ export function OrderSummary({ onEdit }: { onBack?: () => void; onEdit: (s: numb
               className="absolute inset-x-0 top-0 h-28 bg-[radial-gradient(60%_100%_at_50%_0%,#eff6ff,transparent)]"
             />
             <div className="relative">
-              <h3 className="text-[17px] font-bold text-navy-950">Your Order</h3>
-              <p className="mt-1 text-[13px] text-navy-900/55">
-                {itemCount} units · {lines.length} services selected
-              </p>
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="text-[17px] font-bold text-navy-950">Your Order</h3>
+                  <p className="mt-1 text-[13px] text-navy-900/55">
+                    {itemCount} units · {lines.length} services selected
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleEdit(1)}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-ice-200 bg-ice-50 px-3 py-1.5 text-[12.5px] font-bold text-navy-700 transition-all duration-300 hover:scale-105 hover:border-navy-300 hover:bg-white"
+                >
+                  <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
+                  Edit
+                </button>
+              </div>
+
+              {/* Service Duration Switcher Bar */}
+              <div className="mt-4 rounded-2xl border border-ice-200 bg-ice-50/70 p-3">
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <span className="flex items-center gap-1.5 text-[12px] font-bold text-navy-900/65 uppercase tracking-wide">
+                    <Clock className="h-3.5 w-3.5 text-navy-600" aria-hidden="true" />
+                    Service Duration:
+                  </span>
+                  <span className="text-[12.5px] font-extrabold text-navy-900">
+                    {selectedDuration}
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-2" role="radiogroup" aria-label="Service Duration">
+                  {(["72 Hours", "24 Hours", "12 Hours"] as const).map((dur) => {
+                    const active = selectedDuration === dur;
+                    return (
+                      <button
+                        key={dur}
+                        type="button"
+                        role="radio"
+                        aria-checked={active}
+                        onClick={() => setSelectedDuration(dur)}
+                        className={cn(
+                          "rounded-xl py-2 px-1 text-center text-[12px] font-bold transition-all duration-200 cursor-pointer",
+                          active
+                            ? "bg-navy-600 text-white shadow-sm ring-2 ring-navy-600 ring-offset-1"
+                            : "bg-white text-navy-700 border border-ice-200 hover:border-navy-300 hover:bg-ice-50",
+                        )}
+                      >
+                        {dur}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
 
               {placing ? (
                 <div className="mt-6 space-y-3" aria-busy="true" aria-live="polite">
@@ -322,45 +442,105 @@ export function OrderSummary({ onEdit }: { onBack?: () => void; onEdit: (s: numb
                 </div>
               ) : (
                 <>
-                  <ul className="mt-5 divide-y divide-ice-200">
+                  <div className="mt-4 space-y-3">
                     <AnimatePresence initial={false}>
                       {lines.map((line) => {
                         const s = serviceMap[line.id];
                         const Icon = s.icon;
+                        const itemDuration = line.duration || selectedDuration || "72 Hours";
+                        const rate = servicePrices[itemDuration]?.[s.name] ?? s.price;
+                        const qty = Number(line.qty) || 0;
+                        const serviceTotal = qty * rate;
+
                         return (
-                          <motion.li
+                          <motion.div
                             key={line.id}
                             layout
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, height: 0 }}
                             transition={{ duration: 0.35 }}
-                            className="flex items-center gap-4 py-3.5"
+                            className="rounded-2xl border border-ice-200 bg-white p-4 shadow-sm space-y-3"
                           >
-                            <span
-                              className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${s.accent} text-white`}
-                            >
-                              <Icon className="h-5 w-5" aria-hidden="true" />
-                            </span>
-                            <span className="min-w-0 flex-1">
-                              <span className="block truncate text-[14.5px] font-bold text-navy-950">
-                                {s.name}{" "}
-                                <span className="font-semibold text-navy-900/45">
-                                  ({line.qty} {line.qty === 1 ? s.unit : s.unitPlural})
+                            {/* Service Header Row */}
+                            <div className="flex items-center justify-between gap-3">
+                              <div className="flex items-center gap-3 min-w-0">
+                                <span
+                                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${s.accent} text-white`}
+                                >
+                                  <Icon className="h-5 w-5" aria-hidden="true" />
                                 </span>
-                              </span>
-                              <span className="text-[12.5px] text-navy-900/50">
-                                {s.unitPlural}
-                              </span>
-                            </span>
-                            <span className="font-display text-[15px] font-extrabold text-navy-900">
-                              {line.qty} {s.unit.toLowerCase()}
-                            </span>
-                          </motion.li>
+                                <div className="min-w-0">
+                                  <span className="text-[11px] font-semibold text-navy-900/50 uppercase tracking-wide">
+                                    Service:
+                                  </span>
+                                  <p className="truncate text-[14.5px] font-bold text-navy-950">
+                                    {s.name}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="text-right shrink-0">
+                                <span className="text-[11px] font-semibold text-navy-900/50 uppercase tracking-wide">
+                                  Service Total:
+                                </span>
+                                <p className="font-display text-[16px] font-extrabold text-navy-900">
+                                  ₹{serviceTotal}
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* Details Grid: Duration, Quantity, Rate */}
+                            <div className="grid grid-cols-3 gap-2 border-t border-ice-100 pt-2.5 text-[12px]">
+                              <div>
+                                <span className="block text-[10.5px] font-semibold text-navy-900/50 uppercase">
+                                  Service Duration:
+                                </span>
+                                <span className="font-bold text-navy-900">
+                                  {itemDuration}
+                                </span>
+                              </div>
+                              <div>
+                                <span className="block text-[10.5px] font-semibold text-navy-900/50 uppercase">
+                                  Quantity:
+                                </span>
+                                <div className="flex items-center gap-1.5 mt-0.5">
+                                  <span className="font-bold text-navy-900">
+                                    {qty} {s.unit.toUpperCase()}
+                                  </span>
+                                  <div className="inline-flex items-center gap-1 ml-auto sm:ml-1">
+                                    <button
+                                      type="button"
+                                      onClick={() => setQty(line.id, qty - 1, itemDuration)}
+                                      aria-label={`Decrease ${s.name} quantity`}
+                                      className="flex h-5 w-5 items-center justify-center rounded-full border border-ice-200 bg-ice-50 text-navy-700 hover:bg-ice-100 text-[11px] font-bold"
+                                    >
+                                      -
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => setQty(line.id, qty + 1, itemDuration)}
+                                      aria-label={`Increase ${s.name} quantity`}
+                                      className="flex h-5 w-5 items-center justify-center rounded-full border border-navy-600 bg-navy-600 text-white hover:bg-navy-700 text-[11px] font-bold"
+                                    >
+                                      +
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                              <div>
+                                <span className="block text-[10.5px] font-semibold text-navy-900/50 uppercase">
+                                  Rate:
+                                </span>
+                                <span className="font-bold text-navy-900">
+                                  ₹{rate} per {s.unit.toUpperCase()}
+                                </span>
+                              </div>
+                            </div>
+                          </motion.div>
                         );
                       })}
                     </AnimatePresence>
-                  </ul>
+                  </div>
 
                   {lines.length === 0 && (
                     <p className="mt-6 rounded-2xl border border-dashed border-ice-300 p-5 text-center text-[13.5px] text-navy-900/55">
@@ -375,13 +555,49 @@ export function OrderSummary({ onEdit }: { onBack?: () => void; onEdit: (s: numb
                     </p>
                   )}
 
-                  <div className="mt-5 space-y-3 border-t border-dashed border-ice-300 pt-5 text-[14px]">
-                    <div className="mt-2 flex items-center justify-between rounded-2xl border border-navy-100 bg-navy-50/70 px-4 py-3.5">
-                      <span className="font-display text-[15px] font-bold text-navy-900">
-                        Payment
+                  <div className="mt-5 space-y-2.5 border-t border-dashed border-ice-300 pt-4 text-[13.5px]">
+                    <div className="flex justify-between">
+                      <span className="text-navy-900/60">Subtotal</span>
+                      <span className="font-bold text-navy-900">{inr(subtotal)}</span>
+                    </div>
+                    {discount > 0 && (
+                      <div className="flex justify-between text-leaf-700">
+                        <span className="font-medium">10% Discount</span>
+                        <span className="font-bold">-{inr(discount)}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between">
+                      <span className="text-navy-900/60">Pickup &amp; Delivery</span>
+                      <span
+                        className={
+                          deliveryFee === 0
+                            ? "font-extrabold text-leaf-600"
+                            : "font-bold text-navy-900"
+                        }
+                      >
+                        {deliveryFee === 0 ? "FREE" : inr(deliveryFee)}
                       </span>
-                      <span className="font-display text-[14px] font-extrabold text-leaf-700">
-                        Calculated at pickup
+                    </div>
+                    <div className="flex items-center justify-between border-t border-dashed border-ice-300 pt-3">
+                      <span className="font-display text-[15px] font-bold text-navy-900">
+                        TOTAL
+                      </span>
+                      <motion.span
+                        key={total}
+                        initial={{ scale: 0.9, opacity: 0.3 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ type: "spring", stiffness: 420, damping: 22 }}
+                        className="font-display text-2xl font-extrabold text-navy-900"
+                      >
+                        {inr(total)}
+                      </motion.span>
+                    </div>
+                    <div className="mt-2 flex items-center justify-between rounded-2xl border border-navy-100 bg-navy-50/70 px-4 py-3">
+                      <span className="font-display text-[13.5px] font-bold text-navy-900">
+                        Payment Method
+                      </span>
+                      <span className="font-display text-[13px] font-extrabold text-leaf-700">
+                        Pay After Delivery (Cash / UPI)
                       </span>
                     </div>
                   </div>

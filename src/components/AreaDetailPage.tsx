@@ -1,8 +1,9 @@
 import { motion } from "framer-motion";
 import { ArrowRight, MapPin, CheckCircle2 } from "lucide-react";
 import { useEffect } from "react";
-import { Link, Navigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { HowItWorks } from "@/components/HowItWorks";
+import { NotFound } from "@/components/NotFound";
 import { getAreaBySlug } from "@/data/areas";
 
 export function AreaDetailPage({ onBook }: { onBook: () => void }) {
@@ -24,7 +25,7 @@ export function AreaDetailPage({ onBook }: { onBook: () => void }) {
   }, [area]);
 
   if (!area) {
-    return <Navigate to="/areas" replace />;
+    return <NotFound onBook={onBook} />;
   }
 
   return (
@@ -78,7 +79,7 @@ export function AreaDetailPage({ onBook }: { onBook: () => void }) {
             </p>
             <ul className="mt-8 space-y-4">
               {[
-                "Free doorstep pickup and delivery on orders above ₹300",
+                "Free doorstep pickup and delivery on orders above ₹399",
                 "Hygienic, individual wash processes",
                 "Eco-friendly dry cleaning solutions",
                 "Expert care for premium & designer wear",

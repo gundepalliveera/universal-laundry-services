@@ -38,7 +38,7 @@ export function Pricing({
           eyebrow="Transparent rates in Hyderabad"
           title="Simple, Honest Laundry"
           highlight="Pricing"
-          subtitle="No hidden charges. Regular 72-hr turnaround, or Express 12/24-hr on request. Free pickup & delivery above ₹300 across Hyderabad."
+          subtitle="No hidden charges. Regular 72-hr turnaround, or Express 12/24-hr on request. Free pickup & delivery above ₹399 across Hyderabad."
         />
 
         <motion.div
@@ -155,7 +155,7 @@ export function Pricing({
                 </h3>
               </div>
               <div className="inline-flex items-center gap-2 rounded-full bg-leaf-50 px-3.5 py-1 sm:px-4 sm:py-1.5 text-[11px] sm:text-xs font-bold text-leaf-700">
-                <span>Free Pickup &amp; Delivery above ₹300</span>
+                <span>Free Pickup &amp; Delivery above ₹399</span>
               </div>
             </div>
 

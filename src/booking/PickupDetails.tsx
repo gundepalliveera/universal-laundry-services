@@ -1,8 +1,20 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Building2, Loader2, MapPin, Navigation, Phone, StickyNote, User } from "lucide-react";
+import {
+  AlertCircle,
+  ArrowRight,
+  Building2,
+  CheckCircle2,
+  Loader2,
+  MapPin,
+  Navigation,
+  Phone,
+  StickyNote,
+  User,
+} from "lucide-react";
 import { useState, type FormEvent, type ReactNode } from "react";
 import { useBooking } from "@/booking/BookingContext";
 import { cn } from "@/utils/cn";
+import { checkServiceAvailability } from "@/utils/geo";
 
 type Errors = Partial<
   Record<"name" | "phone" | "flat" | "street" | "city" | "pincode", string>
@@ -40,6 +52,16 @@ export function PickupDetails({
     if (pickup.street.trim().length < 3) e.street = "Enter street or area name";
     if (pickup.city.trim().length < 2) e.city = "Enter city name";
 
+    // Service Availability Check: Maximum 20 KM from Jubilee Hills Road No. 5
+    if (pickup.latitude !== undefined && pickup.longitude !== undefined) {
+      const check = checkServiceAvailability(pickup.latitude, pickup.longitude);
+      if (!check.available) {
+        e.city = `Service Not Available: Location is ${check.distanceKm} KM away (exceeds our 20 KM radius from Jubilee Hills Hub)`;
+      }
+    } else if (pickup.distanceKm !== undefined && !pickup.serviceAvailable) {
+      e.city = `Service Not Available: Location is ${pickup.distanceKm} KM away (exceeds our 20 KM radius from Jubilee Hills Hub)`;
+    }
+
     const isHydPincode = /^(500|501|502)\d{3}$/.test(pickup.pincode.trim());
     const hydAreas = [
       "hyderabad", "secunderabad", "gachibowli", "hitech", "hi-tech", "madhapur",
@@ -68,30 +90,55 @@ export function PickupDetails({
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const { latitude, longitude } = pos.coords;
+        const avail = checkServiceAvailability(latitude, longitude);
         try {
           const res = await fetch(
             `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`,
             { headers: { "Accept-Language": "en" } },
           );
+          if (!res.ok) throw new Error("Fetch failed");
           const data = await res.json();
           const addr = data.address ?? {};
           setPickup({
             ...pickup,
-            flat: addr.house_number ? `${addr.house_number}` : pickup.flat,
-            street: addr.road || addr.suburb || addr.neighbourhood || pickup.street,
-            landmark: addr.amenity || addr.shop || addr.tourism || pickup.landmark,
-            city:
-              addr.city || addr.town || addr.county || addr.state_district || pickup.city,
+            latitude,
+            longitude,
+            accuracy: pos.coords.accuracy,
+            distanceKm: avail.distanceKm,
+            serviceAvailable: avail.available,
+            flat: addr.house_number ? `${addr.house_number}`.slice(0, 100) : pickup.flat,
+            street: (addr.road || addr.suburb || addr.neighbourhood || pickup.street).slice(0, 150),
+            landmark: (addr.amenity || addr.shop || addr.tourism || pickup.landmark).slice(0, 100),
+            city: (
+              addr.city || addr.town || addr.county || addr.state_district || pickup.city
+            ).slice(0, 60),
             pincode: addr.postcode ? addr.postcode.replace(/\D/g, "").slice(0, 6) : pickup.pincode,
             address: buildAddress(
               addr.house_number ?? pickup.flat,
               addr.road || addr.suburb || pickup.street,
               addr.amenity || pickup.landmark,
               addr.city || addr.town || pickup.city,
-            ),
+            ).slice(0, 300),
           });
+          if (!avail.available) {
+            setLocError(avail.message);
+          } else {
+            setLocError(null);
+          }
         } catch {
-          setLocError("Could not fetch address. Please fill manually.");
+          setPickup({
+            ...pickup,
+            latitude,
+            longitude,
+            accuracy: pos.coords.accuracy,
+            distanceKm: avail.distanceKm,
+            serviceAvailable: avail.available,
+          });
+          if (!avail.available) {
+            setLocError(avail.message);
+          } else {
+            setLocError(null);
+          }
         } finally {
           setLocating(false);
         }
@@ -104,6 +151,48 @@ export function PickupDetails({
     );
   };
 
+  const handlePincodeChange = async (rawVal: string) => {
+    const code = rawVal.replace(/\D/g, "").slice(0, 6);
+    setPickup((prev) => ({
+      ...prev,
+      pincode: code,
+      ...(prev.accuracy === undefined
+        ? { distanceKm: undefined, serviceAvailable: undefined }
+        : {}),
+    }));
+
+    if (code.length === 6 && pickup.accuracy === undefined) {
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?postalcode=${code}&country=India&format=json`,
+          { headers: { "Accept-Language": "en" } },
+        );
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data[0]?.lat && data[0]?.lon) {
+            const lat = parseFloat(data[0].lat);
+            const lon = parseFloat(data[0].lon);
+            const check = checkServiceAvailability(lat, lon);
+            setPickup((prev) => ({
+              ...prev,
+              latitude: lat,
+              longitude: lon,
+              distanceKm: check.distanceKm,
+              serviceAvailable: check.available,
+            }));
+            if (!check.available) {
+              setLocError(check.message);
+            } else {
+              setLocError(null);
+            }
+          }
+        }
+      } catch {
+        // Fallback silently
+      }
+    }
+  };
+
   const submit = (ev: FormEvent) => {
     ev.preventDefault();
     const e = validate();
@@ -112,13 +201,23 @@ export function PickupDetails({
       setShake((s) => s + 1);
       return;
     }
-    const assembled = buildAddress(pickup.flat, pickup.street, pickup.landmark, pickup.city);
+    const flat = pickup.flat.trim().slice(0, 100);
+    const street = pickup.street.trim().slice(0, 150);
+    const landmark = pickup.landmark.trim().slice(0, 100);
+    const city = pickup.city.trim().slice(0, 60);
+    const assembled = buildAddress(flat, street, landmark, city);
     setPickup({
       ...pickup,
+      name: pickup.name.trim().slice(0, 80),
       phone: digitOnly(pickup.phone),
-      pincode: pickup.pincode.trim(),
-      address: assembled,
+      flat,
+      street,
+      landmark,
+      city,
+      pincode: pickup.pincode.trim().slice(0, 6),
+      address: assembled.slice(0, 300),
     });
+    setNotes(notes.trim().slice(0, 250));
     onNext();
   };
 
@@ -141,6 +240,7 @@ export function PickupDetails({
           <input
             id="name"
             autoComplete="name"
+            maxLength={80}
             className={cn("field", errors.name && "field-error")}
             placeholder="Ananya Sharma"
             value={pickup.name}
@@ -159,6 +259,7 @@ export function PickupDetails({
             id="phone"
             inputMode="numeric"
             autoComplete="tel"
+            maxLength={14}
             className={cn("field", errors.phone && "field-error")}
             placeholder="94949 13323"
             value={pickup.phone}
@@ -207,6 +308,50 @@ export function PickupDetails({
             )}
           </AnimatePresence>
 
+          {/* Service Availability Badge (Hub: Jubilee Hills Rd No. 5 | Max Radius: 20 KM) */}
+          <AnimatePresence>
+            {pickup.distanceKm !== undefined && (
+              pickup.serviceAvailable ? (
+                <motion.div
+                  key="avail"
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  className="mb-3 flex items-center justify-between gap-3 rounded-xl border border-leaf-300 bg-leaf-50/90 px-4 py-2.5 text-[12.5px] font-semibold text-leaf-800 shadow-xs"
+                >
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 shrink-0 text-leaf-600" aria-hidden="true" />
+                    <span>
+                      <strong className="font-bold">Service Available</strong> — {pickup.distanceKm} KM from Jubilee Hills Hub
+                    </span>
+                  </div>
+                  <span className="hidden xs:inline-block rounded-md bg-leaf-100/90 px-2 py-0.5 text-[11px] font-bold text-leaf-700">
+                    Within 20 KM
+                  </span>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="unavail"
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  className="mb-3 flex items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50/90 px-4 py-2.5 text-[12.5px] font-semibold text-red-800 shadow-xs"
+                  role="alert"
+                >
+                  <div className="flex items-center gap-2">
+                    <AlertCircle className="h-4 w-4 shrink-0 text-red-600" aria-hidden="true" />
+                    <span>
+                      <strong className="font-bold">Service Not Available</strong> — {pickup.distanceKm} KM from Jubilee Hills Hub
+                    </span>
+                  </div>
+                  <span className="rounded-md bg-red-100/90 px-2 py-0.5 text-[11px] font-bold text-red-700">
+                    Exceeds 20 KM
+                  </span>
+                </motion.div>
+              )
+            )}
+          </AnimatePresence>
+
           <div className="grid gap-4 sm:grid-cols-2">
             {/* House / Flat */}
             <Field
@@ -218,6 +363,7 @@ export function PickupDetails({
               <input
                 id="flat"
                 autoComplete="address-line1"
+                maxLength={100}
                 className={cn("field", errors.flat && "field-error")}
                 placeholder="Flat 402, Block B"
                 value={pickup.flat}
@@ -235,6 +381,7 @@ export function PickupDetails({
               <input
                 id="street"
                 autoComplete="address-line2"
+                maxLength={150}
                 className={cn("field", errors.street && "field-error")}
                 placeholder="Road No 5, Jubilee Hills"
                 value={pickup.street}
@@ -256,6 +403,7 @@ export function PickupDetails({
               <input
                 id="landmark"
                 autoComplete="off"
+                maxLength={100}
                 className="field"
                 placeholder="Near Apollo Hospital"
                 value={pickup.landmark}
@@ -273,6 +421,7 @@ export function PickupDetails({
               <input
                 id="city"
                 autoComplete="address-level2"
+                maxLength={60}
                 className={cn("field", errors.city && "field-error")}
                 placeholder="Hyderabad"
                 value={pickup.city}
@@ -297,9 +446,7 @@ export function PickupDetails({
             className={cn("field", errors.pincode && "field-error")}
             placeholder="500033"
             value={pickup.pincode}
-            onChange={(e) =>
-              setPickup({ ...pickup, pincode: e.target.value.replace(/\D/g, "") })
-            }
+            onChange={(e) => handlePincodeChange(e.target.value)}
           />
         </Field>
 
@@ -314,6 +461,7 @@ export function PickupDetails({
           </label>
           <input
             id="notes"
+            maxLength={250}
             className="field"
             placeholder="Separate whites, use mild detergent…"
             value={notes}

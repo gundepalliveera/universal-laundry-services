@@ -7,7 +7,8 @@ import { ServiceSelector } from "@/booking/ServiceSelector";
 import { TimeSelector } from "@/booking/TimeSelector";
 import { OrderSummary } from "@/booking/OrderSummary";
 import { WaterAnimation } from "@/components/WaterAnimation";
-import { inr, serviceMap } from "@/data/site";
+import { inr, serviceMap, servicePrices } from "@/data/site";
+import { cn } from "@/utils/cn";
 import { useEffect, useState } from "react";
 import { useSearchParams, useParams } from "react-router-dom";
 
@@ -31,7 +32,19 @@ const stepMeta = [
 ];
 
 export function BookingPage({ onExit }: { onExit: () => void }) {
-  const { step, setStep, subtotal, deliveryFee, total, cart } = useBooking();
+  const {
+    step,
+    setStep,
+    subtotal,
+    discount,
+    deliveryFee,
+    total,
+    cart,
+    selectedDuration,
+    handleBack: ctxHandleBack,
+    navigateToStep,
+    reset,
+  } = useBooking();
   const [dir, setDir] = useState(1);
   const [searchParams, setSearchParams] = useSearchParams();
   const params = useParams<{ stepNum?: string }>();
@@ -58,6 +71,36 @@ export function BookingPage({ onExit }: { onExit: () => void }) {
     setStep(next);
     setSearchParams({ step: (next + 1).toString() }, { replace: true });
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const onBackClick = () => {
+    if (step === 0) {
+      reset();
+      onExit();
+      return;
+    }
+    setDir(-1);
+    ctxHandleBack();
+    const nextStep = step - 1;
+    setSearchParams({ step: (nextStep + 1).toString() }, { replace: true });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const onExitClick = () => {
+    reset();
+    onExit();
+  };
+
+  const onStepClick = (targetStep: number) => {
+    if (targetStep === step) return;
+    if (targetStep < step) {
+      setDir(-1);
+      navigateToStep(targetStep);
+      setSearchParams({ step: (targetStep + 1).toString() }, { replace: true });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      go(targetStep);
+    }
   };
 
   const meta = stepMeta[step];
@@ -88,7 +131,7 @@ export function BookingPage({ onExit }: { onExit: () => void }) {
           {/* Back button — top-left */}
           <button
             type="button"
-            onClick={() => (step === 0 ? onExit() : go(step - 1))}
+            onClick={onBackClick}
             aria-label={step === 0 ? "Exit booking" : `Back to step ${step}`}
             className="mb-3 sm:mb-4 inline-flex items-center gap-2 text-[13.5px] font-bold text-navy-700 transition-all duration-200 hover:gap-3 hover:text-navy-900"
           >
@@ -99,17 +142,22 @@ export function BookingPage({ onExit }: { onExit: () => void }) {
           {/* Close / exit booking — top-right corner */}
           <button
             type="button"
-            onClick={onExit}
+            onClick={onExitClick}
             aria-label="Close booking and return to home"
             className="absolute top-4 right-4 sm:top-5 sm:right-5 flex h-9 w-9 items-center justify-center rounded-full border border-ice-200 bg-white text-navy-500 shadow-sm transition-all duration-200 hover:border-navy-300 hover:text-navy-800 hover:scale-105"
           >
             <X className="h-4 w-4" aria-hidden="true" />
           </button>
 
-          <BookingStepper step={step} onStepClick={go} />
+          <BookingStepper step={step} onStepClick={onStepClick} />
         </motion.div>
 
-        <div className="mt-4 sm:mt-6 grid gap-5 sm:gap-6 lg:grid-cols-[1fr_336px]">
+        <div
+          className={cn(
+            "mt-4 sm:mt-6 grid gap-5 sm:gap-6",
+            step > 0 && step < 3 ? "lg:grid-cols-[1fr_336px]" : "w-full",
+          )}
+        >
           <div>
             <AnimatePresence mode="wait">
               <motion.div
@@ -147,10 +195,9 @@ export function BookingPage({ onExit }: { onExit: () => void }) {
             </AnimatePresence>
           </div>
 
-
-          {/* sticky mini summary — hidden on the final summary step */}
+          {/* sticky mini summary — hidden on Step 1 (Pickup Details) and Step 4 (Order Summary) */}
           <AnimatePresence>
-            {step < 3 && (
+            {step > 0 && step < 3 && (
               <motion.aside
                 initial={{ opacity: 0, x: 34 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -167,6 +214,10 @@ export function BookingPage({ onExit }: { onExit: () => void }) {
                         .filter((l) => l.qty > 0)
                         .map((l) => {
                           const s = serviceMap[l.id];
+                          const itemDuration = l.duration || selectedDuration || "72 Hours";
+                          const rate = servicePrices[itemDuration]?.[s.name] ?? s.price;
+                          const qty = Number(l.qty) || 0;
+                          const lineTotal = qty * rate;
                           return (
                             <motion.li
                               key={l.id}
@@ -184,7 +235,7 @@ export function BookingPage({ onExit }: { onExit: () => void }) {
                                 </span>
                               </span>
                               <span className="font-bold text-navy-900">
-                                {inr(s.price * l.qty)}
+                                {inr(lineTotal)}
                               </span>
                             </motion.li>
                           );
@@ -202,8 +253,14 @@ export function BookingPage({ onExit }: { onExit: () => void }) {
                       <span className="text-navy-900/60">Subtotal</span>
                       <span className="font-bold text-navy-900">{inr(subtotal)}</span>
                     </div>
+                    {discount > 0 && (
+                      <div className="flex justify-between text-leaf-700">
+                        <span className="font-medium">10% Discount</span>
+                        <span className="font-bold">-{inr(discount)}</span>
+                      </div>
+                    )}
                     <div className="flex justify-between">
-                      <span className="text-navy-900/60">Delivery Charges</span>
+                      <span className="text-navy-900/60">Pickup &amp; Delivery</span>
                       <span
                         className={
                           deliveryFee === 0
@@ -214,9 +271,9 @@ export function BookingPage({ onExit }: { onExit: () => void }) {
                         {deliveryFee === 0 ? "FREE" : inr(deliveryFee)}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between pt-1">
+                    <div className="flex items-center justify-between border-t border-dashed border-ice-300 pt-2">
                       <span className="font-display text-[15px] font-bold text-navy-900">
-                        Total Amount
+                        TOTAL
                       </span>
                       <motion.span
                         key={total}

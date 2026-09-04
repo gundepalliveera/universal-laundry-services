@@ -9,7 +9,12 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useBooking } from "@/booking/BookingContext";
-import { getPickupDays, timeSlots } from "@/data/site";
+import {
+  getPickupDays,
+  timeSlots,
+  isSlotAvailable,
+  getAvailableSlots,
+} from "@/data/site";
 import { cn } from "@/utils/cn";
 
 const slotMetadata: Record<
@@ -112,7 +117,15 @@ export function TimeSelector({
               const active = date === d.key;
               const isToday = i === 0;
               const isTomorrow = i === 1;
-              const dayTag = isToday ? "Today" : isTomorrow ? "Tomorrow" : d.weekday;
+              const availableSlotsForDay = getAvailableSlots(d.key);
+              const hasNoSlots = availableSlotsForDay.length === 0;
+              const dayTag = isToday
+                ? hasNoSlots
+                  ? "No Slots"
+                  : "Today"
+                : isTomorrow
+                ? "Tomorrow"
+                : d.weekday;
 
               return (
                 <motion.button
@@ -124,17 +137,24 @@ export function TimeSelector({
                   transition={{ duration: 0.2 }}
                   type="button"
                   role="radio"
+                  disabled={hasNoSlots}
+                  aria-disabled={hasNoSlots}
                   aria-checked={active}
                   aria-label={`${dayTag}, ${d.day} ${d.month}. ${active ? "Selected" : ""}`}
-                  onClick={() => setDate(d.key)}
-                  whileHover={{ y: -2 }}
-                  whileTap={{ scale: 0.97 }}
+                  onClick={() => {
+                    if (!hasNoSlots) setDate(d.key);
+                  }}
+                  whileHover={hasNoSlots ? undefined : { y: -2 }}
+                  whileTap={hasNoSlots ? undefined : { scale: 0.97 }}
                   className={cn(
-                    "group relative flex flex-col items-center justify-between rounded-xl sm:rounded-2xl border p-1.5 sm:p-2.5 text-center transition-all duration-200 cursor-pointer min-h-[72px] sm:min-h-[82px]",
+                    "group relative flex flex-col items-center justify-between rounded-xl sm:rounded-2xl border p-1.5 sm:p-2.5 text-center transition-all duration-200 min-h-[72px] sm:min-h-[82px]",
+                    hasNoSlots ? "opacity-45 cursor-not-allowed bg-ice-50/50 border-ice-100" : "cursor-pointer",
                     "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy-600",
                     active
                       ? "border-navy-600 bg-navy-600 text-white shadow-[0_6px_18px_-5px_rgba(26,83,224,0.55)] ring-2 ring-navy-600 ring-offset-1"
-                      : "border-ice-200 bg-white hover:border-navy-300 hover:bg-ice-50/50 shadow-sm text-navy-900",
+                      : !hasNoSlots
+                      ? "border-ice-200 bg-white hover:border-navy-300 hover:bg-ice-50/50 shadow-sm text-navy-900"
+                      : "text-navy-900/40",
                   )}
                 >
                   {/* Active Checkmark Pill (top-right) */}
@@ -159,7 +179,9 @@ export function TimeSelector({
                       active
                         ? "bg-white/20 text-white"
                         : isToday
-                        ? "bg-leaf-50 text-leaf-700 border border-leaf-200"
+                        ? hasNoSlots
+                          ? "bg-gray-100 text-gray-500 border border-gray-200"
+                          : "bg-leaf-50 text-leaf-700 border border-leaf-200"
                         : isTomorrow
                         ? "bg-sky-50 text-navy-700 border border-sky-200"
                         : "text-navy-900/55",
@@ -216,7 +238,8 @@ export function TimeSelector({
           className="mt-3.5 grid grid-cols-2 gap-2.5 sm:grid-cols-2 sm:gap-3 lg:grid-cols-3 lg:gap-3.5"
         >
           {timeSlots.map((t) => {
-            const active = slot === t;
+            const available = isSlotAvailable(t, date || "");
+            const active = slot === t && available;
             const detail = slotMetadata[t] || {
               period: "Standard",
               badge: "Available",
@@ -229,17 +252,26 @@ export function TimeSelector({
                 key={t}
                 type="button"
                 role="radio"
+                disabled={!available}
+                aria-disabled={!available}
                 aria-checked={active}
-                aria-label={`${t}, ${detail.period}, ${detail.badge}. ${active ? "Selected" : ""}`}
-                onClick={() => setSlot(t)}
-                whileHover={{ y: -2 }}
-                whileTap={{ scale: 0.98 }}
+                aria-label={`${t}, ${detail.period}, ${!available ? "Expired" : detail.badge}. ${active ? "Selected" : ""}`}
+                onClick={() => {
+                  if (available) setSlot(t);
+                }}
+                whileHover={available ? { y: -2 } : undefined}
+                whileTap={available ? { scale: 0.98 } : undefined}
                 className={cn(
-                  "group relative flex flex-col justify-between rounded-2xl border p-3 sm:p-3.5 text-left transition-all duration-200 cursor-pointer min-h-[96px] sm:min-h-[104px]",
+                  "group relative flex flex-col justify-between rounded-2xl border p-3 sm:p-3.5 text-left transition-all duration-200 min-h-[96px] sm:min-h-[104px]",
+                  !available
+                    ? "border-ice-200/60 bg-ice-50/40 opacity-40 cursor-not-allowed select-none"
+                    : "cursor-pointer",
                   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy-600",
                   active
                     ? "border-navy-600 bg-navy-50/90 shadow-[0_4px_18px_-6px_rgba(26,83,224,0.35)] ring-2 ring-navy-600 ring-offset-1"
-                    : "border-ice-200 bg-white hover:border-navy-300 hover:bg-ice-50/40 shadow-sm",
+                    : available
+                    ? "border-ice-200 bg-white hover:border-navy-300 hover:bg-ice-50/40 shadow-sm"
+                    : "",
                 )}
               >
                 {/* Top header row: Period & Radio indicator */}
@@ -272,10 +304,14 @@ export function TimeSelector({
                   <span
                     className={cn(
                       "inline-block rounded-md border px-1.5 py-0.5 text-[9px] sm:text-[10px] font-bold leading-none",
-                      active ? detail.activeBadgeColor : detail.badgeColor,
+                      !available
+                        ? "bg-gray-100 text-gray-500 border-gray-200"
+                        : active
+                        ? detail.activeBadgeColor
+                        : detail.badgeColor,
                     )}
                   >
-                    {detail.badge}
+                    {!available ? "Expired" : detail.badge}
                   </span>
                 </div>
               </motion.button>

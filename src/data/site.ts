@@ -45,6 +45,44 @@ export type DeliveryTier = {
   description: string;
 };
 
+export const servicePrices: Record<string, Record<string, number>> = {
+  "72 Hours": {
+    "Wash & Fold": 80,
+    "Wash & Steam Iron": 120,
+  },
+  "12 Hours": {
+    "Wash & Fold": 180,
+    "Wash & Steam Iron": 250,
+  },
+  "24 Hours": {
+    "Wash & Fold": 150,
+    "Wash & Steam Iron": 200,
+  },
+};
+
+export function normalizeDuration(duration?: string | null): string {
+  if (!duration) return "72 Hours";
+  const s = String(duration).trim().toLowerCase();
+  if (s.includes("12")) return "12 Hours";
+  if (s.includes("24")) return "24 Hours";
+  return "72 Hours";
+}
+
+export function getServiceRate(
+  selectedDuration: string,
+  selectedService: string,
+  basePrice: number = 0,
+): number {
+  const norm = normalizeDuration(selectedDuration);
+  const rate = servicePrices[norm]?.[selectedService];
+  if (rate !== undefined) {
+    return rate;
+  }
+  // SPECIAL SERVICES such as Premium Wash, Shoe Cleaning, Bag Cleaning, and Dry Cleaning
+  // must continue using their existing prices and calculation logic.
+  return basePrice;
+}
+
 export const deliveryTiers: DeliveryTier[] = [
   {
     id: "72hr",
@@ -65,7 +103,7 @@ export const deliveryTiers: DeliveryTier[] = [
     badgeColor: "bg-emerald-500 text-white",
     iconColor: "text-emerald-500",
     basePrice: 150,
-    multiplier: 1.875,      // 150/80
+    multiplier: 1,
     description: "Fast & reliable",
   },
   {
@@ -76,7 +114,7 @@ export const deliveryTiers: DeliveryTier[] = [
     badgeColor: "bg-orange-500 text-white",
     iconColor: "text-orange-500",
     basePrice: 180,
-    multiplier: 2.25,       // 180/80
+    multiplier: 1,
     description: "Super fast delivery",
   },
 ];
@@ -177,7 +215,7 @@ export const serviceMap: Record<ServiceId, Service> = services.reduce(
   {} as Record<ServiceId, Service>,
 );
 
-export type CartLine = { id: ServiceId; qty: number };
+export type CartLine = { id: ServiceId; qty: number; duration?: string };
 
 export const defaultCart: CartLine[] = [
   { id: "wash-fold", qty: 0 },
@@ -201,7 +239,7 @@ export const featureCards = [
   },
   {
     title: "Free Pickup & Delivery",
-    body: "Doorstep service on all orders above ₹300.",
+    body: "Doorstep service on all orders above ₹399.",
     icon: "truck",
   },
 ] as const;
@@ -251,7 +289,7 @@ export const pricingPlans = [
     features: [
       "Wash & Fold — ₹80/KG",
       "Wash & Steam Iron — ₹120/KG",
-      "Free pickup & delivery above ₹300",
+      "Free pickup & delivery above ₹399",
       "72 hour turnaround",
     ],
     popular: false,
@@ -303,28 +341,182 @@ export const inr = (n: number) =>
     maximumFractionDigits: 0,
   }).format(n);
 
-export const FREE_DELIVERY_ABOVE = 300;
+export const FREE_DELIVERY_ABOVE = 399;
 export const DELIVERY_FEE = 49;
 
-/** Next 7 pickup days, formatted like "10 May 2024, Friday" */
-export function getPickupDays(count = 7) {
-  const out: { key: string; day: number; month: string; label: string; weekday: string; short: string }[] =
-    [];
+export function parseSlotStartHour(slot: string): number {
+  const match = slot.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+  if (!match) return 0;
+  let hours = parseInt(match[1], 10);
+  const isPM = match[3].toUpperCase() === "PM";
+  if (isPM && hours !== 12) hours += 12;
+  if (!isPM && hours === 12) hours = 0;
+  return hours;
+}
+
+export function isSlotAvailable(
+  slot: string,
+  dateKey: string,
+  now: Date = new Date(),
+): boolean {
+  if (!dateKey) return false;
+  const parts = dateKey.split("-").map(Number);
+  if (parts.length !== 3) return true;
+  const [year, month, day] = parts;
+
+  const todayYear = now.getFullYear();
+  const todayMonth = now.getMonth() + 1;
+  const todayDay = now.getDate();
+
+  // Past dates are not available
+  if (
+    year < todayYear ||
+    (year === todayYear && month < todayMonth) ||
+    (year === todayYear && month === todayMonth && day < todayDay)
+  ) {
+    return false;
+  }
+
+  // Future dates have all slots available
+  if (
+    year > todayYear ||
+    (year === todayYear && month > todayMonth) ||
+    (year === todayYear && month === todayMonth && day > todayDay)
+  ) {
+    return true;
+  }
+
+  // Today: check if current time has passed slot start time
+  const startHour = parseSlotStartHour(slot);
+  const curHour = now.getHours();
+  const curMin = now.getMinutes();
+
+  if (curHour > startHour || (curHour === startHour && curMin > 0)) {
+    return false;
+  }
+  return true;
+}
+
+export function getAvailableSlots(
+  dateKey: string,
+  now: Date = new Date(),
+): string[] {
+  return timeSlots.filter((slot) => isSlotAvailable(slot, dateKey, now));
+}
+
+export function formatPickupDate(dateKey: string | null | undefined): {
+  dateOnly: string;
+  shortWithDay: string;
+  fullLabel: string;
+  relativeTag: string;
+  dayNum: number;
+  monthShort: string;
+} {
+  if (!dateKey) {
+    return {
+      dateOnly: "—",
+      shortWithDay: "—",
+      fullLabel: "—",
+      relativeTag: "",
+      dayNum: 0,
+      monthShort: "",
+    };
+  }
+
+  const parts = dateKey.split("-").map(Number);
+  if (parts.length !== 3) {
+    return {
+      dateOnly: dateKey,
+      shortWithDay: dateKey,
+      fullLabel: dateKey,
+      relativeTag: "",
+      dayNum: 0,
+      monthShort: "",
+    };
+  }
+
+  const [year, month, day] = parts;
+  const d = new Date(year, month - 1, day);
   const now = new Date();
+  const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  const tomorrowKey = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, "0")}-${String(tomorrow.getDate()).padStart(2, "0")}`;
+
+  let rawMonthShort = d.toLocaleDateString("en-IN", { month: "short" });
+  if (rawMonthShort === "Sep") rawMonthShort = "Sept";
+  const weekdayShort = d.toLocaleDateString("en-IN", { weekday: "short" });
+  const weekdayLong = d.toLocaleDateString("en-IN", { weekday: "long" });
+  const monthLong = d.toLocaleDateString("en-IN", { month: "long" });
+
+  const relativeTag = dateKey === todayKey ? "Today" : dateKey === tomorrowKey ? "Tomorrow" : "";
+
+  return {
+    dateOnly: `${rawMonthShort} ${day}`,
+    shortWithDay: `${rawMonthShort} ${day} · ${weekdayShort}`,
+    fullLabel: `${day} ${monthLong} ${year}, ${weekdayLong}`,
+    relativeTag,
+    dayNum: day,
+    monthShort: rawMonthShort,
+  };
+}
+
+/** Next pickup days formatted dynamically, using local timezone dates */
+export function getPickupDays(count = 7, now: Date = new Date()) {
+  const out: {
+    key: string;
+    day: number;
+    month: string;
+    label: string;
+    weekday: string;
+    short: string;
+    relativeTag: string;
+  }[] = [];
   for (let i = 0; i < count; i++) {
     const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + i);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const dayNum = String(d.getDate()).padStart(2, "0");
+    const key = `${y}-${m}-${dayNum}`;
+
+    let monthShort = d.toLocaleDateString("en-IN", { month: "short" });
+    if (monthShort === "Sep") monthShort = "Sept";
+    const weekdayLong = d.toLocaleDateString("en-IN", { weekday: "long" });
+    const weekdayShort = d.toLocaleDateString("en-IN", { weekday: "short" });
+    const monthLong = d.toLocaleDateString("en-IN", { month: "long" });
+
     out.push({
-      key: d.toISOString().slice(0, 10),
+      key,
       day: d.getDate(),
-      month: d.toLocaleDateString("en-IN", { month: "short" }),
-      weekday: d.toLocaleDateString("en-IN", { weekday: "long" }),
-      short: d.toLocaleDateString("en-IN", { weekday: "short" }),
-      label: `${d.getDate()} ${d.toLocaleDateString("en-IN", {
-        month: "long",
-      })} ${d.getFullYear()}, ${d.toLocaleDateString("en-IN", {
-        weekday: "long",
-      })}`,
+      month: monthShort,
+      weekday: weekdayLong,
+      short: weekdayShort,
+      relativeTag: i === 0 ? "Today" : i === 1 ? "Tomorrow" : weekdayLong,
+      label: `${d.getDate()} ${monthLong} ${d.getFullYear()}, ${weekdayLong}`,
     });
   }
   return out;
+}
+
+export function getDefaultDateAndSlot(now: Date = new Date()): {
+  date: string;
+  slot: string;
+} {
+  const days = getPickupDays(7, now);
+  const todayKey = days[0].key;
+  const todayAvailable = getAvailableSlots(todayKey, now);
+
+  if (todayAvailable.length > 0) {
+    return {
+      date: todayKey,
+      slot: todayAvailable[0],
+    };
+  }
+
+  // If there are no remaining slots today: move to tomorrow
+  const tomorrowKey = days[1].key;
+  const tomorrowAvailable = getAvailableSlots(tomorrowKey, now);
+  return {
+    date: tomorrowKey,
+    slot: tomorrowAvailable[0] || timeSlots[0],
+  };
 }

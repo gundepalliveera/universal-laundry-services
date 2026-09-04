@@ -5,7 +5,7 @@ import { Hero } from "@/components/Hero";
 import { Navbar } from "@/components/Navbar";
 import { applySeoMetadata } from "@/data/seo";
 
-import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, useNavigate, Navigate } from "react-router-dom";
 
 // Lazy-loaded components below-the-fold
 const About = lazy(() => import("@/components/About").then((m) => ({ default: m.About })));
@@ -19,6 +19,7 @@ const Services = lazy(() => import("@/components/Services").then((m) => ({ defau
 const AreaDirectory = lazy(() => import("./components/AreaDirectory").then((m) => ({ default: m.AreaDirectory })));
 const AreaDetailPage = lazy(() => import("./components/AreaDetailPage").then((m) => ({ default: m.AreaDetailPage })));
 const BookingPage = lazy(() => import("@/booking/BookingPage").then((m) => ({ default: m.BookingPage })));
+const NotFound = lazy(() => import("@/components/NotFound").then((m) => ({ default: m.NotFound })));
 
 const sectionIds = ["home", "how-it-works", "services", "pricing", "about", "contact"];
 
@@ -177,8 +178,14 @@ function MainLayout() {
               </motion.div>
             }
           />
+          <Route path="/booking" element={<Navigate to="/book" replace />} />
+          <Route path="/services" element={<Navigate to="/#services" replace />} />
+          <Route path="/pricing" element={<Navigate to="/#pricing" replace />} />
+          <Route path="/about" element={<Navigate to="/#about" replace />} />
+          <Route path="/contact" element={<Navigate to="/#contact" replace />} />
           <Route path="/areas" element={<AreaDirectory />} />
           <Route path="/areas/:slug" element={<AreaDetailPage onBook={handleBook} />} />
+          <Route path="*" element={<NotFound onBook={handleBook} />} />
         </Routes>
 
         {/* Service Detail SEO Modal */}

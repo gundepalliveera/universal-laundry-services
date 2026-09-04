@@ -1,11 +1,12 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Check, ChevronDown, Clock, Minus, Plus, ShoppingBasket, Truck } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, Clock, Minus, Plus, ShoppingBasket } from "lucide-react";
 import { useState } from "react";
 import { useBooking } from "@/booking/BookingContext";
 import {
   inr,
   services,
   serviceMap,
+  servicePrices,
   deliveryTiers,
   type DeliveryTierId,
   type ServiceId,
@@ -410,12 +411,14 @@ function SummaryBar({
   tierLabel,
   total,
   subtotal,
+  discount,
   deliveryFee,
 }: {
   itemCount: number;
   tierLabel: string;
   total: number;
   subtotal: number;
+  discount: number;
   deliveryFee: number;
 }) {
   const [open, setOpen] = useState(false);
@@ -455,7 +458,7 @@ function SummaryBar({
             transition={{ type: "spring", stiffness: 400, damping: 22 }}
             className="font-display text-[20px] font-extrabold text-navy-900"
           >
-            ₹{total}
+            {inr(total)}
           </motion.p>
         </div>
 
@@ -483,14 +486,20 @@ function SummaryBar({
                 <span>Subtotal</span>
                 <span className="font-semibold text-navy-900">{inr(subtotal)}</span>
               </div>
+              {discount > 0 && (
+                <div className="flex justify-between text-leaf-700">
+                  <span className="font-medium">10% Discount</span>
+                  <span className="font-bold">-{inr(discount)}</span>
+                </div>
+              )}
               <div className="flex justify-between text-navy-900/60">
-                <span>Delivery</span>
+                <span>Pickup &amp; Delivery</span>
                 <span className={cn("font-semibold", deliveryFee === 0 ? "text-leaf-600" : "text-navy-900")}>
                   {deliveryFee === 0 ? "FREE" : inr(deliveryFee)}
                 </span>
               </div>
               <div className="flex justify-between border-t border-dashed border-ice-300 pt-1.5 font-bold text-navy-900">
-                <span>Total</span>
+                <span>TOTAL</span>
                 <span>{inr(total)}</span>
               </div>
             </div>
@@ -509,30 +518,95 @@ export function ServiceSelector({
   onBack?: () => void;
   onNext: () => void;
 }) {
-  const { qtyOf, setQty, itemCount, subtotal, deliveryFee, total } = useBooking();
-  const [tierId, setTierId] = useState<DeliveryTierId>("72hr");
+  const {
+    qtyOf,
+    setQty,
+    itemCount,
+    subtotal,
+    discount,
+    deliveryFee,
+    total,
+    selectedDuration,
+    setSelectedDuration,
+  } = useBooking();
 
-  const tier = deliveryTiers.find((t) => t.id === tierId)!;
+  const tierId: DeliveryTierId = selectedDuration.includes("12")
+    ? "12hr"
+    : selectedDuration.includes("24")
+    ? "24hr"
+    : "72hr";
 
-  const effectivePrice = (id: ServiceId) =>
-    Math.round(serviceMap[id].price * tier.multiplier);
+  const tier = deliveryTiers.find((t) => t.id === tierId) || deliveryTiers[0];
+
+  const effectivePrice = (id: ServiceId) => {
+    const s = serviceMap[id];
+    const rate = servicePrices[selectedDuration]?.[s.name];
+    if (rate !== undefined) {
+      return rate;
+    }
+    return s.price;
+  };
 
   const toggle = (id: ServiceId) => {
     const qty = qtyOf(id);
-    if (qty > 0) setQty(id, 0);
-    else setQty(id, serviceMap[id].defaultQty || 1);
+    if (qty > 0) setQty(id, 0, selectedDuration);
+    else setQty(id, serviceMap[id].defaultQty || 1, selectedDuration);
+  };
+
+  const handleSelectTier = (id: DeliveryTierId) => {
+    const found = deliveryTiers.find((t) => t.id === id);
+    if (found) {
+      setSelectedDuration(found.label);
+    }
   };
 
   return (
     <div>
-      {/* Promotional Notice */}
-      <div className="mb-4 sm:mb-5 flex items-center gap-2.5 rounded-2xl border border-leaf-200 bg-leaf-50/80 px-3.5 py-2.5 text-[12.5px] sm:text-[13.5px] font-semibold text-leaf-800 shadow-sm">
-        <Truck className="h-4 w-4 shrink-0 text-leaf-600" aria-hidden="true" />
-        <span>Enjoy free pickup and delivery on orders above ₹300.</span>
-      </div>
+      {/* 10% Discount Information Banner */}
+      {subtotal >= 1000 ? (
+        <div className="mb-4 flex flex-col xs:flex-row xs:items-center justify-between gap-2 rounded-2xl border border-leaf-300 bg-gradient-to-r from-leaf-50/95 via-leaf-100/60 to-leaf-50/95 px-3.5 py-2.5 shadow-sm transition-all duration-300">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-leaf-200/80 text-[14px]">
+              🎉
+            </span>
+            <div className="min-w-0">
+              <p className="text-[13px] sm:text-[13.5px] font-extrabold text-navy-950 leading-tight">
+                <span className="text-leaf-700 font-black mr-1.5">YOU QUALIFIED FOR 10% OFF!</span>
+                Orders above ₹1,000 get an automatic 10% discount.
+              </p>
+              <p className="text-[11px] sm:text-[11.5px] font-medium text-leaf-800 leading-tight">
+                Add more services and save more! · Free delivery included
+              </p>
+            </div>
+          </div>
+          <span className="self-start xs:self-center shrink-0 rounded-full border border-leaf-400 bg-leaf-600 px-2.5 py-0.5 text-[11.5px] font-extrabold text-white shadow-xs">
+            10% OFF Applied
+          </span>
+        </div>
+      ) : (
+        <div className="mb-4 flex flex-col xs:flex-row xs:items-center justify-between gap-2 rounded-2xl border border-ice-300/80 bg-gradient-to-r from-ice-50/90 via-white to-ice-50/90 px-3.5 py-2.5 shadow-sm transition-all duration-300">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-ice-100 text-[14px]">
+              🎉
+            </span>
+            <div className="min-w-0">
+              <p className="text-[13px] sm:text-[13.5px] font-bold text-navy-950 leading-tight">
+                <span className="text-navy-900 font-extrabold mr-1.5">GET 10% OFF</span>
+                Orders above ₹1,000 get an automatic 10% discount.
+              </p>
+              <p className="text-[11px] sm:text-[11.5px] text-navy-900/60 leading-tight">
+                Add more services and save more!
+              </p>
+            </div>
+          </div>
+          <span className="self-start xs:self-center shrink-0 rounded-full border border-leaf-200 bg-leaf-50 px-2.5 py-0.5 text-[11px] font-bold text-leaf-700">
+            Free delivery above ₹399
+          </span>
+        </div>
+      )}
 
       {/* Delivery tier selector */}
-      <DeliveryTabs selected={tierId} onSelect={setTierId} />
+      <DeliveryTabs selected={tierId} onSelect={handleSelectTier} />
 
       {/* ── Mobile rows (< sm) ── */}
       <div className="flex flex-col gap-3 sm:hidden">
@@ -545,7 +619,7 @@ export function ServiceSelector({
             price={effectivePrice(s.id)}
             tierId={tierId}
             onToggle={() => toggle(s.id)}
-            onQty={(q) => setQty(s.id, q)}
+            onQty={(q) => setQty(s.id, q, selectedDuration)}
             index={i}
           />
         ))}
@@ -562,7 +636,7 @@ export function ServiceSelector({
             price={effectivePrice(s.id)}
             tierId={tierId}
             onToggle={() => toggle(s.id)}
-            onQty={(q) => setQty(s.id, q)}
+            onQty={(q) => setQty(s.id, q, selectedDuration)}
             index={i}
           />
         ))}
@@ -574,6 +648,7 @@ export function ServiceSelector({
         tierLabel={tier.label}
         total={total}
         subtotal={subtotal}
+        discount={discount}
         deliveryFee={deliveryFee}
       />
 

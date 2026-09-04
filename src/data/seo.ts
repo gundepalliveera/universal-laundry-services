@@ -39,7 +39,7 @@ const routeSeoMap: Record<string, SeoRouteMeta> = {
   pricing: {
     title: "Laundry Prices in Hyderabad | Universal Laundry Services",
     description:
-      "Transparent laundry and dry cleaning pricing in Hyderabad. Wash & Fold at ₹80/KG, Steam Ironing at ₹120/KG. Free pickup & delivery above ₹300.",
+      "Transparent laundry and dry cleaning pricing in Hyderabad. Wash & Fold at ₹80/KG, Steam Ironing at ₹120/KG. Free pickup & delivery above ₹399.",
     canonical: `${SITE_URL}/pricing`,
     h1: "Simple, Honest Laundry Prices in Hyderabad",
     keywords:

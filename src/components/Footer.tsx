@@ -82,7 +82,7 @@ export function Footer({
                   key={s.label}
                   href={s.href}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   aria-label={s.label}
                   className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-white/15 bg-white/5 text-navy-200 transition-all active:scale-95 hover:border-leaf-400 hover:bg-leaf-500/20 hover:text-white shadow-sm"
                 >
@@ -197,7 +197,7 @@ export function Footer({
                   <a
                     href={`https://wa.me/91${contactInfo.whatsapp}`}
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                     className="flex items-center gap-1.5 text-navy-100 font-semibold transition-colors hover:text-leaf-300 py-0.5 truncate"
                   >
                     <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-leaf-500/20 text-leaf-400">
@@ -240,7 +240,7 @@ export function Footer({
                   key={s.label}
                   href={s.href}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   aria-label={s.label}
                   className="inline-flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl border border-white/15 bg-white/5 text-navy-200 transition-all duration-300 hover:scale-110 hover:border-leaf-400 hover:bg-leaf-500/20 hover:text-white shadow-sm"
                 >
@@ -353,7 +353,7 @@ export function Footer({
                   className="inline-flex items-center gap-2 text-white font-semibold transition-colors hover:text-leaf-300"
                   href={`https://wa.me/91${contactInfo.whatsapp}`}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                 >
                   <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-white/10 text-leaf-400">
                     <MessageCircle className="h-3.5 w-3.5" aria-hidden="true" />

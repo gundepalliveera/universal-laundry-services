@@ -46,18 +46,21 @@ export function Contact() {
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     const next: Record<string, string> = {};
-    if (form.name.trim().length < 2) next.name = "Please enter your name";
+    if (form.name.trim().length < 2 || form.name.trim().length > 60) next.name = "Please enter a valid name";
     if (!/^[6-9]\d{9}$/.test(form.phone.replace(/\D/g, "")))
       next.phone = "Enter a valid 10-digit mobile number";
-    if (form.message.trim().length < 5) next.message = "Tell us a little more";
+    if (form.message.trim().length < 5 || form.message.trim().length > 500) next.message = "Message must be between 5 and 500 characters";
     setErrors(next);
     if (Object.keys(next).length === 0) {
       setSent(true);
       
-      // Send message via WhatsApp
-      const text = `Hi, I am ${form.name.trim()}.\nMy phone number is ${form.phone}.\n\n${form.message.trim()}`;
+      // Send message via WhatsApp safely
+      const cleanName = form.name.trim().slice(0, 60);
+      const cleanPhone = form.phone.replace(/\D/g, "").slice(0, 10);
+      const cleanMsg = form.message.trim().slice(0, 500);
+      const text = `Hi, I am ${cleanName}.\nMy phone number is +91 ${cleanPhone}.\n\n${cleanMsg}`;
       const url = `https://wa.me/91${contactInfo.whatsapp}?text=${encodeURIComponent(text)}`;
-      window.open(url, "_blank");
+      window.open(url, "_blank", "noopener,noreferrer");
 
       setTimeout(() => setSent(false), 5000);
       setForm({ name: "", phone: "", message: "" });
