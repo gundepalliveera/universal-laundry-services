@@ -16,30 +16,30 @@ export function BookingStepper({
   onStepClick: (s: number) => void;
 }) {
   return (
-    <div className="relative py-2 sm:py-3">
-      {/* Segmented connector rail matching screenshot */}
+    <div className="relative py-1.5 sm:py-3 select-none">
+      {/* Segmented connector rail */}
       <div
         aria-hidden="true"
-        className="absolute inset-x-8 sm:inset-x-12 top-6 sm:top-7 flex items-center -z-0 pointer-events-none"
+        className="absolute inset-x-6 xs:inset-x-8 sm:inset-x-12 top-4 xs:top-4.5 sm:top-7 flex items-center -z-0 pointer-events-none"
       >
         {/* Segment 1 → 2 */}
         <div
           className={cn(
-            "h-[2.5px] flex-1 transition-colors duration-300",
+            "h-[2px] sm:h-[2.5px] flex-1 transition-colors duration-300",
             step >= 1 ? "bg-[#16a34a]" : "bg-gray-200",
           )}
         />
         {/* Segment 2 → 3 */}
         <div
           className={cn(
-            "h-[2.5px] flex-1 transition-colors duration-300",
+            "h-[2px] sm:h-[2.5px] flex-1 transition-colors duration-300",
             step >= 2 ? "bg-[#16a34a]" : "bg-[#bfdbfe]/80",
           )}
         />
         {/* Segment 3 → 4 */}
         <div
           className={cn(
-            "h-[2.5px] flex-1 transition-colors duration-300",
+            "h-[2px] sm:h-[2.5px] flex-1 transition-colors duration-300",
             step >= 3 ? "bg-[#16a34a]" : "bg-[#bfdbfe]/80",
           )}
         />
@@ -53,7 +53,7 @@ export function BookingStepper({
           return (
             <li
               key={s.id}
-              className="flex flex-1 flex-col items-center text-center"
+              className="flex flex-1 flex-col items-center text-center px-0.5"
             >
               <button
                 type="button"
@@ -66,16 +66,16 @@ export function BookingStepper({
                 {/* Step Circle */}
                 <span
                   className={cn(
-                    "flex h-8.5 w-8.5 sm:h-10 sm:w-10 items-center justify-center rounded-full text-[13px] sm:text-[14.5px] font-black transition-all duration-300 shadow-xs",
+                    "flex h-7 w-7 xs:h-8 xs:w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full text-[11px] xs:text-[12px] sm:text-[14.5px] font-black transition-all duration-300 shadow-xs",
                     isDone
                       ? "bg-[#16a34a] text-white border-none"
                       : isActive
-                      ? "bg-[#1a56db] text-white border-none shadow-[0_4px_14px_-2px_rgba(26,86,219,0.5)]"
+                      ? "bg-[#1a56db] text-white border-none shadow-[0_4px_14px_-2px_rgba(26,86,219,0.5)] ring-2 ring-[#1a56db]/30"
                       : "border-2 border-[#bfdbfe] bg-white text-[#1a56db]",
                   )}
                 >
                   {isDone ? (
-                    <Check className="h-4 w-4 stroke-[3]" aria-hidden="true" />
+                    <Check className="h-3.5 w-3.5 sm:h-4 sm:w-4 stroke-[3]" aria-hidden="true" />
                   ) : (
                     s.id + 1
                   )}
@@ -84,7 +84,7 @@ export function BookingStepper({
                 {/* Step Label */}
                 <span
                   className={cn(
-                    "mt-2 text-[11px] sm:text-[13px] leading-tight line-clamp-1 sm:line-clamp-none max-w-[76px] xs:max-w-[85px] sm:max-w-none transition-colors",
+                    "mt-1.5 text-[9.5px] xs:text-[10.5px] sm:text-[13px] leading-tight line-clamp-2 sm:line-clamp-none max-w-[66px] xs:max-w-[78px] sm:max-w-none transition-colors",
                     isActive
                       ? "font-extrabold text-[#1a56db]"
                       : isDone
@@ -92,6 +92,7 @@ export function BookingStepper({
                       : "font-semibold text-[#64748b]",
                   )}
                 >
+                  {isDone && <span className="text-[#16a34a] mr-0.5 font-black sm:hidden">✓</span>}
                   {s.label}
                 </span>
               </button>

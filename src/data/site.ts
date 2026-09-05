@@ -33,18 +33,6 @@ export type Service = {
 
 export type DeliveryTierId = "72hr" | "24hr" | "12hr";
 
-export type DeliveryTier = {
-  id: DeliveryTierId;
-  hours: string;
-  label: string;
-  badge: "Regular" | "Express" | "Express Fast";
-  badgeColor: string;
-  iconColor: string;
-  basePrice: number;        // Wash & Fold kg price — used as the "from" indicator
-  multiplier: number;       // Applied to all service base prices
-  description: string;
-};
-
 export const servicePrices: Record<string, Record<string, number>> = {
   "72 Hours": {
     "Wash & Fold": 80,
@@ -82,42 +70,6 @@ export function getServiceRate(
   // must continue using their existing prices and calculation logic.
   return basePrice;
 }
-
-export const deliveryTiers: DeliveryTier[] = [
-  {
-    id: "72hr",
-    hours: "72 HOURS",
-    label: "72 Hours",
-    badge: "Regular",
-    badgeColor: "bg-navy-600 text-white",
-    iconColor: "text-navy-600",
-    basePrice: 80,
-    multiplier: 1,
-    description: "Best for normal needs",
-  },
-  {
-    id: "24hr",
-    hours: "24 HOURS",
-    label: "24 Hours",
-    badge: "Express",
-    badgeColor: "bg-emerald-500 text-white",
-    iconColor: "text-emerald-500",
-    basePrice: 150,
-    multiplier: 1,
-    description: "Fast & reliable",
-  },
-  {
-    id: "12hr",
-    hours: "12 HOURS",
-    label: "12 Hours",
-    badge: "Express Fast",
-    badgeColor: "bg-orange-500 text-white",
-    iconColor: "text-orange-500",
-    basePrice: 180,
-    multiplier: 1,
-    description: "Super fast delivery",
-  },
-];
 
 export const services: Service[] = [
 

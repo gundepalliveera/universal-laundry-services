@@ -67,8 +67,8 @@ export function Navbar({
       <nav
         aria-label="Primary"
         className={cn(
-          "shell flex items-center justify-between gap-2 transition-all duration-300",
-          scrolled ? "h-[58px] sm:h-[66px] md:h-[70px]" : "h-[64px] sm:h-[72px] md:h-[76px]",
+          "mx-auto w-full max-w-7xl px-3 sm:px-8 flex items-center justify-between gap-1.5 xs:gap-2 transition-all duration-300",
+          scrolled ? "h-[56px] sm:h-[66px] md:h-[70px]" : "h-[60px] sm:h-[72px] md:h-[76px]",
         )}
       >
         {/* Logo */}
@@ -78,7 +78,7 @@ export function Navbar({
           className="shrink-0 rounded-xl text-left transition-transform duration-300 hover:scale-[1.02] focus:outline-none"
           aria-label="Universal Laundry Services — go to home"
         >
-          <Logo markClassName="h-9 w-9 sm:h-11 sm:w-11" />
+          <Logo markClassName="h-8 w-8 xs:h-9 xs:w-9 sm:h-11 sm:w-11" />
         </button>
 
         {/* Desktop Navigation Links (>=1024px) */}
@@ -114,11 +114,11 @@ export function Navbar({
         </ul>
 
         {/* Actions & Mobile Buttons */}
-        <div className="flex items-center gap-1.5 xs:gap-2 sm:gap-3">
-          {/* Phone Pill Button - matches screenshot exactly */}
+        <div className="flex items-center gap-1.5 xs:gap-2 sm:gap-3 shrink-0">
+          {/* Phone Pill Button - compact on mobile */}
           <a
             href={`tel:+91${contactInfo.phone}`}
-            className="inline-flex h-8.5 xs:h-9 sm:h-10 items-center gap-1 xs:gap-1.5 sm:gap-2 rounded-full border border-ice-200 bg-white px-2.5 xs:px-3 sm:px-4 text-[11px] xs:text-[12px] sm:text-sm font-bold text-navy-900 shadow-sm transition-all duration-300 hover:border-navy-300 hover:scale-105"
+            className="inline-flex h-8 xs:h-9 sm:h-10 items-center gap-1 xs:gap-1.5 sm:gap-2 rounded-full border border-ice-200 bg-white px-2 xs:px-3 sm:px-4 text-[10.5px] xs:text-[12px] sm:text-sm font-bold text-navy-900 shadow-sm transition-all duration-300 hover:border-navy-300 hover:scale-105 shrink-0"
             aria-label={`Call ${contactInfo.phone}`}
           >
             <Phone className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-leaf-600 fill-leaf-600/10 shrink-0" aria-hidden="true" />
@@ -142,15 +142,15 @@ export function Navbar({
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
-            className="inline-flex h-9 w-9 min-h-[44px] min-w-[44px] items-center justify-center rounded-xl text-navy-900 transition-colors lg:hidden focus:outline-none"
+            className="inline-flex h-8.5 w-8.5 min-h-[38px] min-w-[38px] xs:min-h-[44px] xs:min-w-[44px] items-center justify-center rounded-xl text-navy-900 transition-colors lg:hidden focus:outline-none shrink-0"
             aria-expanded={open}
             aria-controls="mobile-menu"
             aria-label={open ? "Close menu" : "Open menu"}
           >
             {open ? (
-              <X className="h-6 w-6 text-navy-900" aria-hidden="true" />
+              <X className="h-5.5 w-5.5 xs:h-6 xs:w-6 text-navy-900" aria-hidden="true" />
             ) : (
-              <Menu className="h-6 w-6 text-navy-900" aria-hidden="true" />
+              <Menu className="h-5.5 w-5.5 xs:h-6 xs:w-6 text-navy-900" aria-hidden="true" />
             )}
           </button>
         </div>

@@ -98,12 +98,12 @@ export function Logo({
   light?: boolean;
 }) {
   return (
-    <span className={cn("flex items-center gap-3", className)}>
+    <span className={cn("flex items-center gap-2 xs:gap-3", className)}>
       <LogoMark className={markClassName} />
       <span className="flex flex-col leading-none">
         <span
           className={cn(
-            "font-display text-[15px] font-extrabold tracking-[0.06em] sm:text-base",
+            "font-display text-[13.5px] xs:text-[15px] font-extrabold tracking-[0.05em] sm:tracking-[0.06em] sm:text-base",
             light ? "text-white" : "text-navy-900",
           )}
         >
@@ -111,7 +111,7 @@ export function Logo({
         </span>
         <span
           className={cn(
-            "mt-1 font-display text-[9.5px] font-bold tracking-[0.14em] sm:text-[10.5px]",
+            "mt-0.5 sm:mt-1 font-display text-[8.5px] xs:text-[9.5px] font-bold tracking-[0.12em] sm:tracking-[0.14em] sm:text-[10.5px]",
             light ? "text-navy-100" : "text-navy-600",
           )}
         >

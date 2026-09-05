@@ -32,7 +32,6 @@ export function PickupDetails({
   onNext,
 }: {
   onNext: () => void;
-  onBack?: () => void;
 }) {
   const { pickup, setPickup, notes, setNotes } = useBooking();
   const [errors, setErrors] = useState<Errors>({});
@@ -226,7 +225,7 @@ export function PickupDetails({
         initial={shake ? { x: 0 } : false}
         animate={shake ? { x: [0, -8, 8, -5, 5, 0] } : {}}
         transition={{ duration: 0.42 }}
-        className="grid gap-5 sm:grid-cols-2"
+        className="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2"
       >
         {/* Full Name */}
         <Field
@@ -266,9 +265,9 @@ export function PickupDetails({
         </Field>
 
         {/* ── Pickup Address section ──────────────────────────── */}
-        <div className="sm:col-span-2">
+        <div className="col-span-1 sm:col-span-2">
           {/* Section header */}
-          <div className="mb-3 flex items-center justify-between">
+          <div className="mb-2.5 flex items-center justify-between gap-2 flex-wrap">
             <span className="inline-flex items-center gap-1.5 text-sm font-bold text-navy-900">
               <MapPin className="h-4 w-4 text-navy-500" aria-hidden="true" />
               Pickup Address
@@ -280,14 +279,14 @@ export function PickupDetails({
               onClick={handleGPS}
               disabled={locating}
               whileTap={{ scale: 0.97 }}
-              className="inline-flex items-center gap-1.5 rounded-full border border-navy-200 bg-navy-50 px-3.5 py-1.5 text-[12.5px] font-bold text-navy-700 transition-all duration-200 hover:border-navy-400 hover:bg-navy-100 disabled:opacity-60"
+              className="inline-flex items-center gap-1.5 rounded-full border border-navy-200 bg-navy-50 px-3 py-1.5 text-[12px] xs:text-[12.5px] font-bold text-navy-700 transition-all duration-200 hover:border-navy-400 hover:bg-navy-100 disabled:opacity-60 cursor-pointer"
             >
               {locating ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
               ) : (
-                <Navigation className="h-3.5 w-3.5" aria-hidden="true" />
+                <Navigation className="h-3.5 w-3.5 text-[#1a56db]" aria-hidden="true" />
               )}
-              {locating ? "Locating…" : "Use my current location"}
+              <span>{locating ? "Locating…" : "Use My Current Location"}</span>
             </motion.button>
           </div>
 
@@ -298,7 +297,7 @@ export function PickupDetails({
                 initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -4 }}
-                className="mb-3 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-[12.5px] font-medium text-red-600"
+                className="mb-3 rounded-xl border border-red-200 bg-red-50 px-3.5 py-2 text-[12px] xs:text-[12.5px] font-medium text-red-600"
                 role="alert"
               >
                 {locError}
@@ -306,7 +305,7 @@ export function PickupDetails({
             )}
           </AnimatePresence>
 
-          {/* Service Availability Badge (Hub: Jubilee Hills Rd No. 5 | Max Radius: 20 KM) */}
+          {/* Service Availability Badge */}
           <AnimatePresence>
             {pickup.distanceKm !== undefined && (
               pickup.serviceAvailable ? (
@@ -315,7 +314,7 @@ export function PickupDetails({
                   initial={{ opacity: 0, y: -4 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -4 }}
-                  className="mb-3 flex items-center justify-between gap-3 rounded-xl border border-leaf-300 bg-leaf-50/90 px-4 py-2.5 text-[12.5px] font-semibold text-leaf-800 shadow-xs"
+                  className="mb-3 flex items-center justify-between gap-2 rounded-xl border border-leaf-300 bg-leaf-50/90 px-3.5 py-2 text-[12px] xs:text-[12.5px] font-semibold text-leaf-800 shadow-xs"
                 >
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="h-4 w-4 shrink-0 text-leaf-600" aria-hidden="true" />
@@ -323,7 +322,7 @@ export function PickupDetails({
                       <strong className="font-bold">Service Available</strong> — {pickup.distanceKm} KM from Jubilee Hills Hub
                     </span>
                   </div>
-                  <span className="hidden xs:inline-block rounded-md bg-leaf-100/90 px-2 py-0.5 text-[11px] font-bold text-leaf-700">
+                  <span className="hidden xs:inline-block rounded-md bg-leaf-100/90 px-2 py-0.5 text-[11px] font-bold text-leaf-700 shrink-0">
                     Within 20 KM
                   </span>
                 </motion.div>
@@ -333,7 +332,7 @@ export function PickupDetails({
                   initial={{ opacity: 0, y: -4 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -4 }}
-                  className="mb-3 flex items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50/90 px-4 py-2.5 text-[12.5px] font-semibold text-red-800 shadow-xs"
+                  className="mb-3 flex items-center justify-between gap-2 rounded-xl border border-red-200 bg-red-50/90 px-3.5 py-2 text-[12px] xs:text-[12.5px] font-semibold text-red-800 shadow-xs"
                   role="alert"
                 >
                   <div className="flex items-center gap-2">
@@ -342,7 +341,7 @@ export function PickupDetails({
                       <strong className="font-bold">Service Not Available</strong> — {pickup.distanceKm} KM from Jubilee Hills Hub
                     </span>
                   </div>
-                  <span className="rounded-md bg-red-100/90 px-2 py-0.5 text-[11px] font-bold text-red-700">
+                  <span className="rounded-md bg-red-100/90 px-2 py-0.5 text-[11px] font-bold text-red-700 shrink-0">
                     Exceeds 20 KM
                   </span>
                 </motion.div>
@@ -350,11 +349,11 @@ export function PickupDetails({
             )}
           </AnimatePresence>
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-3.5 sm:gap-4 grid-cols-1 sm:grid-cols-2">
             {/* House / Flat */}
             <Field
               id="flat"
-              label="House / Flat / Building No."
+              label="House / Flat / Building"
               icon={<Building2 className="h-4 w-4" aria-hidden="true" />}
               error={errors.flat}
             >
@@ -468,15 +467,15 @@ export function PickupDetails({
         </div>
       </motion.div>
 
-      <div className="mt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3.5">
-        <button type="submit" className="btn-primary group w-full sm:w-auto px-7 py-3.5">
+      <div className="mt-7 sm:mt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3.5">
+        <button type="submit" className="btn-primary group w-full sm:w-auto px-7 py-3.5 cursor-pointer">
           Next: Select Services
           <ArrowRight
             className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1.5"
             aria-hidden="true"
           />
         </button>
-        <p className="text-[13px] text-navy-900/55">
+        <p className="text-[12.5px] xs:text-[13px] text-navy-900/55 text-center sm:text-left">
           Your details are used only for this pickup.
         </p>
       </div>

@@ -283,24 +283,9 @@ export function BookingProvider({ children }: { children: ReactNode }) {
 
   const navigateToStep = useCallback((targetStep: number) => {
     setState((prev) => {
-      if (targetStep >= prev.step) {
-        return { ...prev, step: targetStep };
-      }
-
-      let newDate = prev.date;
-      let newSlot = prev.slot;
-
-      // If leaving Step 3 or higher (returning to Step 2 or Step 1): clear date and time
-      if (targetStep <= 1) {
-        newDate = null;
-        newSlot = null;
-      }
-
       return {
         ...prev,
         step: targetStep,
-        date: newDate,
-        slot: newSlot,
         orderConfirmed: false,
       };
     });
@@ -310,7 +295,7 @@ export function BookingProvider({ children }: { children: ReactNode }) {
     setState((prev) => {
       if (prev.step === 3) {
         // Step 4 → Step 3:
-        // - Keep selected date & time for editing
+        // - Keep selected services, quantities, duration, pickup date & time for editing
         return {
           ...prev,
           step: 2,
@@ -320,19 +305,17 @@ export function BookingProvider({ children }: { children: ReactNode }) {
       if (prev.step === 2) {
         // Step 3 → Step 2:
         // - Return to Select Services
-        // - Services and quantities selected in Step 2 remain
+        // - Preserve pickup details, selected services, quantities, duration, and date/slot
         return {
           ...prev,
           step: 1,
-          date: null,
-          slot: null,
           orderConfirmed: false,
         };
       }
       if (prev.step === 1) {
         // Step 2 → Step 1:
         // - Return to Pickup Details
-        // - Preserve Pickup Details and selected services/duration for when user returns
+        // - Preserve name, phone, address, GPS location, services, and duration
         return {
           ...prev,
           step: 0,

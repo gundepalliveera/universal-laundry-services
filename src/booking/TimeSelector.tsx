@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useBooking } from "@/booking/BookingContext";
+import { CompactStickyBottomBar } from "@/booking/CompactStickyBottomBar";
 import {
   getPickupDays,
   timeSlots,
@@ -62,7 +63,6 @@ const slotMetadata: Record<
 export function TimeSelector({
   onNext,
 }: {
-  onBack?: () => void;
   onNext: () => void;
 }) {
   const { date, slot, setDate, setSlot, pickup } = useBooking();
@@ -75,15 +75,15 @@ export function TimeSelector({
   const visibleDays = showMoreDates ? days : days.slice(0, 4);
 
   return (
-    <div className="space-y-6 sm:space-y-7">
-      {/* ── 1. Date Selection Grid (1 Row by Default + More Option) ────── */}
+    <div className="space-y-5 sm:space-y-7 pb-32 sm:pb-4">
+      {/* ── 1. Date Selection Container (Horizontal scroll on mobile, Grid on desktop) ────── */}
       <section aria-labelledby="pickup-date-heading">
         <div className="flex items-center justify-between">
           <h3
             id="pickup-date-heading"
-            className="flex items-center gap-2 text-[15px] font-bold text-navy-950"
+            className="flex items-center gap-2 text-[14px] xs:text-[15px] font-bold text-navy-950"
           >
-            <CalendarDays className="h-4.5 w-4.5 text-navy-600" aria-hidden="true" />
+            <CalendarDays className="h-4 w-4 sm:h-4.5 sm:w-4.5 text-navy-600" aria-hidden="true" />
             Select Pickup Date
           </h3>
 
@@ -92,9 +92,9 @@ export function TimeSelector({
             type="button"
             onClick={() => setShowMoreDates((v) => !v)}
             aria-expanded={showMoreDates}
-            className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[12px] sm:text-[12.5px] font-bold text-navy-700 hover:text-navy-950 hover:bg-navy-50 transition-colors"
+            className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-[11.5px] sm:text-[12.5px] font-bold text-navy-700 hover:text-navy-950 hover:bg-navy-50 transition-colors cursor-pointer"
           >
-            <span>{showMoreDates ? "Show Less" : "+ More Options"}</span>
+            <span>{showMoreDates ? "Show Less" : "+ More Dates"}</span>
             <ChevronDown
               className={cn(
                 "h-3.5 w-3.5 text-navy-500 transition-transform duration-200",
@@ -105,12 +105,12 @@ export function TimeSelector({
           </button>
         </div>
 
-        {/* Date cards grid: 1 clean row (4 cards) by default, expands to full grid on "+ More Options" */}
+        {/* Date cards: horizontal scroll on mobile ONLY inside this container, grid on sm+ */}
         <motion.div
           layout
           role="radiogroup"
           aria-labelledby="pickup-date-heading"
-          className="mt-3 grid grid-cols-4 gap-1.5 sm:gap-2.5"
+          className="mt-2.5 flex sm:grid sm:grid-cols-4 gap-1.5 xs:gap-2 sm:gap-2.5 overflow-x-auto no-scrollbar scroll-smooth pb-1 -mx-0.5 px-0.5"
         >
           <AnimatePresence initial={false}>
             {visibleDays.map((d, i) => {
@@ -147,13 +147,13 @@ export function TimeSelector({
                   whileHover={hasNoSlots ? undefined : { y: -2 }}
                   whileTap={hasNoSlots ? undefined : { scale: 0.97 }}
                   className={cn(
-                    "group relative flex flex-col items-center justify-between rounded-xl sm:rounded-2xl border p-1.5 sm:p-2.5 text-center transition-all duration-200 min-h-[72px] sm:min-h-[82px]",
+                    "group relative flex flex-col items-center justify-between rounded-xl sm:rounded-2xl border p-1.5 sm:p-2.5 text-center transition-all duration-200 min-h-[70px] sm:min-h-[82px] shrink-0 w-[68px] xs:w-[74px] sm:w-auto select-none",
                     hasNoSlots ? "opacity-45 cursor-not-allowed bg-ice-50/50 border-ice-100" : "cursor-pointer",
                     "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy-600",
                     active
-                      ? "border-navy-600 bg-navy-600 text-white shadow-[0_6px_18px_-5px_rgba(26,83,224,0.55)] ring-2 ring-navy-600 ring-offset-1"
+                      ? "border-navy-600 bg-navy-600 text-white shadow-sm ring-2 ring-navy-600 ring-offset-1"
                       : !hasNoSlots
-                      ? "border-ice-200 bg-white hover:border-navy-300 hover:bg-ice-50/50 shadow-sm text-navy-900"
+                      ? "border-ice-200 bg-white hover:border-navy-300 hover:bg-ice-50/50 shadow-xs text-navy-900"
                       : "text-navy-900/40",
                   )}
                 >
@@ -165,9 +165,9 @@ export function TimeSelector({
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0, opacity: 0 }}
                         transition={{ type: "spring", stiffness: 500, damping: 24 }}
-                        className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 flex h-3.5 w-3.5 sm:h-4.5 sm:w-4.5 items-center justify-center rounded-full bg-leaf-500 text-white shadow-sm"
+                        className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 flex h-3.5 w-3.5 sm:h-4.5 sm:w-4.5 items-center justify-center rounded-full bg-leaf-500 text-white shadow-xs"
                       >
-                        <Check className="h-2 w-2 sm:h-3 sm:w-3" aria-hidden="true" />
+                        <Check className="h-2 w-2 sm:h-3 sm:w-3 stroke-[3]" aria-hidden="true" />
                       </motion.span>
                     )}
                   </AnimatePresence>
@@ -175,7 +175,7 @@ export function TimeSelector({
                   {/* Day Tag / Today / Tomorrow */}
                   <span
                     className={cn(
-                      "rounded-full px-1 py-0.5 text-[8.5px] xs:text-[9.5px] sm:text-[10.5px] font-bold uppercase tracking-wide leading-none truncate max-w-full",
+                      "rounded-full px-1 py-0.5 text-[8px] xs:text-[9px] sm:text-[10.5px] font-bold uppercase tracking-wide leading-none truncate max-w-full",
                       active
                         ? "bg-white/20 text-white"
                         : isToday
@@ -203,7 +203,7 @@ export function TimeSelector({
                   {/* Month & Short Weekday */}
                   <span
                     className={cn(
-                      "text-[9.5px] xs:text-[10px] sm:text-[11px] font-semibold leading-none truncate max-w-full",
+                      "text-[9px] xs:text-[9.5px] sm:text-[11px] font-semibold leading-none truncate max-w-full",
                       active ? "text-navy-100" : "text-navy-900/50",
                     )}
                   >
@@ -221,21 +221,21 @@ export function TimeSelector({
         <div className="flex items-center justify-between">
           <h3
             id="pickup-slot-heading"
-            className="flex items-center gap-2 text-[15px] font-bold text-navy-950"
+            className="flex items-center gap-2 text-[14px] xs:text-[15px] font-bold text-navy-950"
           >
-            <Clock className="h-4.5 w-4.5 text-navy-600" aria-hidden="true" />
+            <Clock className="h-4 w-4 sm:h-4.5 sm:w-4.5 text-navy-600" aria-hidden="true" />
             Select Pickup Time Slot
           </h3>
-          <span className="text-[11.5px] font-semibold text-navy-900/45">
+          <span className="text-[11px] xs:text-[11.5px] font-semibold text-navy-900/45">
             2-Hour Windows
           </span>
         </div>
 
-        {/* Time slot cards grid: Desktop 3 cols, Tablet 2 cols, Mobile 2 cols */}
+        {/* Time slot cards grid: Mobile 2 cols, Tablet 2 cols, Desktop 3 cols */}
         <div
           role="radiogroup"
           aria-labelledby="pickup-slot-heading"
-          className="mt-3.5 grid grid-cols-2 gap-2.5 sm:grid-cols-2 sm:gap-3 lg:grid-cols-3 lg:gap-3.5"
+          className="mt-2.5 grid grid-cols-2 gap-2 xs:gap-2.5 sm:gap-3 lg:grid-cols-3 lg:gap-3.5"
         >
           {timeSlots.map((t) => {
             const available = isSlotAvailable(t, date || "");
@@ -262,39 +262,39 @@ export function TimeSelector({
                 whileHover={available ? { y: -2 } : undefined}
                 whileTap={available ? { scale: 0.98 } : undefined}
                 className={cn(
-                  "group relative flex flex-col justify-between rounded-2xl border p-3 sm:p-3.5 text-left transition-all duration-200 min-h-[96px] sm:min-h-[104px]",
+                  "group relative flex flex-col justify-between rounded-xl sm:rounded-2xl border p-2.5 xs:p-3 sm:p-3.5 text-left transition-all duration-200 min-h-[90px] xs:min-h-[96px] sm:min-h-[104px] cursor-pointer select-none",
                   !available
                     ? "border-ice-200/60 bg-ice-50/40 opacity-40 cursor-not-allowed select-none"
                     : "cursor-pointer",
                   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy-600",
                   active
-                    ? "border-navy-600 bg-navy-50/90 shadow-[0_4px_18px_-6px_rgba(26,83,224,0.35)] ring-2 ring-navy-600 ring-offset-1"
+                    ? "border-2 border-[#1a56db] bg-[#eff6ff] shadow-sm ring-1 ring-[#1a56db]/20"
                     : available
-                    ? "border-ice-200 bg-white hover:border-navy-300 hover:bg-ice-50/40 shadow-sm"
+                    ? "border-ice-200 bg-white hover:border-navy-300 hover:bg-ice-50/40 shadow-xs"
                     : "",
                 )}
               >
                 {/* Top header row: Period & Radio indicator */}
                 <div className="flex items-center justify-between gap-1">
-                  <span className="flex items-center gap-1 text-[10.5px] sm:text-[11.5px] font-bold text-navy-900/60 uppercase tracking-wide">
-                    <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-navy-500" aria-hidden="true" />
+                  <span className="flex items-center gap-1 text-[10px] sm:text-[11.5px] font-bold text-navy-900/60 uppercase tracking-wide">
+                    <Clock className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5 text-navy-500" aria-hidden="true" />
                     {detail.period}
                   </span>
                   <span
                     className={cn(
-                      "flex h-4.5 w-4.5 sm:h-5 sm:w-5 shrink-0 items-center justify-center rounded-full border transition-all duration-200",
+                      "flex h-4 w-4 sm:h-5 sm:w-5 shrink-0 items-center justify-center rounded-full border transition-all duration-200",
                       active
-                        ? "border-navy-600 bg-navy-600 text-white"
+                        ? "border-[#1a56db] bg-[#1a56db] text-white"
                         : "border-ice-300 bg-white group-hover:border-navy-400",
                     )}
                   >
-                    {active && <Check className="h-2.5 w-2.5 sm:h-3 sm:w-3" aria-hidden="true" />}
+                    {active && <Check className="h-2.5 w-2.5 sm:h-3 sm:w-3 stroke-[3]" aria-hidden="true" />}
                   </span>
                 </div>
 
                 {/* Time Range */}
                 <div className="my-1 sm:my-1.5">
-                  <p className="font-display text-[12.5px] sm:text-[14px] font-bold text-navy-950 leading-snug">
+                  <p className="font-display text-[12px] xs:text-[13px] sm:text-[14px] font-bold text-navy-950 leading-snug">
                     {t}
                   </p>
                 </div>
@@ -303,7 +303,7 @@ export function TimeSelector({
                 <div>
                   <span
                     className={cn(
-                      "inline-block rounded-md border px-1.5 py-0.5 text-[9px] sm:text-[10px] font-bold leading-none",
+                      "inline-block rounded-md border px-1.5 py-0.5 text-[8.5px] sm:text-[10px] font-bold leading-none truncate max-w-full",
                       !available
                         ? "bg-gray-100 text-gray-500 border-gray-200"
                         : active
@@ -325,45 +325,65 @@ export function TimeSelector({
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15 }}
-        className="flex items-start gap-3 rounded-2xl border border-leaf-200 bg-leaf-50/80 p-3.5 sm:p-4"
+        className="flex items-start gap-2.5 sm:gap-3 rounded-2xl border border-leaf-200 bg-leaf-50/80 p-3 xs:p-3.5 sm:p-4"
       >
-        <Info className="mt-0.5 h-4.5 w-4.5 shrink-0 text-leaf-600" aria-hidden="true" />
-        <p className="text-[12.5px] sm:text-[13px] leading-relaxed text-leaf-800">
+        <Info className="mt-0.5 h-4 w-4 shrink-0 text-leaf-600" aria-hidden="true" />
+        <p className="text-[12px] sm:text-[13px] leading-relaxed text-leaf-800">
           Our executive will arrive at{" "}
           <span className="font-bold text-leaf-950">
-            {pickup.address ? `${pickup.address.slice(0, 42)}${pickup.address.length > 42 ? "…" : ""}` : "your address"}
+            {pickup.address ? `${pickup.address.slice(0, 36)}${pickup.address.length > 36 ? "…" : ""}` : "your address"}
           </span>{" "}
           within the chosen slot. You will get an instant WhatsApp confirmation.
         </p>
       </motion.div>
 
-      {/* ── 4. Bottom Selection Summary & Navigation Bar ─────────────────── */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3.5 sm:gap-4 rounded-2xl sm:rounded-3xl border border-ice-200 bg-ice-50/70 p-4 sm:p-5">
-        <p className="text-[13.5px] sm:text-[14px] font-semibold text-navy-900/75 text-center sm:text-left">
+      {/* ── 4. Desktop / Laptop Bottom Bar (sm+ screens only) ─────────────── */}
+      <div className="hidden sm:flex flex-col md:flex-row lg:max-xl:flex-col xl:flex-row items-stretch md:items-center lg:max-xl:items-stretch xl:items-center justify-between gap-4 rounded-2xl sm:rounded-3xl border border-gray-200/90 bg-[#f8fafc] p-4 sm:p-5 shadow-xs">
+        <div className="min-w-0 flex-1">
           {date && slot ? (
-            <>
-              Selected:{" "}
-              <span className="font-display font-extrabold text-navy-900">
-                {days.find((d) => d.key === date)?.label} · {slot}
-              </span>
-            </>
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#eff6ff] border border-[#bfdbfe]/60 text-[#1a56db] shadow-xs">
+                <Clock className="h-5 w-5 stroke-[2.2]" aria-hidden="true" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[10.5px] sm:text-[11px] font-bold uppercase tracking-wider text-gray-400">
+                  Selected Pickup Slot
+                </p>
+                <p className="text-[13.5px] sm:text-[14.5px] font-black text-[#0c1e40] truncate">
+                  {days.find((d) => d.key === date)?.label} · {slot}
+                </p>
+              </div>
+            </div>
           ) : (
-            "Pick a date and a time slot to continue"
+            <div className="flex items-center gap-2.5 text-gray-400">
+              <Info className="h-4 w-4 shrink-0 text-gray-400" aria-hidden="true" />
+              <p className="text-[13.5px] font-semibold">
+                Pick a date and a time slot to continue
+              </p>
+            </div>
           )}
-        </p>
+        </div>
+
         <button
           type="button"
           onClick={onNext}
           disabled={!date || !slot}
-          className="btn-primary group w-full sm:w-auto px-7 py-3.5 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
+          className="btn-primary group inline-flex items-center justify-center gap-2 whitespace-nowrap px-8 py-3.5 text-sm sm:text-[15px] font-bold shadow-[0_12px_28px_-10px_rgba(26,83,224,0.7)] hover:shadow-[0_16px_34px_-10px_rgba(26,83,224,0.85)] transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100 cursor-pointer shrink-0"
         >
-          Next: Order Summary
+          <span>Next: Order Summary</span>
           <ArrowRight
             className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1.5"
             aria-hidden="true"
           />
         </button>
       </div>
+
+      {/* ── 5. Mobile Compact Sticky Bottom Bar ──────────────────────────── */}
+      <CompactStickyBottomBar
+        onContinue={onNext}
+        disabled={!date || !slot}
+        buttonLabel="Continue"
+      />
     </div>
   );
 }

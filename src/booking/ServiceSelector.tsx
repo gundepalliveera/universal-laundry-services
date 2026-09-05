@@ -2,7 +2,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight,
   Check,
-  ChevronDown,
   Clock,
   Layers,
   Minus,
@@ -12,10 +11,11 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useBooking } from "@/booking/BookingContext";
+import { CompactStickyBottomBar } from "@/booking/CompactStickyBottomBar";
 import {
   inr,
   serviceMap,
-  servicePrices,
+  getServiceRate,
   services,
   type DeliveryTierId,
   type ServiceId,
@@ -116,18 +116,18 @@ function DurationCards({
   ];
 
   return (
-    <div className="mb-5 sm:mb-6">
-      <div className="mb-2.5 flex items-center gap-2">
-        <div className="flex h-5 w-5 items-center justify-center rounded-full border-2 border-[#1a56db] text-[#1a56db]">
-          <Clock className="h-3 w-3 stroke-[2.5]" aria-hidden="true" />
+    <div className="mb-4 sm:mb-6">
+      <div className="mb-2 flex items-center gap-1.5">
+        <div className="flex h-4.5 w-4.5 items-center justify-center rounded-full border-2 border-[#1a56db] text-[#1a56db]">
+          <Clock className="h-2.5 w-2.5 stroke-[2.5]" aria-hidden="true" />
         </div>
-        <h2 className="text-[14.5px] xs:text-[15px] font-bold text-[#0c1e40]">
+        <h2 className="text-[13.5px] xs:text-[14.5px] sm:text-[15px] font-bold text-[#0c1e40]">
           Choose your delivery time
         </h2>
       </div>
 
       <div
-        className="grid grid-cols-3 gap-2 sm:gap-3"
+        className="grid grid-cols-3 gap-1.5 xs:gap-2 sm:gap-3"
         role="radiogroup"
         aria-label="Choose your delivery time"
       >
@@ -141,31 +141,31 @@ function DurationCards({
               aria-checked={active}
               onClick={() => onSelectDuration(opt.label)}
               className={cn(
-                "relative flex flex-col items-center justify-between rounded-2xl border-2 px-1.5 py-3 xs:px-2.5 xs:py-3.5 sm:px-3 sm:py-4 text-center transition-all duration-200 cursor-pointer w-full min-w-0",
+                "relative flex flex-col items-center justify-between rounded-xl sm:rounded-2xl border-2 px-1 py-2.5 xs:px-2 xs:py-3 sm:px-3 sm:py-4 text-center transition-all duration-200 cursor-pointer w-full min-w-0",
                 active
-                  ? "border-[#1a56db] bg-[#eff6ff] shadow-sm ring-1 ring-[#1a56db]/20"
+                  ? "border-[#1a56db] bg-[#eff6ff] shadow-xs ring-1 ring-[#1a56db]/20"
                   : "border-[#e2e8f0] bg-white hover:border-gray-300",
               )}
             >
               {/* Checkmark badge on active card */}
               {active && (
-                <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#1a56db] text-white shadow-xs">
-                  <Check className="h-3 w-3 stroke-[3]" aria-hidden="true" />
+                <span className="absolute -top-1.5 -right-1.5 xs:-top-2 xs:-right-2 flex h-4 w-4 xs:h-5 xs:w-5 items-center justify-center rounded-full bg-[#1a56db] text-white shadow-xs">
+                  <Check className="h-2.5 w-2.5 xs:h-3 xs:w-3 stroke-[3]" aria-hidden="true" />
                 </span>
               )}
 
               {/* Clock Icon */}
-              <Clock className="h-5 w-5 text-[#1a56db] stroke-[2] mb-1.5" aria-hidden="true" />
+              <Clock className="h-4 w-4 xs:h-4.5 xs:w-4.5 sm:h-5 sm:w-5 text-[#1a56db] stroke-[2] mb-1" aria-hidden="true" />
 
               {/* Hours Title */}
-              <span className="font-display text-[12px] xs:text-[13.5px] sm:text-[14.5px] font-black tracking-tight text-[#0c1e40] uppercase leading-none">
+              <span className="font-display text-[11px] xs:text-[12.5px] sm:text-[14.5px] font-black tracking-tight text-[#0c1e40] uppercase leading-none truncate max-w-full">
                 {opt.hours}
               </span>
 
               {/* Badge */}
               <span
                 className={cn(
-                  "my-2 rounded-full px-2 xs:px-2.5 py-0.5 text-[8.5px] xs:text-[9.5px] sm:text-[10px] font-black uppercase tracking-wider leading-none shadow-xs",
+                  "my-1.5 rounded-full px-1.5 xs:px-2 py-0.5 text-[7.5px] xs:text-[8.5px] sm:text-[10px] font-black uppercase tracking-wider leading-none shadow-xs truncate max-w-full",
                   opt.badgeClass,
                 )}
               >
@@ -174,10 +174,10 @@ function DurationCards({
 
               {/* Dynamic Price */}
               <p className="font-display leading-none">
-                <span className="text-[14px] xs:text-[15px] sm:text-[16px] font-black text-[#1a56db]">
+                <span className="text-[13px] xs:text-[14px] sm:text-[16px] font-black text-[#1a56db]">
                   ₹{opt.price}
                 </span>{" "}
-                <span className="text-[10.5px] xs:text-[11.5px] text-gray-500 font-semibold">
+                <span className="text-[9.5px] xs:text-[10.5px] sm:text-[11.5px] text-gray-500 font-semibold">
                   /kg
                 </span>
               </p>
@@ -308,17 +308,13 @@ function SpecialServiceCard({
 export function ServiceSelector({
   onNext,
 }: {
-  onBack?: () => void;
   onNext: () => void;
 }) {
   const {
-    cart,
     qtyOf,
     setQty,
     itemCount,
-    subtotal,
     discount,
-    deliveryFee,
     total,
     selectedDuration,
     setSelectedDuration,
@@ -326,7 +322,6 @@ export function ServiceSelector({
 
   const [focusedService, setFocusedService] = useState<string>("Wash & Fold");
   const [showMoreServices, setShowMoreServices] = useState(false);
-  const [showDetails, setShowDetails] = useState(false);
 
   // Dynamic check: Is Wash & Steam Iron currently active?
   const steamIronQty = qtyOf("wash-steam-iron");
@@ -337,11 +332,7 @@ export function ServiceSelector({
   // Calculate dynamic price per service based on selectedDuration
   const getDynamicPrice = (id: ServiceId) => {
     const s = serviceMap[id];
-    const rate = servicePrices[selectedDuration]?.[s.name];
-    if (rate !== undefined) {
-      return rate;
-    }
-    return s.price;
+    return getServiceRate(selectedDuration, s.name, s.price);
   };
 
   const primaryServices = services.filter(
@@ -351,20 +342,6 @@ export function ServiceSelector({
   const specialServices = services.filter(
     (s) => s.id !== "wash-fold" && s.id !== "wash-steam-iron",
   );
-
-  const selectedLines = cart.filter((l) => (Number(l.qty) || 0) > 0);
-
-  // Summary label for sticky bar, e.g. "2 KG • Wash & Fold"
-  const summaryServiceLabel =
-    selectedLines.length > 0
-      ? selectedLines
-          .map((l) => {
-            const s = serviceMap[l.id];
-            const unit = s.unit.toUpperCase();
-            return `${l.qty} ${unit} • ${s.name}`;
-          })
-          .join(", ")
-      : "";
 
   return (
     <div className="pb-32 sm:pb-4">
@@ -513,99 +490,8 @@ export function ServiceSelector({
         </button>
       </div>
 
-      {/* ── FLOATING STICKY BOTTOM SUMMARY BAR (Matches Screenshot Exactly) ── */}
-      <AnimatePresence>
-        {itemCount > 0 && (
-          <motion.div
-            initial={{ y: 90, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 90, opacity: 0 }}
-            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed bottom-0 inset-x-0 z-40 sm:hidden border-t border-gray-200/90 bg-white/98 backdrop-blur-xl px-4 py-3.5 shadow-[0_-10px_35px_rgba(0,0,0,0.12)] rounded-t-3xl"
-          >
-            {/* Expandable Order Breakdown */}
-            <AnimatePresence>
-              {showDetails && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.25 }}
-                  className="overflow-hidden mb-3 pb-3 border-b border-gray-100 text-xs space-y-1.5"
-                >
-                  <div className="flex justify-between text-gray-600">
-                    <span>Subtotal</span>
-                    <span className="font-bold text-[#0c1e40]">{inr(subtotal)}</span>
-                  </div>
-                  {discount > 0 && (
-                    <div className="flex justify-between text-[#16a34a] font-bold">
-                      <span>10% Discount</span>
-                      <span>-{inr(discount)}</span>
-                    </div>
-                  )}
-                  <div className="flex justify-between text-gray-600">
-                    <span>Pickup &amp; Delivery</span>
-                    <span className={cn("font-bold", deliveryFee === 0 ? "text-[#16a34a]" : "text-[#0c1e40]")}>
-                      {deliveryFee === 0 ? "FREE" : inr(deliveryFee)}
-                    </span>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <div className="flex items-center justify-between gap-2">
-              {/* Left Column: Line items, duration, and View Details */}
-              <div className="min-w-0 flex-1">
-                <p className="text-[14px] font-black text-[#0c1e40] truncate leading-tight">
-                  {summaryServiceLabel}
-                </p>
-                <p className="text-[12px] text-gray-500 font-medium mt-0.5 leading-none">
-                  {selectedDuration}
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setShowDetails(!showDetails)}
-                  className="inline-flex items-center gap-1 text-[12px] font-bold text-[#1a56db] hover:text-blue-800 mt-1 cursor-pointer"
-                >
-                  View Details
-                  <ChevronDown
-                    className={cn(
-                      "h-3.5 w-3.5 transition-transform duration-200",
-                      showDetails && "rotate-180",
-                    )}
-                    aria-hidden="true"
-                  />
-                </button>
-              </div>
-
-              {/* Vertical Divider */}
-              <div className="h-11 w-[1px] bg-gray-200 shrink-0 mx-2 xs:mx-3" />
-
-              {/* Middle Column: Total label + amount */}
-              <div className="shrink-0 text-left">
-                <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wide leading-none">
-                  Total
-                </span>
-                <p className="font-display text-[22px] xs:text-[24px] font-black text-[#16a34a] leading-tight mt-0.5">
-                  {inr(total)}
-                </p>
-              </div>
-
-              {/* Right Column: Continue CTA Button */}
-              <div className="shrink-0 pl-1">
-                <button
-                  type="button"
-                  onClick={onNext}
-                  className="h-12 px-5 xs:px-6 rounded-2xl bg-[#1a56db] hover:bg-[#1e40af] text-white font-bold text-[14.5px] xs:text-[15px] flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer"
-                >
-                  Continue
-                  <ArrowRight className="h-4.5 w-4.5 stroke-[2.5]" aria-hidden="true" />
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* ── FLOATING COMPACT STICKY BOTTOM BAR (Mobile) ── */}
+      <CompactStickyBottomBar onContinue={onNext} buttonLabel="Continue" />
     </div>
   );
 }

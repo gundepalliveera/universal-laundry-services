@@ -10,7 +10,7 @@ import { WaterAnimation } from "@/components/WaterAnimation";
 import { inr, serviceMap, servicePrices } from "@/data/site";
 import { cn } from "@/utils/cn";
 import { useEffect, useState } from "react";
-import { useSearchParams, useParams } from "react-router-dom";
+import { useSearchParams, useParams, useNavigate } from "react-router-dom";
 
 const stepMeta = [
   {
@@ -22,11 +22,11 @@ const stepMeta = [
     sub: "Add quantities and watch your order total update instantly.",
   },
   {
-    title: "Choose pickup date & time",
-    sub: "Pick a slot that fits your day — we will be there on time.",
+    title: "Choose your pickup time",
+    sub: "Select a convenient date and time for pickup.",
   },
   {
-    title: "Review your order",
+    title: "Order Summary",
     sub: "Check the details, then confirm your pickup.",
   },
 ];
@@ -48,6 +48,7 @@ export function BookingPage({ onExit }: { onExit: () => void }) {
   const [dir, setDir] = useState(1);
   const [searchParams, setSearchParams] = useSearchParams();
   const params = useParams<{ stepNum?: string }>();
+  const navigate = useNavigate();
 
   // Determine target step from URL param (path /book/step-2 or query /book?step=2)
   useEffect(() => {
@@ -57,6 +58,7 @@ export function BookingPage({ onExit }: { onExit: () => void }) {
       if (!isNaN(parsed) && parsed >= 1 && parsed <= 4) {
         const target = parsed - 1;
         if (target !== step) {
+          setDir(target > step ? 1 : -1);
           setStep(target);
         }
       }
@@ -69,7 +71,8 @@ export function BookingPage({ onExit }: { onExit: () => void }) {
   const go = (next: number) => {
     setDir(next > step ? 1 : -1);
     setStep(next);
-    setSearchParams({ step: (next + 1).toString() }, { replace: true });
+    // Use PUSH navigation so each booking step creates a real browser history entry
+    setSearchParams({ step: (next + 1).toString() });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -82,7 +85,16 @@ export function BookingPage({ onExit }: { onExit: () => void }) {
     setDir(-1);
     ctxHandleBack();
     const nextStep = step - 1;
-    setSearchParams({ step: (nextStep + 1).toString() }, { replace: true });
+    // Pop history entry if available so duplicate history entries are not created
+    if (
+      window.history.state &&
+      typeof window.history.state.idx === "number" &&
+      window.history.state.idx > 0
+    ) {
+      navigate(-1);
+    } else {
+      setSearchParams({ step: (nextStep + 1).toString() });
+    }
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -96,7 +108,7 @@ export function BookingPage({ onExit }: { onExit: () => void }) {
     if (targetStep < step) {
       setDir(-1);
       navigateToStep(targetStep);
-      setSearchParams({ step: (targetStep + 1).toString() }, { replace: true });
+      setSearchParams({ step: (targetStep + 1).toString() });
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
       go(targetStep);
@@ -108,7 +120,7 @@ export function BookingPage({ onExit }: { onExit: () => void }) {
   return (
     <main
       id="booking"
-      className="relative overflow-x-clip pt-3 sm:pt-4 md:pt-6 pb-16"
+      className="relative overflow-x-clip pt-2 sm:pt-4 md:pt-6 pb-16"
     >
       <div
         aria-hidden="true"
@@ -116,16 +128,16 @@ export function BookingPage({ onExit }: { onExit: () => void }) {
       />
       <WaterAnimation count={9} droplets={2} className="-z-10 opacity-70" seed={303} />
 
-      <div className="shell max-w-4xl mx-auto">
-        <div className="relative mb-3 sm:mb-4 px-1">
+      <div className="mx-auto w-full max-w-4xl lg:max-w-5xl px-3 xs:px-4 sm:px-8">
+        <div className="relative mb-2.5 sm:mb-4 px-0.5">
           {/* Back button — top-left */}
           <button
             type="button"
             onClick={onBackClick}
             aria-label={step === 0 ? "Exit booking" : `Back to step ${step}`}
-            className="inline-flex items-center gap-1.5 text-[14.5px] font-bold text-[#1a56db] hover:text-blue-800 transition-colors cursor-pointer mb-2"
+            className="inline-flex items-center gap-1.5 text-[13.5px] sm:text-[14.5px] font-bold text-[#1a56db] hover:text-blue-800 transition-colors cursor-pointer mb-1.5"
           >
-            <ArrowLeft className="h-4.5 w-4.5 stroke-[2.5]" aria-hidden="true" />
+            <ArrowLeft className="h-4 w-4 sm:h-4.5 sm:w-4.5 stroke-[2.5]" aria-hidden="true" />
             Back
           </button>
 
@@ -134,9 +146,9 @@ export function BookingPage({ onExit }: { onExit: () => void }) {
             type="button"
             onClick={onExitClick}
             aria-label="Close booking and return to home"
-            className="absolute top-0 right-1 flex h-8.5 w-8.5 items-center justify-center rounded-full border border-ice-200 bg-white text-navy-400 shadow-xs transition-all duration-200 hover:border-navy-300 hover:text-navy-800 hover:scale-105 cursor-pointer"
+            className="absolute top-0 right-0 flex h-8 w-8 sm:h-8.5 sm:w-8.5 items-center justify-center rounded-full border border-ice-200 bg-white text-navy-400 shadow-xs transition-all duration-200 hover:border-navy-300 hover:text-navy-800 hover:scale-105 cursor-pointer"
           >
-            <X className="h-4 w-4 stroke-[2.5]" aria-hidden="true" />
+            <X className="h-3.5 w-3.5 sm:h-4 sm:w-4 stroke-[2.5]" aria-hidden="true" />
           </button>
 
           <BookingStepper step={step} onStepClick={onStepClick} />
@@ -144,7 +156,7 @@ export function BookingPage({ onExit }: { onExit: () => void }) {
 
         <div
           className={cn(
-            "grid gap-5 sm:gap-6",
+            "grid gap-4 sm:gap-6",
             step > 0 && step < 3 ? "lg:grid-cols-[1fr_336px]" : "w-full",
           )}
         >
@@ -157,16 +169,16 @@ export function BookingPage({ onExit }: { onExit: () => void }) {
                 exit={{ opacity: 0, x: dir * -36, scale: 0.99 }}
                 transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
               >
-                <div className="rounded-3xl border border-[#e2e8f0] bg-white p-4 sm:p-6 shadow-xs">
-                  <header className="mb-4 sm:mb-5">
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#f0fdf4] border border-[#bbf7d0] text-[#16a34a] text-[11px] sm:text-xs font-black tracking-wider uppercase">
-                      <Sparkles className="h-3.5 w-3.5 stroke-[2.5]" aria-hidden="true" />
+                <div className="rounded-2xl sm:rounded-3xl border border-[#e2e8f0] bg-white p-3.5 xs:p-4.5 sm:p-6 shadow-xs">
+                  <header className="mb-3.5 sm:mb-5">
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-[#f0fdf4] border border-[#bbf7d0] text-[#16a34a] text-[10.5px] sm:text-xs font-black tracking-wider uppercase">
+                      <Sparkles className="h-3 w-3 sm:h-3.5 sm:w-3.5 stroke-[2.5]" aria-hidden="true" />
                       STEP {step + 1} OF 4
                     </div>
-                    <h1 className="mt-2 text-2xl font-black text-[#0c1e40] sm:text-[28px] tracking-tight">
+                    <h1 className="mt-1.5 text-xl xs:text-2xl font-black text-[#0c1e40] sm:text-[28px] tracking-tight">
                       {meta.title}
                     </h1>
-                    <p className="mt-1 text-[13.5px] sm:text-[14px] text-gray-500 font-medium">
+                    <p className="mt-0.5 sm:mt-1 text-[12.5px] xs:text-[13.5px] sm:text-[14px] text-gray-500 font-medium">
                       {meta.sub}
                     </p>
                   </header>
