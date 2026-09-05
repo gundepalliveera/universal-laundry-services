@@ -10,7 +10,6 @@ import {
 import {
   defaultCart,
   serviceMap,
-  servicePrices,
   normalizeDuration,
   getServiceRate,
   getAvailableSlots,
@@ -288,8 +287,6 @@ export function BookingProvider({ children }: { children: ReactNode }) {
         return { ...prev, step: targetStep };
       }
 
-      let newCart = prev.cart;
-      let newDuration = prev.selectedDuration;
       let newDate = prev.date;
       let newSlot = prev.slot;
 
@@ -299,17 +296,9 @@ export function BookingProvider({ children }: { children: ReactNode }) {
         newSlot = null;
       }
 
-      // If leaving Step 2 (returning to Step 1): clear services, quantities, duration
-      if (targetStep <= 0) {
-        newCart = defaultCart.map((l) => ({ ...l, qty: 0 }));
-        newDuration = "72 Hours";
-      }
-
       return {
         ...prev,
         step: targetStep,
-        cart: newCart,
-        selectedDuration: newDuration,
         date: newDate,
         slot: newSlot,
         orderConfirmed: false,
@@ -321,9 +310,7 @@ export function BookingProvider({ children }: { children: ReactNode }) {
     setState((prev) => {
       if (prev.step === 3) {
         // Step 4 → Step 3:
-        // - Remove/reset Order Summary confirmation state.
-        // - Keep the selected date and time so the user can edit them.
-        // - Do not create duplicate order data.
+        // - Keep selected date & time for editing
         return {
           ...prev,
           step: 2,
@@ -332,10 +319,8 @@ export function BookingProvider({ children }: { children: ReactNode }) {
       }
       if (prev.step === 2) {
         // Step 3 → Step 2:
-        // - Clear the selected pickup date.
-        // - Clear the selected pickup time slot.
-        // - Return to Select Services.
-        // - Services and quantities selected in Step 2 should remain.
+        // - Return to Select Services
+        // - Services and quantities selected in Step 2 remain
         return {
           ...prev,
           step: 1,
@@ -346,17 +331,11 @@ export function BookingProvider({ children }: { children: ReactNode }) {
       }
       if (prev.step === 1) {
         // Step 2 → Step 1:
-        // - Clear/reset the selected services.
-        // - Clear quantities and service selections.
-        // - Return to Pickup Details.
-        // - Pickup details/address should remain.
+        // - Return to Pickup Details
+        // - Preserve Pickup Details and selected services/duration for when user returns
         return {
           ...prev,
           step: 0,
-          cart: defaultCart.map((l) => ({ ...l, qty: 0 })),
-          selectedDuration: "72 Hours",
-          date: null,
-          slot: null,
           orderConfirmed: false,
         };
       }
@@ -371,7 +350,7 @@ export function BookingProvider({ children }: { children: ReactNode }) {
       const s = serviceMap[line.id];
       if (!s) return sum;
       const dur = line.duration || state.selectedDuration || "72 Hours";
-      const rate = servicePrices[dur]?.[s.name] ?? s.price;
+      const rate = getServiceRate(dur, s.name, s.price);
       return sum + qty * rate;
     }, 0);
   }, [state.cart, state.selectedDuration]);

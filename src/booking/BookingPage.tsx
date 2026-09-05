@@ -116,45 +116,35 @@ export function BookingPage({ onExit }: { onExit: () => void }) {
       />
       <WaterAnimation count={9} droplets={2} className="-z-10 opacity-70" seed={303} />
 
-      <div className="shell">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          className="card-soft relative overflow-hidden p-4 sm:p-6"
-        >
-          <div
-            aria-hidden="true"
-            className="absolute -top-16 -right-10 h-44 w-44 rounded-full bg-[radial-gradient(circle,rgba(108,179,63,0.18),transparent_65%)]"
-          />
-
+      <div className="shell max-w-4xl mx-auto">
+        <div className="relative mb-3 sm:mb-4 px-1">
           {/* Back button — top-left */}
           <button
             type="button"
             onClick={onBackClick}
             aria-label={step === 0 ? "Exit booking" : `Back to step ${step}`}
-            className="mb-3 sm:mb-4 inline-flex items-center gap-2 text-[13.5px] font-bold text-navy-700 transition-all duration-200 hover:gap-3 hover:text-navy-900"
+            className="inline-flex items-center gap-1.5 text-[14.5px] font-bold text-[#1a56db] hover:text-blue-800 transition-colors cursor-pointer mb-2"
           >
-            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+            <ArrowLeft className="h-4.5 w-4.5 stroke-[2.5]" aria-hidden="true" />
             Back
           </button>
 
-          {/* Close / exit booking — top-right corner */}
+          {/* Close / exit booking — top-right */}
           <button
             type="button"
             onClick={onExitClick}
             aria-label="Close booking and return to home"
-            className="absolute top-4 right-4 sm:top-5 sm:right-5 flex h-9 w-9 items-center justify-center rounded-full border border-ice-200 bg-white text-navy-500 shadow-sm transition-all duration-200 hover:border-navy-300 hover:text-navy-800 hover:scale-105"
+            className="absolute top-0 right-1 flex h-8.5 w-8.5 items-center justify-center rounded-full border border-ice-200 bg-white text-navy-400 shadow-xs transition-all duration-200 hover:border-navy-300 hover:text-navy-800 hover:scale-105 cursor-pointer"
           >
-            <X className="h-4 w-4" aria-hidden="true" />
+            <X className="h-4 w-4 stroke-[2.5]" aria-hidden="true" />
           </button>
 
           <BookingStepper step={step} onStepClick={onStepClick} />
-        </motion.div>
+        </div>
 
         <div
           className={cn(
-            "mt-4 sm:mt-6 grid gap-5 sm:gap-6",
+            "grid gap-5 sm:gap-6",
             step > 0 && step < 3 ? "lg:grid-cols-[1fr_336px]" : "w-full",
           )}
         >
@@ -167,16 +157,18 @@ export function BookingPage({ onExit }: { onExit: () => void }) {
                 exit={{ opacity: 0, x: dir * -36, scale: 0.99 }}
                 transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
               >
-                <div className="card-soft p-5 sm:p-7">
-                  <header className="mb-6">
-                    <span className="eyebrow">
-                      <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
-                      Step {step + 1} of 4
-                    </span>
-                    <h1 className="mt-2.5 text-2xl font-extrabold text-navy-950 sm:text-[28px]">
+                <div className="rounded-3xl border border-[#e2e8f0] bg-white p-4 sm:p-6 shadow-xs">
+                  <header className="mb-4 sm:mb-5">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#f0fdf4] border border-[#bbf7d0] text-[#16a34a] text-[11px] sm:text-xs font-black tracking-wider uppercase">
+                      <Sparkles className="h-3.5 w-3.5 stroke-[2.5]" aria-hidden="true" />
+                      STEP {step + 1} OF 4
+                    </div>
+                    <h1 className="mt-2 text-2xl font-black text-[#0c1e40] sm:text-[28px] tracking-tight">
                       {meta.title}
                     </h1>
-                    <p className="mt-1.5 text-[14px] text-navy-900/60">{meta.sub}</p>
+                    <p className="mt-1 text-[13.5px] sm:text-[14px] text-gray-500 font-medium">
+                      {meta.sub}
+                    </p>
                   </header>
 
                   {/* Step 1 */}
@@ -195,7 +187,7 @@ export function BookingPage({ onExit }: { onExit: () => void }) {
             </AnimatePresence>
           </div>
 
-          {/* sticky mini summary — hidden on Step 1 (Pickup Details) and Step 4 (Order Summary) */}
+          {/* desktop sidebar summary — hidden on mobile and on Step 1 & Step 4 */}
           <AnimatePresence>
             {step > 0 && step < 3 && (
               <motion.aside
@@ -203,7 +195,7 @@ export function BookingPage({ onExit }: { onExit: () => void }) {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 34 }}
                 transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                className="lg:sticky lg:top-28 lg:self-start"
+                className="hidden lg:block lg:sticky lg:top-28 lg:self-start"
                 aria-label="Running order summary"
               >
                 <div className="card-soft p-6">

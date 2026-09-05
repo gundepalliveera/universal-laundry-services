@@ -1,12 +1,11 @@
-import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import { cn } from "@/utils/cn";
 
 const bookingSteps = [
-  { id: 0, label: "Pickup Details", hint: "Where should we come?" },
-  { id: 1, label: "Select Services", hint: "What do you need?" },
-  { id: 2, label: "Choose Time", hint: "When works best?" },
-  { id: 3, label: "Order Summary", hint: "Review & confirm" },
+  { id: 0, label: "Pickup Details" },
+  { id: 1, label: "Select Services" },
+  { id: 2, label: "Choose Time" },
+  { id: 3, label: "Order Summary" },
 ];
 
 export function BookingStepper({
@@ -16,61 +15,84 @@ export function BookingStepper({
   step: number;
   onStepClick: (s: number) => void;
 }) {
-  const progress = (step / (bookingSteps.length - 1)) * 100;
-
   return (
-    <div className="relative">
-      {/* progress rail */}
-      <div aria-hidden="true" className="absolute inset-x-0 top-5 sm:top-6">
-        <div className="mx-auto h-[3px] w-[80%] rounded-full bg-ice-200" />
-        <motion.div
-          className="mx-auto h-[3px] w-[80%] origin-left rounded-full bg-gradient-to-r from-navy-600 to-leaf-400"
-          initial={false}
-          animate={{ scaleX: progress / 100 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          style={{ marginTop: -3 }}
+    <div className="relative py-2 sm:py-3">
+      {/* Segmented connector rail matching screenshot */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-x-8 sm:inset-x-12 top-6 sm:top-7 flex items-center -z-0 pointer-events-none"
+      >
+        {/* Segment 1 → 2 */}
+        <div
+          className={cn(
+            "h-[2.5px] flex-1 transition-colors duration-300",
+            step >= 1 ? "bg-[#16a34a]" : "bg-gray-200",
+          )}
+        />
+        {/* Segment 2 → 3 */}
+        <div
+          className={cn(
+            "h-[2.5px] flex-1 transition-colors duration-300",
+            step >= 2 ? "bg-[#16a34a]" : "bg-[#bfdbfe]/80",
+          )}
+        />
+        {/* Segment 3 → 4 */}
+        <div
+          className={cn(
+            "h-[2.5px] flex-1 transition-colors duration-300",
+            step >= 3 ? "bg-[#16a34a]" : "bg-[#bfdbfe]/80",
+          )}
         />
       </div>
 
-      <ol className="relative flex items-start justify-between gap-1 sm:gap-2">
+      <ol className="relative z-10 flex items-start justify-between">
         {bookingSteps.map((s) => {
-          const done = step > s.id;
-          const active = step === s.id;
+          const isDone = step > s.id;
+          const isActive = step === s.id;
+
           return (
-            <li key={s.id} className="flex flex-1 flex-col items-center text-center">
+            <li
+              key={s.id}
+              className="flex flex-1 flex-col items-center text-center"
+            >
               <button
                 type="button"
                 disabled={s.id > step}
                 onClick={() => onStepClick(s.id)}
-                aria-current={active ? "step" : undefined}
+                aria-current={isActive ? "step" : undefined}
                 aria-label={`Step ${s.id + 1}: ${s.label}`}
-                className="group relative flex flex-col items-center focus:outline-none"
+                className="group flex flex-col items-center focus:outline-none cursor-pointer disabled:cursor-default"
               >
-                <motion.span
-                  animate={
-                    active ? { scale: [1, 1.08, 1] } : { scale: 1 }
-                  }
-                  transition={{ duration: 0.5 }}
-                  className={cn(
-                    "relative z-10 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full border-2 text-[13px] sm:text-[15px] font-extrabold transition-all duration-400",
-                    done && "border-leaf-500 bg-leaf-500 text-white",
-                    active &&
-                      "border-navy-600 bg-navy-600 text-white shadow-[0_14px_28px_-14px_rgba(26,83,224,0.9)]",
-                    !done && !active && "border-ice-300 bg-white text-navy-300",
-                  )}
-                >
-                  {done ? <Check className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" /> : s.id + 1}
-                </motion.span>
+                {/* Step Circle */}
                 <span
                   className={cn(
-                    "mt-2 sm:mt-3 text-[11px] sm:text-[14px] font-bold transition-colors leading-tight line-clamp-2",
-                    active || done ? "text-navy-900" : "text-navy-900/45",
+                    "flex h-8.5 w-8.5 sm:h-10 sm:w-10 items-center justify-center rounded-full text-[13px] sm:text-[14.5px] font-black transition-all duration-300 shadow-xs",
+                    isDone
+                      ? "bg-[#16a34a] text-white border-none"
+                      : isActive
+                      ? "bg-[#1a56db] text-white border-none shadow-[0_4px_14px_-2px_rgba(26,86,219,0.5)]"
+                      : "border-2 border-[#bfdbfe] bg-white text-[#1a56db]",
+                  )}
+                >
+                  {isDone ? (
+                    <Check className="h-4 w-4 stroke-[3]" aria-hidden="true" />
+                  ) : (
+                    s.id + 1
+                  )}
+                </span>
+
+                {/* Step Label */}
+                <span
+                  className={cn(
+                    "mt-2 text-[11px] sm:text-[13px] leading-tight line-clamp-1 sm:line-clamp-none max-w-[76px] xs:max-w-[85px] sm:max-w-none transition-colors",
+                    isActive
+                      ? "font-extrabold text-[#1a56db]"
+                      : isDone
+                      ? "font-bold text-[#0c1e40]"
+                      : "font-semibold text-[#64748b]",
                   )}
                 >
                   {s.label}
-                </span>
-                <span className="mt-0.5 hidden text-[11.5px] text-navy-900/45 md:block">
-                  {s.hint}
                 </span>
               </button>
             </li>

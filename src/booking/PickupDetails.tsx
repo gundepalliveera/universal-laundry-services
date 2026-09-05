@@ -15,14 +15,11 @@ import { useState, type FormEvent, type ReactNode } from "react";
 import { useBooking } from "@/booking/BookingContext";
 import { cn } from "@/utils/cn";
 import { checkServiceAvailability } from "@/utils/geo";
+import { validateAndNormalizeIndianPhone } from "@/utils/phone";
 
 type Errors = Partial<
   Record<"name" | "phone" | "flat" | "street" | "city" | "pincode", string>
 >;
-
-function digitOnly(v: string) {
-  return v.replace(/\D/g, "").slice(0, 10);
-}
 
 /** Assembles the full address string from structured sub-fields */
 function buildAddress(flat: string, street: string, landmark: string, city: string) {
@@ -46,8 +43,8 @@ export function PickupDetails({
   const validate = () => {
     const e: Errors = {};
     if (pickup.name.trim().length < 3) e.name = "Enter your full name";
-    const d = pickup.phone.replace(/\D/g, "");
-    if (!/^[6-9]\d{9}$/.test(d)) e.phone = "Enter a valid 10-digit mobile number";
+    const phoneRes = validateAndNormalizeIndianPhone(pickup.phone);
+    if (!phoneRes.isValid) e.phone = phoneRes.error || "Enter a valid 10-digit mobile number";
     if (pickup.flat.trim().length < 2) e.flat = "Enter house / flat / building number";
     if (pickup.street.trim().length < 3) e.street = "Enter street or area name";
     if (pickup.city.trim().length < 2) e.city = "Enter city name";
@@ -206,10 +203,11 @@ export function PickupDetails({
     const landmark = pickup.landmark.trim().slice(0, 100);
     const city = pickup.city.trim().slice(0, 60);
     const assembled = buildAddress(flat, street, landmark, city);
+    const phoneRes = validateAndNormalizeIndianPhone(pickup.phone);
     setPickup({
       ...pickup,
       name: pickup.name.trim().slice(0, 80),
-      phone: digitOnly(pickup.phone),
+      phone: phoneRes.isValid ? phoneRes.normalized : pickup.phone.trim(),
       flat,
       street,
       landmark,
@@ -257,11 +255,11 @@ export function PickupDetails({
         >
           <input
             id="phone"
-            inputMode="numeric"
+            inputMode="tel"
             autoComplete="tel"
-            maxLength={14}
+            maxLength={16}
             className={cn("field", errors.phone && "field-error")}
-            placeholder="94949 13323"
+            placeholder="+91 94949 13323"
             value={pickup.phone}
             onChange={(e) => setPickup({ ...pickup, phone: e.target.value })}
           />

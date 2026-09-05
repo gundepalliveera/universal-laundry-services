@@ -11,13 +11,15 @@ import {
   Truck,
   User,
 } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
 import { useBooking } from "@/booking/BookingContext";
 import { WaterAnimation } from "@/components/WaterAnimation";
-import { inr, formatPickupDate, serviceMap, servicePrices, WHATSAPP_NUMBER } from "@/data/site";
+import { inr, formatPickupDate, serviceMap, getServiceRate, WHATSAPP_NUMBER } from "@/data/site";
 import { cn } from "@/utils/cn";
 
 export function OrderSummary({ onEdit }: { onBack?: () => void; onEdit: (s: number) => void }) {
+  const navigate = useNavigate();
   const {
     pickup,
     cart,
@@ -34,6 +36,7 @@ export function OrderSummary({ onEdit }: { onBack?: () => void; onEdit: (s: numb
     setQty,
     orderConfirmed,
     setOrderConfirmed,
+    reset,
   } = useBooking();
   const [placing, setPlacing] = useState(false);
   const [orderId] = useState(
@@ -41,6 +44,20 @@ export function OrderSummary({ onEdit }: { onBack?: () => void; onEdit: (s: numb
   );
   const dateInfo = formatPickupDate(date);
   const dayLabel = dateInfo.shortWithDay;
+
+  const displayPhone = pickup.phone.startsWith("+91")
+    ? `+91 ${pickup.phone.replace(/^\+91\s*/, "")}`
+    : `+91 ${pickup.phone}`;
+
+  // Automatically navigate to Home and reset booking state after showing confirmation briefly
+  useEffect(() => {
+    if (!orderConfirmed) return;
+    const timer = setTimeout(() => {
+      reset();
+      navigate("/");
+    }, 4500);
+    return () => clearTimeout(timer);
+  }, [orderConfirmed, reset, navigate]);
 
   // Declare lines before confirm() so the closure always has access to it
   const lines = cart.filter((l) => (Number(l.qty) || 0) > 0);
@@ -67,21 +84,23 @@ export function OrderSummary({ onEdit }: { onBack?: () => void; onEdit: (s: numb
   };
 
   const confirm = () => {
+    if (placing) return;
     setPlacing(true);
-    setTimeout(() => {
-      setPlacing(false);
-      setOrderConfirmed(true);
-      // Build WhatsApp message
-      const lineDetails = lines
-        .map((l) => {
-          const s = serviceMap[l.id];
-          const itemDuration = l.duration || selectedDuration || "72 Hours";
-          const rate = servicePrices[itemDuration]?.[s.name] ?? s.price;
-          const qty = Number(l.qty) || 0;
-          const serviceTotal = qty * rate;
-          return `• ${s.name} (${itemDuration}) — ${qty} ${qty === 1 ? s.unit : s.unitPlural} × ₹${rate} = ₹${serviceTotal}`;
-        })
-        .join("\n");
+    try {
+      setTimeout(() => {
+        setPlacing(false);
+        setOrderConfirmed(true);
+        // Build WhatsApp message
+        const lineDetails = lines
+          .map((l) => {
+            const s = serviceMap[l.id];
+            const itemDuration = l.duration || selectedDuration || "72 Hours";
+            const rate = getServiceRate(itemDuration, s.name, s.price);
+            const qty = Number(l.qty) || 0;
+            const serviceTotal = qty * rate;
+            return `• ${s.name} (${itemDuration}) — ${qty} ${qty === 1 ? s.unit : s.unitPlural} × ₹${rate} = ₹${serviceTotal}`;
+          })
+          .join("\n");
       const addressString = `${pickup.address}${pickup.pincode ? ", " + pickup.pincode : ""}`;
       const locationLink =
         pickup.latitude !== undefined && pickup.longitude !== undefined
@@ -91,7 +110,7 @@ export function OrderSummary({ onEdit }: { onBack?: () => void; onEdit: (s: numb
 
       const msg = [
         `*First name:* ${pickup.name}`,
-        `*Phone number:* +91 ${pickup.phone}`,
+        `*Phone number:* ${displayPhone}`,
         `*Address:* ${addressString}`,
         `*Location Link:* ${locationLink}`,
         ...(pickup.distanceKm !== undefined
@@ -117,6 +136,9 @@ export function OrderSummary({ onEdit }: { onBack?: () => void; onEdit: (s: numb
       const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
       window.open(waUrl, "_blank", "noopener,noreferrer");
     }, 1700);
+    } catch {
+      setPlacing(false);
+    }
   };
 
   return (
@@ -209,7 +231,7 @@ export function OrderSummary({ onEdit }: { onBack?: () => void; onEdit: (s: numb
               href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
                 [
                   `*First name:* ${pickup.name}`,
-                  `*Phone number:* +91 ${pickup.phone}`,
+                  `*Phone number:* ${displayPhone}`,
                   `*Address:* ${pickup.address}${pickup.pincode ? ", " + pickup.pincode : ""}`,
                   `*Location Link:* ${
                     pickup.latitude !== undefined && pickup.longitude !== undefined
@@ -224,7 +246,7 @@ export function OrderSummary({ onEdit }: { onBack?: () => void; onEdit: (s: numb
                     .map((l) => {
                       const s = serviceMap[l.id];
                       const itemDuration = l.duration || selectedDuration || "72 Hours";
-                      const rate = servicePrices[itemDuration]?.[s.name] ?? s.price;
+                      const rate = getServiceRate(itemDuration, s.name, s.price);
                       const qty = Number(l.qty) || 0;
                       const serviceTotal = qty * rate;
                       return `• ${s.name} (${itemDuration}) — ${qty} ${qty === 1 ? s.unit : s.unitPlural} × ₹${rate} = ₹${serviceTotal}`;
@@ -252,6 +274,24 @@ export function OrderSummary({ onEdit }: { onBack?: () => void; onEdit: (s: numb
             >
               <span>Open Order on WhatsApp (9494913323)</span>
             </a>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.64, duration: 0.5 }}
+            className="mt-3 flex justify-center"
+          >
+            <button
+              type="button"
+              onClick={() => {
+                reset();
+                navigate("/");
+              }}
+              className="inline-flex items-center gap-2 rounded-full border border-ice-300 bg-white px-5 py-2 text-xs font-bold text-navy-700 transition-all duration-200 hover:border-navy-300 hover:bg-ice-50 active:scale-95 cursor-pointer"
+            >
+              Return to Home
+            </button>
           </motion.div>
 
           <motion.div
@@ -298,7 +338,7 @@ export function OrderSummary({ onEdit }: { onBack?: () => void; onEdit: (s: numb
               </div>
               <dl className="mt-5 space-y-4 text-[14px]">
                 <Row icon={<User className="h-4 w-4" aria-hidden="true" />} label="Customer name" value={pickup.name} />
-                <Row icon={<Phone className="h-4 w-4" aria-hidden="true" />} label="Phone number" value={`+91 ${pickup.phone}`} />
+                <Row icon={<Phone className="h-4 w-4" aria-hidden="true" />} label="Phone number" value={displayPhone} />
                 <Row
                   icon={<MapPin className="h-4 w-4" aria-hidden="true" />}
                   label="Address"
@@ -448,7 +488,7 @@ export function OrderSummary({ onEdit }: { onBack?: () => void; onEdit: (s: numb
                         const s = serviceMap[line.id];
                         const Icon = s.icon;
                         const itemDuration = line.duration || selectedDuration || "72 Hours";
-                        const rate = servicePrices[itemDuration]?.[s.name] ?? s.price;
+                        const rate = getServiceRate(itemDuration, s.name, s.price);
                         const qty = Number(line.qty) || 0;
                         const serviceTotal = qty * rate;
 
@@ -606,10 +646,10 @@ export function OrderSummary({ onEdit }: { onBack?: () => void; onEdit: (s: numb
                     <button
                       type="button"
                       onClick={confirm}
-                      disabled={lines.length === 0}
+                      disabled={lines.length === 0 || placing}
                       className="btn-green group w-full py-4 text-base font-bold shadow-[0_16px_34px_-14px_rgba(107,179,63,0.8)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
                     >
-                      Confirm Order
+                      {placing ? "Processing Order..." : "Confirm Order"}
                       <CheckCircle2
                         className="h-5 w-5 transition-transform duration-300 group-hover:scale-110"
                         aria-hidden="true"

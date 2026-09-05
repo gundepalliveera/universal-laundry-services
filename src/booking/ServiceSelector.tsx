@@ -1,13 +1,22 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Check, ChevronDown, Clock, Minus, Plus, ShoppingBasket } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  ArrowRight,
+  Check,
+  ChevronDown,
+  Clock,
+  Layers,
+  Minus,
+  Plus,
+  Shirt,
+  Truck,
+} from "lucide-react";
 import { useState } from "react";
 import { useBooking } from "@/booking/BookingContext";
 import {
   inr,
-  services,
   serviceMap,
   servicePrices,
-  deliveryTiers,
+  services,
   type DeliveryTierId,
   type ServiceId,
 } from "@/data/site";
@@ -16,7 +25,7 @@ import { cn } from "@/utils/cn";
 // Popular badge service IDs
 const POPULAR_IDS: ServiceId[] = ["premium-wash"];
 
-// ─── Qty Stepper ─────────────────────────────────────────────────────────────
+// ─── Touch-Friendly Quantity Stepper (Matches Screenshot) ───────────────────
 
 function QtyStepper({
   qty,
@@ -25,148 +34,154 @@ function QtyStepper({
   qty: number;
   onChange: (q: number) => void;
 }) {
-  const btnBase =
-    "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200 active:scale-90";
   return (
     <div
-      className="flex items-center gap-2"
+      className="flex items-center gap-1.5 xs:gap-2 select-none"
       role="group"
       aria-label="Quantity selector"
       onClick={(e) => e.stopPropagation()}
     >
       <button
         type="button"
-        onClick={() => onChange(qty - 1)}
+        onClick={() => onChange(Math.max(0, qty - 1))}
         disabled={qty <= 0}
         aria-label="Decrease quantity"
         style={{ touchAction: "manipulation" }}
         className={cn(
-          btnBase,
+          "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition-all duration-150 active:scale-90",
           qty > 0
-            ? "border-navy-300 text-navy-700 hover:border-navy-600 hover:bg-navy-600 hover:text-white"
-            : "border-ice-200 text-navy-300",
+            ? "border-gray-200 bg-[#f8fafc] text-gray-700 hover:border-gray-400"
+            : "border-gray-200 bg-[#f8fafc]/60 text-gray-300 cursor-not-allowed opacity-60",
         )}
       >
-        <Minus className="h-3.5 w-3.5" aria-hidden="true" />
+        <Minus className="h-4 w-4 stroke-[2.5]" aria-hidden="true" />
       </button>
 
-      <motion.span
-        key={qty}
-        initial={{ scale: 0.7, opacity: 0.4 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: "spring", stiffness: 480, damping: 24 }}
-        className="min-w-[1.75rem] text-center font-display text-[17px] font-extrabold text-navy-900"
+      <span
+        className="min-w-[1.5rem] xs:min-w-[1.75rem] text-center font-display text-[16px] xs:text-[17px] font-extrabold text-[#0c1e40]"
         aria-live="polite"
       >
         {qty}
-      </motion.span>
+      </span>
 
       <button
         type="button"
         onClick={() => onChange(qty + 1)}
         aria-label="Increase quantity"
         style={{ touchAction: "manipulation" }}
-        className={cn(
-          btnBase,
-          "border-navy-600 bg-navy-600 text-white hover:bg-navy-700 hover:border-navy-700",
-        )}
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#1a56db] text-white shadow-xs transition-all duration-150 active:scale-90 hover:bg-[#1e40af]"
       >
-        <Plus className="h-3.5 w-3.5" aria-hidden="true" />
+        <Plus className="h-4 w-4 stroke-[2.5]" aria-hidden="true" />
       </button>
     </div>
   );
 }
 
-// ─── Delivery Tier Tabs ───────────────────────────────────────────────────────
+// ─── Duration Selection (3 equal-width cards in ONE ROW on mobile) ───────────
 
-function DeliveryTabs({
-  selected,
-  onSelect,
+function DurationCards({
+  selectedDuration,
+  onSelectDuration,
+  isSteamIronActive,
 }: {
-  selected: DeliveryTierId;
-  onSelect: (id: DeliveryTierId) => void;
+  selectedDuration: string;
+  onSelectDuration: (durationLabel: string) => void;
+  isSteamIronActive: boolean;
 }) {
-  return (
-    <div className="mb-5">
-      <p className="mb-3 flex items-center gap-2 text-[13px] font-semibold text-navy-800">
-        <Clock className="h-4 w-4 text-navy-500" aria-hidden="true" />
-        Choose your delivery time
-      </p>
+  const durationOptions = [
+    {
+      id: "72hr" as DeliveryTierId,
+      hours: "72 HOURS",
+      label: "72 Hours",
+      badge: "REGULAR",
+      badgeClass: "bg-[#1a56db] text-white",
+      price: isSteamIronActive ? 120 : 80,
+    },
+    {
+      id: "24hr" as DeliveryTierId,
+      hours: "24 HOURS",
+      label: "24 Hours",
+      badge: "EXPRESS",
+      badgeClass: "bg-[#059669] text-white",
+      price: isSteamIronActive ? 200 : 150,
+    },
+    {
+      id: "12hr" as DeliveryTierId,
+      hours: "12 HOURS",
+      label: "12 Hours",
+      badge: "EXPRESS FAST",
+      badgeClass: "bg-[#ea580c] text-white",
+      price: isSteamIronActive ? 250 : 180,
+    },
+  ];
 
-      <div className="grid grid-cols-3 gap-2.5" role="radiogroup" aria-label="Delivery time">
-        {deliveryTiers.map((tier) => {
-          const active = selected === tier.id;
+  return (
+    <div className="mb-5 sm:mb-6">
+      <div className="mb-2.5 flex items-center gap-2">
+        <div className="flex h-5 w-5 items-center justify-center rounded-full border-2 border-[#1a56db] text-[#1a56db]">
+          <Clock className="h-3 w-3 stroke-[2.5]" aria-hidden="true" />
+        </div>
+        <h2 className="text-[14.5px] xs:text-[15px] font-bold text-[#0c1e40]">
+          Choose your delivery time
+        </h2>
+      </div>
+
+      <div
+        className="grid grid-cols-3 gap-2 sm:gap-3"
+        role="radiogroup"
+        aria-label="Choose your delivery time"
+      >
+        {durationOptions.map((opt) => {
+          const active = selectedDuration === opt.label;
           return (
-            <motion.button
-              key={tier.id}
+            <button
+              key={opt.id}
               type="button"
               role="radio"
               aria-checked={active}
-              whileTap={{ scale: 0.96 }}
-              onClick={() => onSelect(tier.id)}
+              onClick={() => onSelectDuration(opt.label)}
               className={cn(
-                "relative flex flex-col items-center gap-1 rounded-2xl border-2 px-2 py-3 text-center transition-all duration-250",
-                "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy-600",
+                "relative flex flex-col items-center justify-between rounded-2xl border-2 px-1.5 py-3 xs:px-2.5 xs:py-3.5 sm:px-3 sm:py-4 text-center transition-all duration-200 cursor-pointer w-full min-w-0",
                 active
-                  ? "border-navy-500 bg-white shadow-[0_4px_18px_-8px_rgba(26,83,224,0.45)]"
-                  : "border-ice-200 bg-white hover:border-navy-200",
+                  ? "border-[#1a56db] bg-[#eff6ff] shadow-sm ring-1 ring-[#1a56db]/20"
+                  : "border-[#e2e8f0] bg-white hover:border-gray-300",
               )}
             >
-              {/* Blue checkmark top-right when active */}
-              <AnimatePresence>
-                {active && (
-                  <motion.span
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0, opacity: 0 }}
-                    transition={{ type: "spring", stiffness: 500, damping: 22 }}
-                    className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-navy-600 text-white shadow"
-                  >
-                    <Check className="h-3 w-3" aria-hidden="true" />
-                  </motion.span>
-                )}
-              </AnimatePresence>
+              {/* Checkmark badge on active card */}
+              {active && (
+                <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#1a56db] text-white shadow-xs">
+                  <Check className="h-3 w-3 stroke-[3]" aria-hidden="true" />
+                </span>
+              )}
 
-              {/* Clock icon */}
-              <Clock
-                className={cn(
-                  "h-5 w-5",
-                  active ? tier.iconColor : "text-navy-400",
-                )}
-                aria-hidden="true"
-              />
+              {/* Clock Icon */}
+              <Clock className="h-5 w-5 text-[#1a56db] stroke-[2] mb-1.5" aria-hidden="true" />
 
-              {/* Hours label */}
-              <span
-                className={cn(
-                  "font-display text-[13px] font-extrabold leading-none tracking-tight sm:text-[15px]",
-                  active ? "text-navy-900" : "text-navy-700",
-                )}
-              >
-                {tier.hours}
+              {/* Hours Title */}
+              <span className="font-display text-[12px] xs:text-[13.5px] sm:text-[14.5px] font-black tracking-tight text-[#0c1e40] uppercase leading-none">
+                {opt.hours}
               </span>
 
-              {/* Badge pill */}
+              {/* Badge */}
               <span
                 className={cn(
-                  "rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider",
-                  tier.badgeColor,
+                  "my-2 rounded-full px-2 xs:px-2.5 py-0.5 text-[8.5px] xs:text-[9.5px] sm:text-[10px] font-black uppercase tracking-wider leading-none shadow-xs",
+                  opt.badgeClass,
                 )}
               >
-                {tier.badge}
+                {opt.badge}
               </span>
 
-              {/* Price */}
-              <span
-                className={cn(
-                  "font-display text-[13px] font-extrabold sm:text-[14px]",
-                  active ? tier.iconColor : "text-navy-600",
-                )}
-              >
-                ₹{tier.basePrice}
-                <span className="text-[10px] font-semibold text-navy-900/50"> /kg</span>
-              </span>
-            </motion.button>
+              {/* Dynamic Price */}
+              <p className="font-display leading-none">
+                <span className="text-[14px] xs:text-[15px] sm:text-[16px] font-black text-[#1a56db]">
+                  ₹{opt.price}
+                </span>{" "}
+                <span className="text-[10.5px] xs:text-[11.5px] text-gray-500 font-semibold">
+                  /kg
+                </span>
+              </p>
+            </button>
           );
         })}
       </div>
@@ -174,343 +189,121 @@ function DeliveryTabs({
   );
 }
 
-// ─── Desktop / tablet vertical card (sm+) ───────────────────────────────────
+// ─── Primary Service Card (Matches Screenshot) ───────────────────────────────
 
-function DesktopServiceCard({
+function PrimaryServiceCard({
   s,
   qty,
-  selected,
   price,
-  tierId,
-  onToggle,
   onQty,
-  index,
+  onFocus,
 }: {
   s: (typeof services)[0];
   qty: number;
-  selected: boolean;
   price: number;
-  tierId: DeliveryTierId;
-  onToggle: () => void;
   onQty: (q: number) => void;
-  index: number;
+  onFocus: () => void;
 }) {
-  const Icon = s.icon;
-  const isPopular = POPULAR_IDS.includes(s.id);
-  const priceColor =
-    tierId === "72hr" ? "text-navy-700" : tierId === "24hr" ? "text-emerald-600" : "text-orange-500";
+  const isWashFold = s.id === "wash-fold";
 
   return (
-    <motion.div
-      role="button"
-      tabIndex={0}
-      aria-pressed={selected}
-      aria-label={`${s.name} — ${inr(price)} per ${s.unit.toLowerCase()}. ${selected ? "Selected" : "Not selected"}`}
-      onClick={onToggle}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onToggle(); }
-      }}
-      initial={{ opacity: 0, y: 22 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
-      whileHover={{ y: -5 }}
+    <div
+      onClick={onFocus}
       className={cn(
-        "group relative cursor-pointer overflow-hidden rounded-3xl border p-5 text-left transition-all duration-300",
-        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy-600",
-        selected
-          ? "border-navy-400 bg-navy-50/60 shadow-[0_22px_44px_-26px_rgba(26,83,224,0.6)]"
-          : "card-soft card-hover",
+        "rounded-2xl border transition-all duration-200 p-3.5 xs:p-4 bg-white flex items-center justify-between gap-3 shadow-xs",
+        qty > 0 ? "border-gray-300" : "border-[#e2e8f0] hover:border-gray-300",
       )}
     >
-      {/* Selected checkmark */}
-      <span
-        className={cn(
-          "absolute top-4 right-4 inline-flex h-6 w-6 items-center justify-center rounded-full transition-all duration-300",
-          selected
-            ? "scale-100 opacity-100 bg-leaf-500 text-white"
-            : "scale-50 opacity-0 bg-transparent text-transparent",
-        )}
-      >
-        <Check className="h-3.5 w-3.5" aria-hidden="true" />
-      </span>
-
-      {/* Icon */}
-      <span
-        className={cn(
-          "mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br text-white transition-transform duration-300 group-hover:scale-110",
-          s.accent,
-        )}
-      >
-        <Icon className="h-6 w-6" aria-hidden="true" />
-      </span>
-
-      {/* Name + popular badge */}
-      <div className="flex flex-wrap items-center gap-2 pr-8">
-        <h3 className="text-[16px] font-bold text-navy-950">{s.name}</h3>
-        {isPopular && (
-          <span className="rounded-full bg-purple-100 px-2 py-0.5 text-[10px] font-bold text-purple-700">
-            POPULAR
-          </span>
-        )}
-      </div>
-
-      <p className="mt-1 text-[12.5px] leading-relaxed text-navy-900/55">{s.tagline}</p>
-
-      {/* Animated price */}
-      <motion.p
-        key={`${s.id}-${tierId}`}
-        initial={{ opacity: 0, y: 6 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.25 }}
-        className="mt-2"
-      >
-        <span className="text-[12px] text-navy-900/50">From </span>
-        <span className={cn("text-[14px] font-extrabold", priceColor)}>₹{price}</span>
-        <span className="text-[12px] text-navy-900/50"> / {s.unit.toLowerCase()}</span>
-      </motion.p>
-
-      {/* Qty stepper */}
+      {/* Left icon with custom rounded badge */}
       <div
-        className="mt-4 flex items-center justify-between border-t border-dashed border-ice-300 pt-4"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <span className="font-display text-[15px] font-extrabold text-navy-700">
-          {qty > 0
-            ? s.unit.toLowerCase() === "kg"
-              ? `Approx. ${qty} kg`
-              : `${qty} ${s.unitPlural.toLowerCase()}`
-            : "Select Qty"}
-        </span>
-        <QtyStepper qty={qty} onChange={onQty} />
-      </div>
-    </motion.div>
-  );
-}
-
-// ─── Service Row Card (mobile — matches screenshot exactly) ───────────────────
-
-function ServiceRow({
-  s,
-  qty,
-  selected,
-  price,
-  tierId,
-  onToggle,
-  onQty,
-  index,
-}: {
-  s: (typeof services)[0];
-  qty: number;
-  selected: boolean;
-  price: number;
-  tierId: DeliveryTierId;
-  onToggle: () => void;
-  onQty: (q: number) => void;
-  index: number;
-}) {
-  const Icon = s.icon;
-  const isPopular = POPULAR_IDS.includes(s.id);
-  const priceColor =
-    tierId === "72hr"
-      ? "text-navy-700"
-      : tierId === "24hr"
-      ? "text-emerald-600"
-      : "text-orange-500";
-
-  return (
-    <motion.div
-      role="button"
-      tabIndex={0}
-      aria-pressed={selected}
-      aria-label={`${s.name} — ₹${price} per ${s.unit.toLowerCase()}. ${selected ? "Selected" : "Not selected"}`}
-      onClick={onToggle}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onToggle(); }
-      }}
-      initial={{ opacity: 0, y: 14 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay: index * 0.055, ease: [0.16, 1, 0.3, 1] }}
-      className={cn(
-        "relative flex cursor-pointer items-center gap-4 rounded-2xl border bg-white px-4 py-3.5 transition-all duration-200",
-        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy-600",
-        selected
-          ? "border-navy-300 shadow-[0_4px_18px_-8px_rgba(26,83,224,0.35)]"
-          : "border-[#e8eef8] shadow-[0_1px_8px_-4px_rgba(15,43,120,0.10)] hover:border-navy-200",
-      )}
-    >
-      {/* ── Left: service icon ── */}
-      <span
         className={cn(
-          "flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br text-white",
-          s.accent,
+          "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-white shadow-xs",
+          isWashFold ? "bg-[#1a56db]" : "bg-[#0284c7]",
         )}
       >
-        <Icon className="h-6 w-6" aria-hidden="true" />
-      </span>
+        {isWashFold ? (
+          <Shirt className="h-6 w-6 stroke-[2]" aria-hidden="true" />
+        ) : (
+          <Layers className="h-6 w-6 stroke-[2]" aria-hidden="true" />
+        )}
+      </div>
 
-      {/* ── Center: name / description / price ── */}
+      {/* Middle info */}
       <div className="min-w-0 flex-1">
-        {/* Name row + POPULAR badge */}
-        <div className="flex flex-wrap items-center gap-2 leading-tight">
-          <span className="text-[15px] font-bold text-navy-950">{s.name}</span>
-          {isPopular && (
-            <span className="rounded-full bg-purple-100 px-2 py-0.5 text-[10px] font-bold text-purple-700">
-              POPULAR
-            </span>
-          )}
-        </div>
-
-        {/* Description — up to 2 lines */}
-        <p className="mt-0.5 text-[12px] leading-snug text-navy-900/55 line-clamp-2">
+        <h3 className="text-[14.5px] xs:text-[15px] sm:text-base font-bold text-[#0c1e40] leading-tight">
+          {s.name}
+        </h3>
+        <p className="mt-0.5 text-[11.5px] xs:text-[12px] text-gray-500 font-medium leading-snug">
           {s.tagline}
         </p>
-
-        {/* Price */}
-        <motion.p
-          key={`${s.id}-${tierId}`}
-          initial={{ opacity: 0, y: 4 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2 }}
-          className="mt-1"
-        >
-          <span className="text-[12px] text-navy-900/50">From </span>
-          <span className={cn("text-[14px] font-extrabold", priceColor)}>
+        <p className="mt-1 text-[11.5px] xs:text-[12px] text-gray-500 font-medium">
+          From{" "}
+          <span className="text-[14px] xs:text-[14.5px] font-black text-[#1a56db]">
             ₹{price}
-          </span>
-          <span className="text-[12px] text-navy-900/50"> / {s.unit.toLowerCase()}</span>
-        </motion.p>
+          </span>{" "}
+          /kg
+        </p>
       </div>
 
-      {/* ── Right: qty controls ── */}
+      {/* Right Stepper */}
       <div className="shrink-0" onClick={(e) => e.stopPropagation()}>
         <QtyStepper qty={qty} onChange={onQty} />
       </div>
-
-      {/* ── Top-right: selected checkmark ── */}
-      <AnimatePresence>
-        {selected && (
-          <motion.span
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 480, damping: 22 }}
-            className="absolute -top-2.5 -right-2.5 flex h-6 w-6 items-center justify-center rounded-full bg-leaf-500 text-white shadow"
-          >
-            <Check className="h-3.5 w-3.5" aria-hidden="true" />
-          </motion.span>
-        )}
-      </AnimatePresence>
-    </motion.div>
-  );
-}
-
-// ─── Collapsible bottom summary bar ──────────────────────────────────────────
-
-function SummaryBar({
-  itemCount,
-  tierLabel,
-  total,
-  subtotal,
-  discount,
-  deliveryFee,
-}: {
-  itemCount: number;
-  tierLabel: string;
-  total: number;
-  subtotal: number;
-  discount: number;
-  deliveryFee: number;
-}) {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <div className="mt-5 overflow-hidden rounded-2xl border border-ice-200 bg-white shadow-[0_4px_18px_-10px_rgba(15,43,120,0.18)]">
-      {/* Summary row */}
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center gap-3 px-4 py-3.5 text-left"
-      >
-        {/* Basket icon */}
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-navy-50">
-          <ShoppingBasket className="h-5 w-5 text-navy-600" aria-hidden="true" />
-        </span>
-
-        <div className="min-w-0 flex-1">
-          <p className="text-[13px] font-bold text-navy-900">
-            {itemCount > 0 ? `${itemCount} Items Selected` : "0 Items Selected"}
-          </p>
-          <p className="text-[11.5px] text-navy-900/50">
-            {itemCount > 0
-              ? `${tierLabel} delivery · ${deliveryFee === 0 ? "Free delivery" : `+₹${deliveryFee} delivery`}`
-              : "Add services and quantity to see order summary"}
-          </p>
-        </div>
-
-        <div className="shrink-0 text-right">
-          <p className="text-[11px] font-semibold text-navy-900/50 uppercase tracking-wide">
-            Total Amount
-          </p>
-          <motion.p
-            key={total}
-            initial={{ scale: 0.88, opacity: 0.5 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: "spring", stiffness: 400, damping: 22 }}
-            className="font-display text-[20px] font-extrabold text-navy-900"
-          >
-            {inr(total)}
-          </motion.p>
-        </div>
-
-        <ChevronDown
-          className={cn(
-            "ml-1 h-4 w-4 shrink-0 text-navy-400 transition-transform duration-300",
-            open && "rotate-180",
-          )}
-          aria-hidden="true"
-        />
-      </button>
-
-      {/* Expandable detail */}
-      <AnimatePresence>
-        {open && itemCount > 0 && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-            className="overflow-hidden border-t border-ice-200"
-          >
-            <div className="space-y-1.5 px-4 py-3 text-[13px]">
-              <div className="flex justify-between text-navy-900/60">
-                <span>Subtotal</span>
-                <span className="font-semibold text-navy-900">{inr(subtotal)}</span>
-              </div>
-              {discount > 0 && (
-                <div className="flex justify-between text-leaf-700">
-                  <span className="font-medium">10% Discount</span>
-                  <span className="font-bold">-{inr(discount)}</span>
-                </div>
-              )}
-              <div className="flex justify-between text-navy-900/60">
-                <span>Pickup &amp; Delivery</span>
-                <span className={cn("font-semibold", deliveryFee === 0 ? "text-leaf-600" : "text-navy-900")}>
-                  {deliveryFee === 0 ? "FREE" : inr(deliveryFee)}
-                </span>
-              </div>
-              <div className="flex justify-between border-t border-dashed border-ice-300 pt-1.5 font-bold text-navy-900">
-                <span>TOTAL</span>
-                <span>{inr(total)}</span>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
 
-// ─── Main Component ───────────────────────────────────────────────────────────
+// ─── Special Service Card (Collapsible secondary care) ───────────────────────
+
+function SpecialServiceCard({
+  s,
+  qty,
+  price,
+  onQty,
+}: {
+  s: (typeof services)[0];
+  qty: number;
+  price: number;
+  onQty: (q: number) => void;
+}) {
+  const Icon = s.icon;
+  const isPopular = POPULAR_IDS.includes(s.id);
+
+  return (
+    <div className="rounded-2xl border border-[#e2e8f0] bg-white p-3 xs:p-3.5 flex items-center justify-between gap-3 shadow-xs">
+      <span
+        className={cn(
+          "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-xs",
+          s.accent,
+        )}
+      >
+        <Icon className="h-5 w-5" aria-hidden="true" />
+      </span>
+
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <h4 className="text-[13.5px] font-bold text-[#0c1e40] truncate">
+            {s.name}
+          </h4>
+          {isPopular && (
+            <span className="rounded-full bg-purple-100 px-1.5 py-0.2 text-[8.5px] font-extrabold text-purple-700">
+              POPULAR
+            </span>
+          )}
+        </div>
+        <p className="text-[11.5px] font-extrabold text-[#1a56db]">
+          ₹{price} / {s.unit.toLowerCase()}
+        </p>
+      </div>
+
+      <div className="shrink-0" onClick={(e) => e.stopPropagation()}>
+        <QtyStepper qty={qty} onChange={onQty} />
+      </div>
+    </div>
+  );
+}
+
+// ─── Main ServiceSelector Component ──────────────────────────────────────────
 
 export function ServiceSelector({
   onNext,
@@ -519,6 +312,7 @@ export function ServiceSelector({
   onNext: () => void;
 }) {
   const {
+    cart,
     qtyOf,
     setQty,
     itemCount,
@@ -530,15 +324,18 @@ export function ServiceSelector({
     setSelectedDuration,
   } = useBooking();
 
-  const tierId: DeliveryTierId = selectedDuration.includes("12")
-    ? "12hr"
-    : selectedDuration.includes("24")
-    ? "24hr"
-    : "72hr";
+  const [focusedService, setFocusedService] = useState<string>("Wash & Fold");
+  const [showMoreServices, setShowMoreServices] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
 
-  const tier = deliveryTiers.find((t) => t.id === tierId) || deliveryTiers[0];
+  // Dynamic check: Is Wash & Steam Iron currently active?
+  const steamIronQty = qtyOf("wash-steam-iron");
+  const washFoldQty = qtyOf("wash-fold");
+  const isSteamIronActive =
+    (steamIronQty > 0 && washFoldQty === 0) || focusedService === "Wash & Steam Iron";
 
-  const effectivePrice = (id: ServiceId) => {
+  // Calculate dynamic price per service based on selectedDuration
+  const getDynamicPrice = (id: ServiceId) => {
     const s = serviceMap[id];
     const rate = servicePrices[selectedDuration]?.[s.name];
     if (rate !== undefined) {
@@ -547,126 +344,268 @@ export function ServiceSelector({
     return s.price;
   };
 
-  const toggle = (id: ServiceId) => {
-    const qty = qtyOf(id);
-    if (qty > 0) setQty(id, 0, selectedDuration);
-    else setQty(id, serviceMap[id].defaultQty || 1, selectedDuration);
-  };
+  const primaryServices = services.filter(
+    (s) => s.id === "wash-fold" || s.id === "wash-steam-iron",
+  );
 
-  const handleSelectTier = (id: DeliveryTierId) => {
-    const found = deliveryTiers.find((t) => t.id === id);
-    if (found) {
-      setSelectedDuration(found.label);
-    }
-  };
+  const specialServices = services.filter(
+    (s) => s.id !== "wash-fold" && s.id !== "wash-steam-iron",
+  );
+
+  const selectedLines = cart.filter((l) => (Number(l.qty) || 0) > 0);
+
+  // Summary label for sticky bar, e.g. "2 KG • Wash & Fold"
+  const summaryServiceLabel =
+    selectedLines.length > 0
+      ? selectedLines
+          .map((l) => {
+            const s = serviceMap[l.id];
+            const unit = s.unit.toUpperCase();
+            return `${l.qty} ${unit} • ${s.name}`;
+          })
+          .join(", ")
+      : "";
 
   return (
-    <div>
-      {/* 10% Discount Information Banner */}
-      {subtotal >= 1000 ? (
-        <div className="mb-4 flex flex-col xs:flex-row xs:items-center justify-between gap-2 rounded-2xl border border-leaf-300 bg-gradient-to-r from-leaf-50/95 via-leaf-100/60 to-leaf-50/95 px-3.5 py-2.5 shadow-sm transition-all duration-300">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-leaf-200/80 text-[14px]">
-              🎉
-            </span>
-            <div className="min-w-0">
-              <p className="text-[13px] sm:text-[13.5px] font-extrabold text-navy-950 leading-tight">
-                <span className="text-leaf-700 font-black mr-1.5">YOU QUALIFIED FOR 10% OFF!</span>
-                Orders above ₹1,000 get an automatic 10% discount.
-              </p>
-              <p className="text-[11px] sm:text-[11.5px] font-medium text-leaf-800 leading-tight">
-                Add more services and save more! · Free delivery included
-              </p>
-            </div>
-          </div>
-          <span className="self-start xs:self-center shrink-0 rounded-full border border-leaf-400 bg-leaf-600 px-2.5 py-0.5 text-[11.5px] font-extrabold text-white shadow-xs">
-            10% OFF Applied
-          </span>
+    <div className="pb-32 sm:pb-4">
+      {/* ── DISCOUNT BANNER (Matches Screenshot with 3D Gift Box) ── */}
+      <div className="mb-5 rounded-2xl bg-[#eff6ff] border border-[#dbeafe] p-3.5 sm:p-4 flex items-center gap-3.5">
+        {/* 3D Gift Box Icon Illustration */}
+        <div className="flex h-12 w-12 xs:h-14 xs:w-14 shrink-0 items-center justify-center">
+          <svg viewBox="0 0 64 64" className="h-12 w-12 xs:h-14 xs:w-14 drop-shadow-md" fill="none">
+            {/* Box Body */}
+            <rect x="12" y="24" width="40" height="32" rx="4" fill="#EF4444" />
+            <rect x="12" y="24" width="40" height="7" fill="#DC2626" />
+            {/* Lid */}
+            <rect x="9" y="18" width="46" height="10" rx="3" fill="#F87171" />
+            {/* Vertical Ribbon */}
+            <rect x="28" y="18" width="8" height="38" fill="#FBBF24" />
+            {/* Horizontal Ribbon */}
+            <rect x="12" y="36" width="40" height="7" fill="#FBBF24" />
+            <rect x="9" y="22" width="46" height="4" fill="#F59E0B" />
+            {/* Bow loops */}
+            <path
+              d="M32 18 C26 9 16 9 22 18 Z"
+              fill="#FCD34D"
+              stroke="#D97706"
+              strokeWidth="1.5"
+            />
+            <path
+              d="M32 18 C38 9 48 9 42 18 Z"
+              fill="#FCD34D"
+              stroke="#D97706"
+              strokeWidth="1.5"
+            />
+            <circle cx="32" cy="18" r="3.5" fill="#F59E0B" />
+          </svg>
         </div>
-      ) : (
-        <div className="mb-4 flex flex-col xs:flex-row xs:items-center justify-between gap-2 rounded-2xl border border-ice-300/80 bg-gradient-to-r from-ice-50/90 via-white to-ice-50/90 px-3.5 py-2.5 shadow-sm transition-all duration-300">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-ice-100 text-[14px]">
-              🎉
+
+        {/* Text and Badge */}
+        <div className="min-w-0 flex-1">
+          <h3 className="text-[15px] sm:text-[16px] font-extrabold text-[#1a56db] leading-tight">
+            GET 10% OFF
+          </h3>
+          <p className="text-[12px] xs:text-[12.5px] sm:text-[13px] text-gray-600 font-medium leading-tight mt-0.5">
+            Orders above ₹1,000 get an automatic 10% discount.
+          </p>
+          <div className="mt-1.5">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#dcfce7] text-[#15803d] px-2.5 py-0.5 text-[11px] font-bold">
+              <Truck className="h-3.5 w-3.5" aria-hidden="true" />
+              Free delivery above ₹399
             </span>
-            <div className="min-w-0">
-              <p className="text-[13px] sm:text-[13.5px] font-bold text-navy-950 leading-tight">
-                <span className="text-navy-900 font-extrabold mr-1.5">GET 10% OFF</span>
-                Orders above ₹1,000 get an automatic 10% discount.
-              </p>
-              <p className="text-[11px] sm:text-[11.5px] text-navy-900/60 leading-tight">
-                Add more services and save more!
-              </p>
-            </div>
           </div>
-          <span className="self-start xs:self-center shrink-0 rounded-full border border-leaf-200 bg-leaf-50 px-2.5 py-0.5 text-[11px] font-bold text-leaf-700">
-            Free delivery above ₹399
-          </span>
         </div>
-      )}
-
-      {/* Delivery tier selector */}
-      <DeliveryTabs selected={tierId} onSelect={handleSelectTier} />
-
-      {/* ── Mobile rows (< sm) ── */}
-      <div className="flex flex-col gap-3 sm:hidden">
-        {services.map((s, i) => (
-          <ServiceRow
-            key={s.id}
-            s={s}
-            qty={qtyOf(s.id)}
-            selected={qtyOf(s.id) > 0}
-            price={effectivePrice(s.id)}
-            tierId={tierId}
-            onToggle={() => toggle(s.id)}
-            onQty={(q) => setQty(s.id, q, selectedDuration)}
-            index={i}
-          />
-        ))}
       </div>
 
-      {/* ── Desktop / tablet grid (sm+) ── */}
-      <div className="hidden sm:grid sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
-        {services.map((s, i) => (
-          <DesktopServiceCard
-            key={s.id}
-            s={s}
-            qty={qtyOf(s.id)}
-            selected={qtyOf(s.id) > 0}
-            price={effectivePrice(s.id)}
-            tierId={tierId}
-            onToggle={() => toggle(s.id)}
-            onQty={(q) => setQty(s.id, q, selectedDuration)}
-            index={i}
-          />
-        ))}
-      </div>
-
-      {/* Collapsible summary bar */}
-      <SummaryBar
-        itemCount={itemCount}
-        tierLabel={tier.label}
-        total={total}
-        subtotal={subtotal}
-        discount={discount}
-        deliveryFee={deliveryFee}
+      {/* ── DURATION SELECTION (3 equal-width cards in ONE ROW on mobile) ── */}
+      <DurationCards
+        selectedDuration={selectedDuration}
+        onSelectDuration={setSelectedDuration}
+        isSteamIronActive={isSteamIronActive}
       />
 
-      {/* Navigation buttons */}
-      <div className="mt-5 flex items-center justify-end">
+      {/* ── PRIMARY SERVICE CARDS ── */}
+      <div className="space-y-3 sm:space-y-4">
+        {primaryServices.map((s) => (
+          <PrimaryServiceCard
+            key={s.id}
+            s={s}
+            qty={qtyOf(s.id)}
+            price={getDynamicPrice(s.id)}
+            onQty={(q) => setQty(s.id, q, selectedDuration)}
+            onFocus={() => setFocusedService(s.name)}
+          />
+        ))}
+      </div>
+
+      {/* ── SPECIAL CARE & DRY CLEANING (Secondary Care) ── */}
+      <div className="mt-5 pt-4 border-t border-gray-200">
+        <button
+          type="button"
+          onClick={() => setShowMoreServices((v) => !v)}
+          className="flex w-full items-center justify-between text-left text-[13px] font-bold text-gray-600 hover:text-[#0c1e40] transition-colors py-1 cursor-pointer"
+        >
+          <span className="flex items-center gap-1.5">
+            Special Care &amp; Dry Cleaning
+            <span className="text-[11px] font-normal text-gray-400">
+              ({specialServices.length} additional services)
+            </span>
+          </span>
+          <span className="text-xs font-bold text-[#1a56db] bg-[#eff6ff] border border-[#dbeafe] rounded-lg px-2.5 py-1">
+            {showMoreServices ? "Hide" : "Show More"}
+          </span>
+        </button>
+
+        <AnimatePresence>
+          {showMoreServices && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="overflow-hidden mt-3 space-y-2.5"
+            >
+              {specialServices.map((s) => (
+                <SpecialServiceCard
+                  key={s.id}
+                  s={s}
+                  qty={qtyOf(s.id)}
+                  price={getDynamicPrice(s.id)}
+                  onQty={(q) => setQty(s.id, q, selectedDuration)}
+                />
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* ── DESKTOP NEXT BUTTON (sm+ screens) ── */}
+      <div className="mt-6 hidden sm:flex items-center justify-between border-t border-gray-200 pt-5">
+        <div>
+          {itemCount > 0 ? (
+            <p className="text-sm font-bold text-[#0c1e40]">
+              {itemCount} units selected · Total:{" "}
+              <span className="text-[#16a34a] font-black text-lg">{inr(total)}</span>
+              {discount > 0 && (
+                <span className="ml-2 text-xs font-extrabold text-[#15803d] bg-[#dcfce7] px-2 py-0.5 rounded-full">
+                  10% OFF Applied (-{inr(discount)})
+                </span>
+              )}
+            </p>
+          ) : (
+            <p className="text-xs text-gray-400">
+              Please select at least 1 service quantity to continue
+            </p>
+          )}
+        </div>
+
         <button
           type="button"
           onClick={onNext}
           disabled={itemCount === 0}
-          className="btn-primary group w-full sm:w-auto px-8 py-3.5 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
+          className="btn-primary group px-8 py-3.5 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Next: Choose Time
+          Continue
           <ArrowRight
-            className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1.5"
+            className="h-4 w-4 ml-1.5 transition-transform group-hover:translate-x-1"
             aria-hidden="true"
           />
         </button>
       </div>
+
+      {/* ── FLOATING STICKY BOTTOM SUMMARY BAR (Matches Screenshot Exactly) ── */}
+      <AnimatePresence>
+        {itemCount > 0 && (
+          <motion.div
+            initial={{ y: 90, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 90, opacity: 0 }}
+            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed bottom-0 inset-x-0 z-40 sm:hidden border-t border-gray-200/90 bg-white/98 backdrop-blur-xl px-4 py-3.5 shadow-[0_-10px_35px_rgba(0,0,0,0.12)] rounded-t-3xl"
+          >
+            {/* Expandable Order Breakdown */}
+            <AnimatePresence>
+              {showDetails && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="overflow-hidden mb-3 pb-3 border-b border-gray-100 text-xs space-y-1.5"
+                >
+                  <div className="flex justify-between text-gray-600">
+                    <span>Subtotal</span>
+                    <span className="font-bold text-[#0c1e40]">{inr(subtotal)}</span>
+                  </div>
+                  {discount > 0 && (
+                    <div className="flex justify-between text-[#16a34a] font-bold">
+                      <span>10% Discount</span>
+                      <span>-{inr(discount)}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between text-gray-600">
+                    <span>Pickup &amp; Delivery</span>
+                    <span className={cn("font-bold", deliveryFee === 0 ? "text-[#16a34a]" : "text-[#0c1e40]")}>
+                      {deliveryFee === 0 ? "FREE" : inr(deliveryFee)}
+                    </span>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <div className="flex items-center justify-between gap-2">
+              {/* Left Column: Line items, duration, and View Details */}
+              <div className="min-w-0 flex-1">
+                <p className="text-[14px] font-black text-[#0c1e40] truncate leading-tight">
+                  {summaryServiceLabel}
+                </p>
+                <p className="text-[12px] text-gray-500 font-medium mt-0.5 leading-none">
+                  {selectedDuration}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setShowDetails(!showDetails)}
+                  className="inline-flex items-center gap-1 text-[12px] font-bold text-[#1a56db] hover:text-blue-800 mt-1 cursor-pointer"
+                >
+                  View Details
+                  <ChevronDown
+                    className={cn(
+                      "h-3.5 w-3.5 transition-transform duration-200",
+                      showDetails && "rotate-180",
+                    )}
+                    aria-hidden="true"
+                  />
+                </button>
+              </div>
+
+              {/* Vertical Divider */}
+              <div className="h-11 w-[1px] bg-gray-200 shrink-0 mx-2 xs:mx-3" />
+
+              {/* Middle Column: Total label + amount */}
+              <div className="shrink-0 text-left">
+                <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wide leading-none">
+                  Total
+                </span>
+                <p className="font-display text-[22px] xs:text-[24px] font-black text-[#16a34a] leading-tight mt-0.5">
+                  {inr(total)}
+                </p>
+              </div>
+
+              {/* Right Column: Continue CTA Button */}
+              <div className="shrink-0 pl-1">
+                <button
+                  type="button"
+                  onClick={onNext}
+                  className="h-12 px-5 xs:px-6 rounded-2xl bg-[#1a56db] hover:bg-[#1e40af] text-white font-bold text-[14.5px] xs:text-[15px] flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer"
+                >
+                  Continue
+                  <ArrowRight className="h-4.5 w-4.5 stroke-[2.5]" aria-hidden="true" />
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
