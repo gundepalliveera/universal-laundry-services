@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useCallback, useEffect, useState, lazy, Suspense } from "react";
+import { useCallback, useEffect, useRef, useState, lazy, Suspense } from "react";
 import { BookingProvider } from "@/booking/BookingContext";
 import { Hero } from "@/components/Hero";
 import { Navbar } from "@/components/Navbar";
@@ -47,9 +47,12 @@ function HomeView({
 function MainLayout() {
   const [active, setActive] = useState("home");
   const [activeService, setActiveService] = useState<string | null>(null);
+  const isClickScrollingRef = useRef(false);
+  const scrollTimeoutRef = useRef<number | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
   const isBooking = location.pathname.startsWith("/book");
+  const navActive = isBooking ? "book" : active;
 
   // Redirect legacy /#book hash link to /book route
   useEffect(() => {
@@ -57,6 +60,24 @@ function MainLayout() {
       navigate("/book", { replace: true });
     }
   }, [location.hash, navigate]);
+
+  const scrollTo = useCallback((id: string) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const top = el.getBoundingClientRect().top + window.scrollY - 78;
+    window.scrollTo({ top: id === "home" ? 0 : top, behavior: "smooth" });
+  }, []);
+
+  // Synchronize hash links on direct URL navigation (e.g. /#services, /#pricing, /#about)
+  useEffect(() => {
+    if (location.hash && location.hash !== "#book") {
+      const targetId = location.hash.replace("#", "");
+      if (["services", "pricing", "about"].includes(targetId)) {
+        setActive(targetId);
+        setTimeout(() => scrollTo(targetId), 150);
+      }
+    }
+  }, [location.hash, scrollTo]);
 
   // Apply dynamic SEO metadata on section / route changes
   useEffect(() => {
@@ -67,36 +88,104 @@ function MainLayout() {
     }
   }, [isBooking, active, location.pathname]);
 
+  // Scroll-spy: Observe visible sections and update active navigation item
   useEffect(() => {
     if (location.pathname !== "/") return;
+
+    const navSectionMap: Record<string, string> = {
+      home: "home",
+      "how-it-works": "home",
+      services: "services",
+      pricing: "pricing",
+      about: "about",
+      contact: "about",
+    };
+
+    const visibilityMap = new Map<string, number>();
+
     const observer = new IntersectionObserver(
       (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (visible) setActive(visible.target.id);
+        // Prevent flickering while smooth scrolling after a navigation tap
+        if (isClickScrollingRef.current) return;
+
+        entries.forEach((entry) => {
+          visibilityMap.set(entry.target.id, entry.isIntersecting ? entry.intersectionRatio : 0);
+        });
+
+        // Top of page: always activate 'home'
+        if (window.scrollY < 80) {
+          setActive("home");
+          return;
+        }
+
+        // Bottom of page: always activate 'about'
+        if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 60) {
+          setActive("about");
+          return;
+        }
+
+        // Find the section with the highest intersection ratio in the reading zone
+        let bestId = "";
+        let maxRatio = 0;
+        for (const [id, ratio] of visibilityMap.entries()) {
+          if (ratio > maxRatio) {
+            maxRatio = ratio;
+            bestId = id;
+          }
+        }
+
+        if (bestId && navSectionMap[bestId]) {
+          setActive(navSectionMap[bestId]);
+        }
       },
-      { rootMargin: "-25% 0px -55% 0px", threshold: [0, 0.2, 0.6, 1] },
+      {
+        rootMargin: "-70px 0px -40% 0px",
+        threshold: [0, 0.1, 0.25, 0.5, 0.75, 1],
+      },
     );
+
     sectionIds.forEach((id) => {
       const el = document.getElementById(id);
       if (el) observer.observe(el);
     });
-    return () => observer.disconnect();
-  }, [location.pathname]);
 
-  const scrollTo = useCallback((id: string) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    const top = el.getBoundingClientRect().top + window.scrollY - 78;
-    window.scrollTo({ top: id === "home" ? 0 : top, behavior: "smooth" });
-  }, []);
+    const onScroll = () => {
+      if (isClickScrollingRef.current) return;
+      if (window.scrollY < 80) {
+        setActive("home");
+      } else if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 50) {
+        setActive("about");
+      }
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", onScroll);
+      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+    };
+  }, [location.pathname]);
 
   const handleNavigate = useCallback(
     (id: string) => {
+      const navTarget = id === "contact" ? "about" : id === "how-it-works" ? "home" : id;
+      setActive(navTarget);
+
+      // Lock scroll-spy while smooth scrolling to prevent flickering between multiple active items
+      isClickScrollingRef.current = true;
+      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+
+      const unlock = () => {
+        isClickScrollingRef.current = false;
+      };
+
+      window.addEventListener("scrollend", unlock, { once: true });
+      scrollTimeoutRef.current = window.setTimeout(unlock, 850);
+
       if (location.pathname !== "/") {
         navigate("/");
-        setTimeout(() => scrollTo(id), 100);
+        setTimeout(() => scrollTo(id), 120);
       } else {
         scrollTo(id);
       }
@@ -206,9 +295,9 @@ function MainLayout() {
       </Suspense>
 
       {/* Floating Mobile Bottom Navigation (<1024px) */}
-      {location.pathname === "/" && (
+      {(location.pathname === "/" || isBooking) && (
         <Suspense fallback={null}>
-          <MobileBottomNav active={active} onNavigate={handleNavigate} onBook={handleBook} />
+          <MobileBottomNav active={navActive} onNavigate={handleNavigate} onBook={handleBook} />
         </Suspense>
       )}
     </div>

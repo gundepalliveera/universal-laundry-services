@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import {
   CalendarCheck,
   Home,
@@ -35,17 +34,9 @@ export function MobileBottomNav({
   onNavigate,
   onBook,
 }: MobileBottomNavProps) {
-  const [currentActive, setCurrentActive] = useState<string>(active || "home");
-
-  // Synchronize active item with scroll observer and route changes
-  useEffect(() => {
-    if (active) {
-      setCurrentActive(active);
-    }
-  }, [active]);
+  const currentActive = active || "home";
 
   const handleSelect = (item: NavItem) => {
-    setCurrentActive(item.id);
     if (item.isBook) {
       onBook?.();
     } else {

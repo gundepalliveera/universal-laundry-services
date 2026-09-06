@@ -44,7 +44,7 @@ export function CompactStickyBottomBar({
       : "";
 
   return (
-    <div className="fixed bottom-0 inset-x-0 z-40 sm:hidden border-t border-gray-200/90 bg-white/98 backdrop-blur-xl px-3.5 py-3 shadow-[0_-8px_30px_rgba(0,0,0,0.12)] rounded-t-3xl transition-all pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+    <div className="fixed bottom-[calc(68px+env(safe-area-inset-bottom,0px))] lg:bottom-0 inset-x-0 z-40 sm:hidden border-t border-gray-200/90 bg-white/98 backdrop-blur-xl px-3.5 py-3 shadow-[0_-8px_30px_rgba(0,0,0,0.12)] rounded-t-3xl transition-all">
       {/* Expandable Order Breakdown */}
       <AnimatePresence>
         {showDetails && (
