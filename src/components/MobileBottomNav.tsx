@@ -1,256 +1,175 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import {
-  BookOpen,
-  ChevronUp,
+  CalendarCheck,
   Home,
   Info,
   LayoutGrid,
-  Menu,
-  Phone,
-  Sparkles,
   Tag,
-  Waves,
   type LucideIcon,
 } from "lucide-react";
-import { useState } from "react";
 import { cn } from "@/utils/cn";
 
 type NavItem = {
   id: string;
   label: string;
   icon: LucideIcon;
+  isBook?: boolean;
 };
 
-const mainNavItems: NavItem[] = [
+const navItems: NavItem[] = [
   { id: "home", label: "Home", icon: Home },
   { id: "services", label: "Services", icon: LayoutGrid },
+  { id: "book", label: "Book", icon: CalendarCheck, isBook: true },
   { id: "pricing", label: "Pricing", icon: Tag },
   { id: "about", label: "About", icon: Info },
 ];
 
-type MoreMenuItem = {
-  id: string;
-  label: string;
-  icon: LucideIcon;
-  action?: "book";
-};
-
-const moreMenuItems: MoreMenuItem[] = [
-  { id: "how-it-works", label: "How It Works", icon: Waves },
-  { id: "pricing", label: "Special & Dry Cleaning", icon: BookOpen },
-  { id: "contact", label: "Contact", icon: Phone },
-  { id: "__book__", label: "Book an Order", icon: Sparkles, action: "book" },
-];
+interface MobileBottomNavProps {
+  active: string;
+  onNavigate: (id: string) => void;
+  onBook?: () => void;
+}
 
 export function MobileBottomNav({
   active,
   onNavigate,
   onBook,
-}: {
-  active: string;
-  onNavigate: (id: string) => void;
-  onBook?: () => void;
-}) {
-  const [moreOpen, setMoreOpen] = useState(false);
+}: MobileBottomNavProps) {
+  const [currentActive, setCurrentActive] = useState<string>(active || "home");
 
-  const handleMain = (id: string) => {
-    setMoreOpen(false);
-    onNavigate(id);
-  };
+  // Synchronize active item with scroll observer and route changes
+  useEffect(() => {
+    if (active) {
+      setCurrentActive(active);
+    }
+  }, [active]);
 
-  const handleMore = (item: MoreMenuItem) => {
-    setMoreOpen(false);
-    if (item.action === "book") {
+  const handleSelect = (item: NavItem) => {
+    setCurrentActive(item.id);
+    if (item.isBook) {
       onBook?.();
     } else {
       onNavigate(item.id);
     }
   };
 
-  const isMoreActive = !mainNavItems.some((n) => n.id === active);
-
   return (
-    <>
-      {/* Backdrop */}
-      <AnimatePresence>
-        {moreOpen && (
-          <motion.div
-            key="backdrop"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.18 }}
-            className="fixed inset-0 z-40 lg:hidden"
-            onClick={() => setMoreOpen(false)}
+    <nav
+      aria-label="Mobile bottom navigation"
+      className="fixed bottom-0 inset-x-0 z-50 lg:hidden pointer-events-none select-none"
+      style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
+    >
+      {/* Floating white navigation container with smooth rounded top corners and subtle border/shadow */}
+      <div className="relative w-full bg-white border-t border-ice-200/90 rounded-t-[22px] shadow-[0_-4px_24px_-4px_rgba(15,43,120,0.09)] pointer-events-auto">
+        {/* SVG curved crest behind center Book button */}
+        <svg
+          className="absolute -top-[18px] left-1/2 -translate-x-1/2 w-[112px] h-[19px] pointer-events-none"
+          viewBox="0 0 112 19"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <path
+            d="M0 19C16 19 28 2 56 2C84 2 96 19 112 19H0Z"
+            fill="white"
           />
-        )}
-      </AnimatePresence>
+          <path
+            d="M0 19C16 19 28 2 56 2C84 2 96 19 112 19"
+            stroke="#DFEAFE"
+            strokeWidth="1.2"
+          />
+        </svg>
 
-      {/* More Menu Popup */}
-      <AnimatePresence>
-        {moreOpen && (
-          <motion.div
-            key="more-menu"
-            initial={{ opacity: 0, y: 16, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 12, scale: 0.97 }}
-            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed bottom-[calc(72px+env(safe-area-inset-bottom,0px)+8px)] right-0 left-0 mx-3 xs:mx-4 sm:mx-6 z-50 lg:hidden"
-          >
-            <div className="rounded-2xl border border-ice-200 bg-white shadow-[0_-4px_32px_-8px_rgba(15,43,120,0.16),0_4px_24px_-4px_rgba(0,0,0,0.1)] overflow-hidden">
-              {/* Menu header */}
-              <div className="flex items-center justify-between border-b border-ice-100 px-4 py-3">
-                <span className="text-[12px] font-bold uppercase tracking-widest text-navy-900/50">
-                  More
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setMoreOpen(false)}
-                  className="flex h-6 w-6 items-center justify-center rounded-full bg-ice-100 text-navy-700"
-                >
-                  <ChevronUp className="h-3.5 w-3.5" />
-                </button>
-              </div>
-
-              {/* Menu items */}
-              <div className="py-1">
-                {moreMenuItems.map((item, i) => {
-                  const Icon = item.icon;
-                  const isBook = item.action === "book";
-                  return (
-                    <motion.button
-                      key={item.id + i}
-                      type="button"
-                      onClick={() => handleMore(item)}
-                      initial={{ opacity: 0, x: -8 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.04, duration: 0.18 }}
-                      className={cn(
-                        "flex w-full items-center gap-3.5 px-4 py-3.5 text-left transition-colors duration-150 active:bg-ice-50",
-                        isBook
-                          ? "text-navy-700 hover:bg-navy-50 border-t border-ice-100 mt-1"
-                          : "text-navy-900 hover:bg-ice-50",
-                      )}
-                    >
-                      <span
-                        className={cn(
-                          "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl",
-                          isBook
-                            ? "bg-navy-600 text-white shadow-sm"
-                            : "bg-ice-100 text-navy-600",
-                        )}
-                      >
-                        <Icon className="h-4.5 w-4.5" strokeWidth={2} aria-hidden="true" />
-                      </span>
-                      <span
-                        className={cn(
-                          "text-[14px] font-semibold leading-tight",
-                          isBook && "text-navy-700",
-                        )}
-                      >
-                        {item.label}
-                      </span>
-                      {isBook && (
-                        <span className="ml-auto rounded-full bg-navy-600/10 px-2 py-0.5 text-[10px] font-bold text-navy-600 uppercase tracking-wider">
-                          Book
-                        </span>
-                      )}
-                    </motion.button>
-                  );
-                })}
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Bottom Navigation Bar */}
-      <nav
-        aria-label="Mobile bottom navigation"
-        className="fixed bottom-0 inset-x-0 z-50 lg:hidden"
-        style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
-      >
-        {/* Top border + subtle shadow */}
-        <div className="flex h-[72px] w-full items-stretch border-t border-ice-200 bg-white shadow-[0_-2px_16px_-4px_rgba(15,43,120,0.1)]">
-
-          {/* Main 4 items */}
-          {mainNavItems.map((item) => {
-            const isActive = active === item.id;
+        {/* 5-item grid for rock-solid centering across all mobile viewports */}
+        <div className="mx-auto grid h-[68px] max-w-lg grid-cols-5 items-stretch px-1">
+          {navItems.map((item) => {
+            const isActive = currentActive === item.id;
+            const isBook = !!item.isBook;
             const Icon = item.icon;
+
+            // Target transform: Book floats higher when selected (-18px vs -8px); standard items float -14px when active
+            const transform = isBook
+              ? isActive
+                ? "translateY(-18px) scale(1.06)"
+                : "translateY(-8px) scale(1)"
+              : isActive
+                ? "translateY(-14px) scale(1.05)"
+                : "translateY(0) scale(1)";
+
             return (
               <button
                 key={item.id}
                 type="button"
-                onClick={() => handleMain(item.id)}
-                className="relative flex flex-1 flex-col items-center justify-center gap-1 px-1 transition-colors duration-150 active:bg-ice-50 focus:outline-none"
+                onClick={() => handleSelect(item)}
+                className="group relative flex flex-col items-center justify-center w-full h-full focus:outline-none min-h-[44px] cursor-pointer touch-manipulation"
+                aria-label={item.isBook ? "Book a Service" : item.label}
                 aria-current={isActive ? "page" : undefined}
               >
-                {/* Active top indicator line */}
-                {isActive && (
-                  <motion.span
-                    layoutId="mobileNavTopIndicator"
-                    className="absolute top-0 left-3 right-3 h-[2.5px] rounded-b-full bg-navy-600"
-                    transition={{ type: "spring", stiffness: 400, damping: 32 }}
-                  />
-                )}
-                <Icon
+                {/* Floating circular icon container */}
+                <div
+                  style={{
+                    transform,
+                    transition:
+                      "transform 250ms ease, box-shadow 250ms ease, background-color 250ms ease, border-color 250ms ease",
+                  }}
                   className={cn(
-                    "h-[22px] w-[22px] transition-colors duration-150",
-                    isActive ? "text-navy-600" : "text-navy-900/40",
+                    "relative flex items-center justify-center rounded-full will-change-transform",
+                    isBook
+                      ? "h-12 w-12 bg-gradient-to-tr from-navy-700 via-navy-600 to-navy-500 text-white ring-[3.5px] ring-white"
+                      : "h-11 w-11",
+                    isBook &&
+                      (isActive
+                        ? "shadow-[0_12px_28px_-2px_rgba(26,83,224,0.65),0_4px_12px_rgba(26,83,224,0.3)]"
+                        : "shadow-[0_6px_18px_-3px_rgba(26,83,224,0.45),0_2px_6px_rgba(0,0,0,0.08)]"),
+                    !isBook &&
+                      (isActive
+                        ? "bg-white border border-ice-200/90 shadow-[0_8px_20px_-4px_rgba(26,83,224,0.3)] ring-2 ring-ice-100 text-navy-600"
+                        : "bg-transparent border-transparent shadow-none ring-0 text-navy-900/40 hover:text-navy-900/60"),
                   )}
-                  strokeWidth={isActive ? 2.2 : 1.8}
-                  aria-hidden="true"
-                />
+                >
+                  <Icon
+                    className={cn(
+                      "h-5 w-5 transition-colors duration-200",
+                      isBook
+                        ? "text-white"
+                        : isActive
+                          ? "text-navy-600"
+                          : "text-navy-900/40",
+                    )}
+                    strokeWidth={isActive || isBook ? 2.2 : 1.8}
+                    aria-hidden="true"
+                  />
+                </div>
+
+                {/* Label */}
                 <span
                   className={cn(
-                    "text-[11.5px] xs:text-[12px] font-semibold leading-none transition-colors duration-150",
-                    isActive ? "text-navy-600" : "text-navy-900/45",
+                    "mt-0.5 text-[10.5px] xs:text-[11.5px] tracking-tight leading-none transition-colors duration-200 whitespace-nowrap",
+                    isActive
+                      ? "font-extrabold text-navy-600"
+                      : isBook
+                        ? "font-bold text-navy-700"
+                        : "font-semibold text-navy-900/50",
                   )}
                 >
                   {item.label}
                 </span>
+
+                {/* Active dot indicator */}
+                <span
+                  className={cn(
+                    "h-1 w-1 rounded-full bg-navy-600 mt-1 transition-all duration-200",
+                    isActive ? "opacity-100 scale-100" : "opacity-0 scale-0",
+                  )}
+                  aria-hidden="true"
+                />
               </button>
             );
           })}
-
-          {/* More button */}
-          <button
-            type="button"
-            onClick={() => setMoreOpen((v) => !v)}
-            className={cn(
-              "relative flex flex-1 flex-col items-center justify-center gap-1 px-1 transition-colors duration-150 active:bg-ice-50 focus:outline-none",
-            )}
-            aria-expanded={moreOpen}
-            aria-haspopup="menu"
-          >
-            {(moreOpen || isMoreActive) && (
-              <motion.span
-                layoutId="mobileNavTopIndicator"
-                className="absolute top-0 left-3 right-3 h-[2.5px] rounded-b-full bg-navy-600"
-                transition={{ type: "spring", stiffness: 400, damping: 32 }}
-              />
-            )}
-            <motion.span animate={{ rotate: moreOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
-              <Menu
-                className={cn(
-                  "h-[22px] w-[22px] transition-colors duration-150",
-                  moreOpen || isMoreActive ? "text-navy-600" : "text-navy-900/40",
-                )}
-                strokeWidth={moreOpen || isMoreActive ? 2.2 : 1.8}
-                aria-hidden="true"
-              />
-            </motion.span>
-            <span
-              className={cn(
-                "text-[11.5px] xs:text-[12px] font-semibold leading-none transition-colors duration-150",
-                moreOpen || isMoreActive ? "text-navy-600" : "text-navy-900/45",
-              )}
-            >
-              More
-            </span>
-          </button>
         </div>
-      </nav>
-    </>
+      </div>
+    </nav>
   );
 }
+
+export default MobileBottomNav;
