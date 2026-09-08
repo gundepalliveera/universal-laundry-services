@@ -12,7 +12,7 @@ const About = lazy(() => import("@/components/About").then((m) => ({ default: m.
 const Contact = lazy(() => import("@/components/Contact").then((m) => ({ default: m.Contact })));
 const Footer = lazy(() => import("@/components/Footer").then((m) => ({ default: m.Footer })));
 const HowItWorks = lazy(() => import("@/components/HowItWorks").then((m) => ({ default: m.HowItWorks })));
-const MobileBottomNav = lazy(() => import("@/components/MobileBottomNav").then((m) => ({ default: m.MobileBottomNav })));
+const MobileBottomNav = lazy(() => import("@/components/MobileBottomNav"));
 const Pricing = lazy(() => import("@/components/Pricing").then((m) => ({ default: m.Pricing })));
 const ServiceDetailView = lazy(() => import("@/components/ServiceDetailModal").then((m) => ({ default: m.ServiceDetailView })));
 const Services = lazy(() => import("@/components/Services").then((m) => ({ default: m.Services })));
@@ -52,7 +52,6 @@ function MainLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const isBooking = location.pathname.startsWith("/book");
-  const navActive = isBooking ? "book" : active;
 
   // Redirect legacy /#book hash link to /book route
   useEffect(() => {
@@ -208,7 +207,11 @@ function MainLayout() {
   }, [active, location.pathname]);
 
   return (
-    <div className="min-h-screen overflow-x-clip bg-white pb-[88px] lg:pb-0">
+    <div
+      className={`min-h-screen overflow-x-clip bg-white ${
+        isBooking ? "" : "pb-[88px] lg:pb-0"
+      }`}
+    >
       <a
         href="#home"
         className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:rounded-full focus:bg-navy-700 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
@@ -294,10 +297,10 @@ function MainLayout() {
         <Footer onNavigate={handleNavigate} onBook={handleBook} />
       </Suspense>
 
-      {/* Floating Mobile Bottom Navigation (<1024px) */}
-      {(location.pathname === "/" || isBooking) && (
+      {/* Floating Mobile Bottom Navigation (<1024px, home only) */}
+      {location.pathname === "/" && (
         <Suspense fallback={null}>
-          <MobileBottomNav active={navActive} onNavigate={handleNavigate} onBook={handleBook} />
+          <MobileBottomNav active={active} onNavigate={handleNavigate} onBook={handleBook} />
         </Suspense>
       )}
     </div>
