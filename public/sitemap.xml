@@ -1,96 +1,175 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- Homepage -->
   <url>
-    <loc>https://www.universallaundryservices.in/</loc>
-    <lastmod>2026-08-30</lastmod>
+    <loc>https://universallaundryservices.com/</loc>
+    <lastmod>2026-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
-  <!-- Core Section Pages -->
+  <!-- Hyderabad Local Landing Page -->
   <url>
-    <loc>https://www.universallaundryservices.in/services</loc>
-    <lastmod>2026-08-30</lastmod>
+    <loc>https://universallaundryservices.com/laundry-service-hyderabad/</loc>
+    <lastmod>2026-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
 
+  <!-- Core Services Overview -->
   <url>
-    <loc>https://www.universallaundryservices.in/pricing</loc>
-    <lastmod>2026-08-30</lastmod>
+    <loc>https://universallaundryservices.com/services/</loc>
+    <lastmod>2026-09-12</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
   </url>
 
+  <!-- Individual Service Pages -->
   <url>
-    <loc>https://www.universallaundryservices.in/how-it-works</loc>
-    <lastmod>2026-08-30</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://www.universallaundryservices.in/about</loc>
-    <lastmod>2026-08-30</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://www.universallaundryservices.in/contact</loc>
-    <lastmod>2026-08-30</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://www.universallaundryservices.in/special-dry-cleaning</loc>
-    <lastmod>2026-08-30</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- Individual Service Landing Pages -->
-  <url>
-    <loc>https://www.universallaundryservices.in/services/wash-and-fold</loc>
-    <lastmod>2026-08-30</lastmod>
+    <loc>https://universallaundryservices.com/services/laundry/</loc>
+    <lastmod>2026-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
 
   <url>
-    <loc>https://www.universallaundryservices.in/services/steam-ironing</loc>
-    <lastmod>2026-08-30</lastmod>
+    <loc>https://universallaundryservices.com/services/wash-and-fold/</loc>
+    <lastmod>2026-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
 
   <url>
-    <loc>https://www.universallaundryservices.in/services/dry-cleaning</loc>
-    <lastmod>2026-08-30</lastmod>
+    <loc>https://universallaundryservices.com/services/wash-and-iron/</loc>
+    <lastmod>2026-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
 
   <url>
-    <loc>https://www.universallaundryservices.in/services/shoe-cleaning</loc>
-    <lastmod>2026-08-30</lastmod>
+    <loc>https://universallaundryservices.com/services/dry-cleaning/</loc>
+    <lastmod>2026-09-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://universallaundryservices.com/services/steam-ironing/</loc>
+    <lastmod>2026-09-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://universallaundryservices.com/services/doorstep-pickup-delivery/</loc>
+    <lastmod>2026-09-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- Verified Locality Pages -->
+  <url>
+    <loc>https://universallaundryservices.com/laundry-service-jubilee-hills/</loc>
+    <lastmod>2026-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://www.universallaundryservices.in/services/bag-cleaning</loc>
-    <lastmod>2026-08-30</lastmod>
+    <loc>https://universallaundryservices.com/laundry-service-banjara-hills/</loc>
+    <lastmod>2026-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://www.universallaundryservices.in/services/premium-wash</loc>
-    <lastmod>2026-08-30</lastmod>
+    <loc>https://universallaundryservices.com/laundry-service-madhapur/</loc>
+    <lastmod>2026-09-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://universallaundryservices.com/laundry-service-hitec-city/</loc>
+    <lastmod>2026-09-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://universallaundryservices.com/laundry-service-gachibowli/</loc>
+    <lastmod>2026-09-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://universallaundryservices.com/laundry-service-kondapur/</loc>
+    <lastmod>2026-09-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://universallaundryservices.com/laundry-service-manikonda/</loc>
+    <lastmod>2026-09-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://universallaundryservices.com/laundry-service-kukatpally/</loc>
+    <lastmod>2026-09-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://universallaundryservices.com/laundry-service-miyapur/</loc>
+    <lastmod>2026-09-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://universallaundryservices.com/laundry-service-kokapet/</loc>
+    <lastmod>2026-09-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://universallaundryservices.com/laundry-service-narsingi/</loc>
+    <lastmod>2026-09-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Core Section Pages -->
+  <url>
+    <loc>https://universallaundryservices.com/pricing/</loc>
+    <lastmod>2026-09-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://universallaundryservices.com/about/</loc>
+    <lastmod>2026-09-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://universallaundryservices.com/contact/</loc>
+    <lastmod>2026-09-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://universallaundryservices.com/book/</loc>
+    <lastmod>2026-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

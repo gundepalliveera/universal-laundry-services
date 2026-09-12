@@ -35,7 +35,7 @@ export function Hero({ onBook }: { onBook: () => void }) {
     <section
       id="home"
       ref={ref}
-      className="relative isolate overflow-hidden pt-[62px] pb-8 sm:pt-[84px] sm:pb-12 md:pt-10 md:pb-20 lg:pt-6"
+      className="relative isolate overflow-hidden pt-3 pb-8 sm:pt-6 sm:pb-12 md:pt-10 md:pb-20 lg:pt-6"
     >
       {/* soft blue gradient backdrop */}
       <div
@@ -70,7 +70,10 @@ export function Hero({ onBook }: { onBook: () => void }) {
                 Fresh Clothes, Happy Life
               </motion.span>
 
-              <h1 className="mt-5 font-display text-[64px] leading-[1.05] font-extrabold tracking-tight text-navy-950">
+              <h1 className="mt-5 font-display text-[48px] xl:text-[60px] leading-[1.08] font-extrabold tracking-tight text-navy-950">
+                <span className="block text-[20px] xl:text-[24px] font-bold text-navy-700 tracking-normal mb-2">
+                  Laundry Service in Hyderabad
+                </span>
                 {words.map((w, i) => (
                   <motion.span
                     key={w.text}
@@ -220,10 +223,10 @@ export function Hero({ onBook }: { onBook: () => void }) {
           <div className="grid grid-cols-[1.1fr_0.9fr] sm:grid-cols-[1.15fr_0.85fr] items-center gap-1 sm:gap-4">
             {/* Left text column */}
             <motion.div variants={fadeUp} className="space-y-2.5 sm:space-y-3">
-              <h1 className="font-display text-[26px] xs:text-[30px] sm:text-[38px] leading-[1.08] font-extrabold tracking-tight text-navy-950">
+              <div className="font-display text-[26px] xs:text-[30px] sm:text-[38px] leading-[1.08] font-extrabold tracking-tight text-navy-950">
                 <span className="block text-navy-950">Fresh Clothes,</span>
                 <span className="block text-navy-600">Happy Life.</span>
-              </h1>
+              </div>
 
               <p className="text-[12px] sm:text-[14px] leading-relaxed text-navy-900/75">
                 Professional laundry care, picked up and delivered to your doorstep.

@@ -275,16 +275,18 @@ export const pricingPlans = [
 ];
 
 
+import { businessConfig } from "@/data/businessConfig";
+
 export const contactInfo = {
-  phone: "9494913323",
-  whatsapp: "9494913323",
-  email: "care@universallaundryservices.in",
-  address: "Jubilee Hills Road No 5, Hyderabad - 500033",
-  hours: "Open all days · 8:00 AM to 9:00 PM",
-  website: "www.universallaundryservices.in",
+  phone: businessConfig.phone,
+  whatsapp: businessConfig.phone,
+  email: businessConfig.email,
+  address: businessConfig.address.formattedAddress,
+  hours: businessConfig.openingHours.display,
+  website: "universallaundryservices.com",
 };
 
-export const WHATSAPP_NUMBER = "919494913323";
+export const WHATSAPP_NUMBER = businessConfig.whatsappNumber;
 
 export const inr = (n: number) =>
   new Intl.NumberFormat("en-IN", {

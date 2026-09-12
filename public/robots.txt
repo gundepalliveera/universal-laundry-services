@@ -3,4 +3,4 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://www.universallaundryservices.in/sitemap.xml
+Sitemap: https://universallaundryservices.com/sitemap.xml

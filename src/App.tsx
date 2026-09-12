@@ -5,7 +5,7 @@ import { Hero } from "@/components/Hero";
 import { Navbar } from "@/components/Navbar";
 import { applySeoMetadata } from "@/data/seo";
 
-import { BrowserRouter, Routes, Route, useLocation, useNavigate, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, useNavigate, Navigate, useParams } from "react-router-dom";
 
 // Lazy-loaded components below-the-fold
 const About = lazy(() => import("@/components/About").then((m) => ({ default: m.About })));
@@ -16,10 +16,22 @@ const MobileBottomNav = lazy(() => import("@/components/MobileBottomNav"));
 const Pricing = lazy(() => import("@/components/Pricing").then((m) => ({ default: m.Pricing })));
 const ServiceDetailView = lazy(() => import("@/components/ServiceDetailModal").then((m) => ({ default: m.ServiceDetailView })));
 const Services = lazy(() => import("@/components/Services").then((m) => ({ default: m.Services })));
-const AreaDirectory = lazy(() => import("./components/AreaDirectory").then((m) => ({ default: m.AreaDirectory })));
-const AreaDetailPage = lazy(() => import("./components/AreaDetailPage").then((m) => ({ default: m.AreaDetailPage })));
 const BookingPage = lazy(() => import("@/booking/BookingPage").then((m) => ({ default: m.BookingPage })));
 const NotFound = lazy(() => import("@/components/NotFound").then((m) => ({ default: m.NotFound })));
+
+// Dedicated SEO Pages
+const ServiceDetailPage = lazy(() => import("@/pages/ServiceDetailPage").then((m) => ({ default: m.ServiceDetailPage })));
+const ServicesOverviewPage = lazy(() => import("@/pages/ServicesOverviewPage").then((m) => ({ default: m.ServicesOverviewPage })));
+const HyderabadLandingPage = lazy(() => import("@/pages/HyderabadLandingPage").then((m) => ({ default: m.HyderabadLandingPage })));
+const LocalityDetailPage = lazy(() => import("@/pages/LocalityDetailPage").then((m) => ({ default: m.LocalityDetailPage })));
+const PricingPage = lazy(() => import("@/pages/PricingPage").then((m) => ({ default: m.PricingPage })));
+const AboutPage = lazy(() => import("@/pages/AboutPage").then((m) => ({ default: m.AboutPage })));
+const ContactPage = lazy(() => import("@/pages/ContactPage").then((m) => ({ default: m.ContactPage })));
+
+function LegacyAreaRedirect() {
+  const { slug } = useParams<{ slug: string }>();
+  return <Navigate to={slug ? `/laundry-service-${slug}/` : "/laundry-service-hyderabad/"} replace />;
+}
 
 const sectionIds = ["home", "how-it-works", "services", "pricing", "about", "contact"];
 
@@ -270,13 +282,38 @@ function MainLayout() {
               </motion.div>
             }
           />
+          {/* Core Services Routes */}
+          <Route path="/services" element={<ServicesOverviewPage onBook={handleBook} />} />
+          <Route path="/services/" element={<ServicesOverviewPage onBook={handleBook} />} />
+          <Route path="/services/:serviceSlug" element={<ServiceDetailPage onBook={handleBook} />} />
+          <Route path="/services/:serviceSlug/" element={<ServiceDetailPage onBook={handleBook} />} />
+
+          {/* Local SEO & Locality Routes */}
+          <Route path="/laundry-service-hyderabad" element={<HyderabadLandingPage onBook={handleBook} />} />
+          <Route path="/laundry-service-hyderabad/" element={<HyderabadLandingPage onBook={handleBook} />} />
+          <Route path="/laundry-service-:localitySlug" element={<LocalityDetailPage onBook={handleBook} />} />
+          <Route path="/laundry-service-:localitySlug/" element={<LocalityDetailPage onBook={handleBook} />} />
+
+          {/* Dedicated Section Pages */}
+          <Route path="/pricing" element={<PricingPage onBook={handleBook} />} />
+          <Route path="/pricing/" element={<PricingPage onBook={handleBook} />} />
+          <Route path="/about" element={<AboutPage onBook={handleBook} />} />
+          <Route path="/about/" element={<AboutPage onBook={handleBook} />} />
+          <Route path="/contact" element={<ContactPage onBook={handleBook} />} />
+          <Route path="/contact/" element={<ContactPage onBook={handleBook} />} />
+
+          {/* Booking Routes */}
           <Route path="/booking" element={<Navigate to="/book" replace />} />
-          <Route path="/services" element={<Navigate to="/#services" replace />} />
-          <Route path="/pricing" element={<Navigate to="/#pricing" replace />} />
-          <Route path="/about" element={<Navigate to="/#about" replace />} />
-          <Route path="/contact" element={<Navigate to="/#contact" replace />} />
-          <Route path="/areas" element={<AreaDirectory />} />
-          <Route path="/areas/:slug" element={<AreaDetailPage onBook={handleBook} />} />
+          <Route path="/booking/" element={<Navigate to="/book" replace />} />
+
+          {/* Legacy 301 Redirects */}
+          <Route path="/special-dry-cleaning" element={<Navigate to="/services/dry-cleaning/" replace />} />
+          <Route path="/special-dry-cleaning/" element={<Navigate to="/services/dry-cleaning/" replace />} />
+          <Route path="/areas" element={<Navigate to="/laundry-service-hyderabad/" replace />} />
+          <Route path="/areas/" element={<Navigate to="/laundry-service-hyderabad/" replace />} />
+          <Route path="/areas/:slug" element={<LegacyAreaRedirect />} />
+
+          {/* 404 Fallback */}
           <Route path="*" element={<NotFound onBook={handleBook} />} />
         </Routes>
 

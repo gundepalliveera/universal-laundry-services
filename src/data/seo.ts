@@ -1,84 +1,15 @@
-type SeoRouteMeta = {
+import { businessConfig } from "@/data/businessConfig";
+
+export const SITE_URL = businessConfig.canonicalBase;
+
+export type SeoRouteMeta = {
   title: string;
   description: string;
   canonical: string;
   h1: string;
   keywords?: string;
-};
-
-export const SITE_URL = "https://www.universallaundryservices.in";
-
-const routeSeoMap: Record<string, SeoRouteMeta> = {
-  home: {
-    title: "Universal Laundry Services",
-    description:
-      "Professional laundry service in Hyderabad with wash & fold, steam ironing, dry cleaning, pickup and delivery. Book Universal Laundry Services today.",
-    canonical: `${SITE_URL}/`,
-    h1: "Fresh Clothes, Happy Life.",
-    keywords:
-      "laundry service in Hyderabad, laundry services Hyderabad, best laundry service in Hyderabad, laundry near me Hyderabad, wash and fold Hyderabad, dry cleaning Hyderabad, clothes washing service Hyderabad, laundry pickup and delivery Hyderabad",
-  },
-  about: {
-    title: "About Universal Laundry Services | Laundry Service Hyderabad",
-    description:
-      "Learn about Universal Laundry Services in Jubilee Hills, Hyderabad. State-of-the-art fabric processing, eco-friendly detergents, and segregated hygienic washing.",
-    canonical: `${SITE_URL}/about`,
-    h1: "About Universal Laundry Services in Hyderabad",
-    keywords:
-      "about universal laundry services, laundry Jubilee Hills, laundry company Hyderabad, hygienic laundry Hyderabad",
-  },
-  services: {
-    title: "Laundry Services in Hyderabad | Wash, Iron & Dry Cleaning",
-    description:
-      "Complete laundry services in Hyderabad: Wash & Fold, Steam Ironing, Dry Cleaning, Shoe Cleaning, Bag Cleaning & Premium Wash with doorstep pickup.",
-    canonical: `${SITE_URL}/services`,
-    h1: "Professional Laundry & Dry Cleaning Services in Hyderabad",
-    keywords:
-      "laundry services Hyderabad, clothes washing service Hyderabad, dry cleaning Hyderabad, steam ironing Hyderabad, shoe cleaning Hyderabad",
-  },
-  pricing: {
-    title: "Laundry Prices in Hyderabad | Universal Laundry Services",
-    description:
-      "Transparent laundry and dry cleaning pricing in Hyderabad. Wash & Fold at ₹80/KG, Steam Ironing at ₹120/KG. Free pickup & delivery above ₹399.",
-    canonical: `${SITE_URL}/pricing`,
-    h1: "Simple, Honest Laundry Prices in Hyderabad",
-    keywords:
-      "laundry prices Hyderabad, wash and fold rates Hyderabad, dry cleaning cost Hyderabad, laundry price per kg Hyderabad",
-  },
-  "how-it-works": {
-    title: "How Laundry Pickup & Delivery Works | Hyderabad",
-    description:
-      "Easy 4-step laundry process in Hyderabad: Schedule pickup, we collect from doorstep, hygienic wash & fold, delivered fresh to your home.",
-    canonical: `${SITE_URL}/how-it-works`,
-    h1: "How Laundry Pickup & Delivery Works in Hyderabad",
-    keywords:
-      "how laundry pickup works, laundry delivery process Hyderabad, doorstep laundry booking Hyderabad",
-  },
-  contact: {
-    title: "Contact Universal Laundry Services | Hyderabad Laundry",
-    description:
-      "Contact Universal Laundry Services at Jubilee Hills, Hyderabad. Call or WhatsApp +91 9494913323 for instant doorstep laundry pickup and inquiries.",
-    canonical: `${SITE_URL}/contact`,
-    h1: "Contact Universal Laundry Services Hyderabad",
-    keywords:
-      "contact laundry Hyderabad, laundry phone number Jubilee Hills, laundry customer care Hyderabad",
-  },
-  "special-dry-cleaning": {
-    title: "Dry Cleaning & Special Laundry Services in Hyderabad",
-    description:
-      "Expert dry cleaning and special garment care in Hyderabad. Gentle cleaning for suits, silk sarees, lehengas, shoes, and luxury bags.",
-    canonical: `${SITE_URL}/special-dry-cleaning`,
-    h1: "Special & Dry Cleaning Services in Hyderabad",
-    keywords:
-      "dry cleaning Hyderabad, saree dry cleaning Hyderabad, suit dry cleaning Jubilee Hills, special garment care Hyderabad",
-  },
-  booking: {
-    title: "Book Laundry Pickup Online | Universal Laundry Services Hyderabad",
-    description:
-      "Schedule your laundry pickup in Hyderabad in under 2 minutes. Select services, choose date & time slot, and enjoy doorstep delivery.",
-    canonical: `${SITE_URL}/book`,
-    h1: "Schedule Laundry Pickup & Delivery in Hyderabad",
-  },
+  breadcrumbs?: { name: string; item: string }[];
+  jsonLd?: object | object[];
 };
 
 export type ServiceDetail = {
@@ -94,184 +25,438 @@ export type ServiceDetail = {
   process: { step: string; detail: string }[];
   benefits: string[];
   localContext: string;
+  faqs?: { question: string; answer: string }[];
 };
 
 export const serviceDetails: Record<string, ServiceDetail> = {
+  laundry: {
+    slug: "laundry",
+    title: "Laundry Service",
+    metaTitle: "Laundry Service in Hyderabad | Universal Laundry Services",
+    metaDescription:
+      "Professional laundry service in Hyderabad with free doorstep pickup and delivery. Hygienic individual wash, steam ironing, and quick turnaround. Book today.",
+    h1: "Laundry Service in Hyderabad",
+    tagline: "Hygienic everyday clothes washing with convenient doorstep pickup across Hyderabad.",
+    price: "From ₹80 / KG",
+    turnaround: "72 Hours (Express 12 & 24 Hr Available)",
+    whoItsFor: [
+      "Everyday casual and office attire: shirts, t-shirts, trousers, and jeans",
+      "Household linens: bedsheets, pillowcases, and bath towels",
+      "Busy households, working professionals, and students across Hyderabad",
+    ],
+    process: [
+      { step: "1. Doorstep Collection", detail: "Our executive weighs and tags your garments at your home or apartment." },
+      { step: "2. Color & Fabric Segregation", detail: "Whites, lights, darks, and delicate items are separated into distinct loads." },
+      { step: "3. Hygienic Machine Wash", detail: "Cleaned in dedicated individual machines with fabric-safe liquid detergents." },
+      { step: "4. Tumble Dry & Crisp Fold", detail: "Moisture-controlled tumble drying followed by neat folding and dust-proof packing." },
+    ],
+    benefits: [
+      "100% individual batch wash — your garments are never mixed with other orders",
+      "Free doorstep pickup and delivery on all orders above ₹399",
+      "Transparent weighing with simple per-KG rates",
+      "Fast 72-hour turnaround with express delivery available",
+    ],
+    localContext:
+      "Serving residents across Jubilee Hills, Banjara Hills, Madhapur, HITEC City, Gachibowli, Kondapur, and surrounding Hyderabad neighborhoods.",
+    faqs: [
+      {
+        question: "How does your laundry service in Hyderabad work?",
+        answer: "Select your service online, choose a date and time slot, and our delivery executive will collect your clothes from your doorstep. We wash, dry, fold, and deliver them back within 72 hours.",
+      },
+      {
+        question: "Is there a minimum order for doorstep laundry pickup?",
+        answer: "Doorstep pickup and delivery is free on all orders above ₹399. A small delivery charge of ₹49 applies for orders below ₹399.",
+      },
+      {
+        question: "Do you wash my clothes with other people's clothes?",
+        answer: "Never. Every customer order is washed individually in dedicated machines to ensure complete hygiene.",
+      },
+    ],
+  },
   "wash-and-fold": {
     slug: "wash-and-fold",
     title: "Wash & Fold",
-    metaTitle: "Wash & Fold Laundry Service in Hyderabad | Universal Laundry",
+    metaTitle: "Wash & Fold Service in Hyderabad | Universal Laundry Services",
     metaDescription:
-      "Everyday hygienic wash & fold service in Hyderabad. Segregated loads, premium detergents, tumble dried and neatly folded from ₹80/KG.",
-    h1: "Wash & Fold Laundry Service in Hyderabad",
-    tagline: "Hygienic daily clothes washing, dried and neatly stacked.",
+      "Hygienic wash & fold laundry service in Hyderabad starting at ₹80/KG. Segregated individual washing, tumble drying, and neat folding with doorstep pickup.",
+    h1: "Wash & Fold Service in Hyderabad",
+    tagline: "Clean, fresh, and neatly stacked laundry ready for your closet.",
     price: "₹80 / KG",
-    turnaround: "72 Hours (Express 12/24 Hr Available)",
+    turnaround: "72 Hours (Express 12 & 24 Hr Available)",
     whoItsFor: [
-      "Everyday casual wear: T-shirts, shirts, jeans, shorts, and nightwear",
-      "Household linens: Bed sheets, pillow covers, and towels",
-      "Busy families, working professionals, and students across Hyderabad",
+      "Everyday casual wear: T-shirts, shirts, jeans, shorts, and sleepwear",
+      "Bed linens, pillow covers, and soft bath towels",
+      "Families and working professionals who want to eliminate weekly washing chores",
     ],
     process: [
-      { step: "1. Color & Fabric Sorting", detail: "Clothes are segregated by color tone and fabric sensitivity to prevent color bleeding." },
+      { step: "1. Sorting & Inspection", detail: "Clothes are segregated by color tone and fabric sensitivity to prevent color bleeding." },
       { step: "2. Hygienic Machine Wash", detail: "Washed in sanitized individual machines with pH-balanced, fabric-safe detergents." },
-      { step: "3. Tumble Drying", detail: "Gentle moisture extraction leaving garments soft, fresh-smelling, and sanitized." },
+      { step: "3. Tumble Drying", detail: "Gentle moisture extraction leaving garments soft, fresh-smelling, and completely dry." },
       { step: "4. Crisp Folding & Packing", detail: "Each item is neatly folded and packed in sealed, dust-proof delivery bags." },
     ],
     benefits: [
       "100% segregated washing — never mixed with other customers' clothes",
-      "Free doorstep pickup and delivery across Hyderabad neighbourhoods",
+      "Free doorstep pickup and delivery across Hyderabad for orders over ₹399",
       "Affordable per-KG pricing with no hidden weight rounding",
+      "Protects fabrics from outdoor pollution, dust, and drying harshness",
     ],
     localContext:
-      "Serving residents and working professionals across Jubilee Hills, Banjara Hills, Madhapur, Hitec City, Kondapur, and Gachibowli.",
+      "Popular among residents in Jubilee Hills, Banjara Hills, Madhapur, HITEC City, Kondapur, and Gachibowli.",
+    faqs: [
+      {
+        question: "What is included in the Wash & Fold service?",
+        answer: "Our Wash & Fold service includes sorting by color, machine washing with fabric-safe detergents, thorough tumble drying, and neat hand folding.",
+      },
+      {
+        question: "How much does Wash & Fold cost in Hyderabad?",
+        answer: "Our Wash & Fold service is priced at ₹80 per KG for standard 72-hour delivery.",
+      },
+      {
+        question: "Are clothes sun-dried or machine-dried?",
+        answer: "All garments are dried in commercial humidity-controlled dryers to protect fabric fibers from sun damage and outdoor dust.",
+      },
+    ],
   },
-  "steam-ironing": {
-    slug: "steam-ironing",
+  "wash-and-iron": {
+    slug: "wash-and-iron",
     title: "Wash & Steam Iron",
-    metaTitle: "Professional Steam Ironing Service Hyderabad | Universal Laundry",
+    metaTitle: "Wash & Iron Service in Hyderabad | Universal Laundry Services",
     metaDescription:
-      "Full wash plus crisp steam ironing in Hyderabad. Crease-free finish, sharp collars, and fabric care from ₹120/KG.",
-    h1: "Wash & Professional Steam Ironing in Hyderabad",
+      "Full laundry wash and professional steam ironing in Hyderabad at ₹120/KG. Wrinkle-free finish, crisp collars, and doorstep pickup. Book online today.",
+    h1: "Wash & Iron Service in Hyderabad",
     tagline: "Washed clean and steam pressed to wardrobe perfection.",
     price: "₹120 / KG",
     turnaround: "72 Hours (Express Available)",
     whoItsFor: [
-      "Office & formal shirts, trousers, and cotton kurtas",
+      "Office & formal shirts, trousers, chinos, and cotton kurtas",
       "Daily workwear requiring crisp creases and structured collars",
-      "Delicate fabrics that need temperature-regulated steam pressure",
+      "Fabrics that benefit from vacuum steam pressure rather than high-heat flat irons",
     ],
     process: [
-      { step: "1. Deep Wash & Conditioning", detail: "Washed with specialized liquid fabric softeners to relax fabric fibers." },
-      { step: "2. Temperature-Controlled Steam Press", detail: "Industrial vacuum steam tables apply optimal heat without scorching or shine marks." },
-      { step: "3. Hanger or Neat Fold Packaging", detail: "Supplied on premium hangers or crisp poly-pack folding ready to wear." },
+      { step: "1. Deep Wash & Conditioning", detail: "Washed with gentle liquid detergents and conditioners to relax garment fibers." },
+      { step: "2. Precision Steam Pressing", detail: "Industrial vacuum steam tables apply optimal pressure without shine marks or scorching." },
+      { step: "3. Wardrobe Packaging", detail: "Supplied crisp-folded or on hangers according to your personal preference." },
     ],
     benefits: [
-      "Zero burns, shine marks, or collar damage guaranteed",
-      "Deep steam penetration kills 99.9% of residual bacteria",
-      "Keeps formal garments looking fresh and lasting longer",
+      "Smooth, scorch-free finish with zero shine marks on dark fabrics",
+      "Deep steam penetration refreshes fabric fibers and removes wrinkles",
+      "Keeps formal garments looking crisp, structured, and lasting longer",
+      "Convenient doorstep delivery ready to hang in your closet",
     ],
     localContext:
-      "Trusted by corporate professionals and business executives across Hyderabad's financial and tech corridors.",
+      "Trusted by corporate executives, doctors, and business professionals across Hyderabad's financial and tech corridors.",
+    faqs: [
+      {
+        question: "How is steam ironing different from regular dry ironing?",
+        answer: "Steam ironing uses pressurized moisture and vacuum suction to relax fibers, eliminating stubborn wrinkles without scorching, burning, or leaving shiny marks.",
+      },
+      {
+        question: "Can I choose hanger delivery for my shirts?",
+        answer: "Yes, you can request hanger packaging or crisp poly-pack folding when scheduling your order.",
+      },
+      {
+        question: "What is the per-KG price for Wash & Steam Iron?",
+        answer: "Our standard 72-hour Wash & Steam Iron service is priced at ₹120 per KG.",
+      },
+    ],
   },
   "dry-cleaning": {
     slug: "dry-cleaning",
     title: "Dry Cleaning",
-    metaTitle: "Eco-Friendly Dry Cleaning in Hyderabad | Universal Laundry",
+    metaTitle: "Dry Cleaning in Hyderabad | Universal Laundry Services",
     metaDescription:
-      "Premium eco-solvent dry cleaning in Hyderabad for suits, silk sarees, lehengas, blazers, and designer wear. Starting at ₹120/piece.",
-    h1: "Eco-Friendly Dry Cleaning Services in Hyderabad",
-    tagline: "Specialized solvent care for your most valued garments.",
+      "Eco-solvent dry cleaning in Hyderabad for silk sarees, suits, lehengas, blazers, and designer wear starting at ₹120/piece. Doorstep pickup across Hyderabad.",
+    h1: "Dry Cleaning in Hyderabad",
+    tagline: "Gentle solvent care for your delicate, ethnic, and designer garments.",
     price: "Starting ₹120 / Piece",
     turnaround: "72–96 Hours",
     whoItsFor: [
-      "Suits, tuxedos, blazers, and winter coats",
-      "Silk sarees, Kanjeevarams, bridal lehengas, and designer wear",
-      "Curtains, heavy blankets, quilts, and upholstery fabrics",
+      "Suits, tuxedos, blazers, and winter overcoats",
+      "Silk sarees, Kanjeevarams, bridal lehengas, and designer couture",
+      "Heavy curtains, quilts, and special fabric upholstery",
     ],
     process: [
-      { step: "1. Expert Stain Spotting", detail: "Pre-treated by certified fabric specialists for oils, wine, sweat, and ink stains." },
-      { step: "2. Eco-Solvent Cleaning", detail: "Cleaned in gentle, closed-loop solvent machines that preserve delicate embellishments." },
-      { step: "3. Hand-Finishing & Form Pressing", detail: "Individual hand press on specialized buck machines to restore garment shape." },
+      { step: "1. Pre-Inspection & Spot Treatment", detail: "Careful examination of fabric care labels and targeted spot treatment for food and oil stains." },
+      { step: "2. Gentle Solvent Cleaning", detail: "Processed in specialized, closed-loop dry cleaning machines using odorless, fabric-safe solvents." },
+      { step: "3. Hand-Finishing & Form Pressing", detail: "Individual hand press on specialized form finishers to restore garment shape and silhouette." },
     ],
     benefits: [
-      "Protects zari, sequins, embroidery, and delicate silk sheen",
-      "Eco-friendly, odorless solvents gentle on skin and fabric",
-      "Complimentary garment inspection and minor button reinforcement",
+      "Protects zari work, sequins, embroidery, and natural silk luster",
+      "Eco-friendly, odorless solvents gentle on sensitive skin and fabrics",
+      "Complimentary garment inspection and careful button protection",
+      "Sealed breathable garment covers for safe closet storage",
     ],
     localContext:
-      "Convenient doorstep pickup for wedding collections, party wear, and formal wardrobes across Hyderabad.",
+      "Doorstep pickup for wedding collections, party wear, and formal wardrobes across Jubilee Hills, Banjara Hills, and West Hyderabad.",
+    faqs: [
+      {
+        question: "Which garments should be dry cleaned instead of washed?",
+        answer: "Garments made of pure silk, wool, velvet, raw linen, structured suits, and items with heavy embroidery or delicate beading should always be dry cleaned.",
+      },
+      {
+        question: "Do you offer dry cleaning for heavy bridal lehengas and sherwanis?",
+        answer: "Yes, our team has extensive experience caring for intricate bridal lehengas, sherwanis, and wedding sarees.",
+      },
+      {
+        question: "What is the turnaround time for dry cleaning in Hyderabad?",
+        answer: "Standard dry cleaning takes 72 to 96 hours to allow thorough solvent cleaning, natural drying, and hand-finishing.",
+      },
+    ],
+  },
+  "steam-ironing": {
+    slug: "steam-ironing",
+    title: "Steam Ironing",
+    metaTitle: "Steam Ironing Service in Hyderabad | Universal Laundry Services",
+    metaDescription:
+      "Professional vacuum steam ironing service in Hyderabad. Crisp creases, smooth collars, and zero burn marks with doorstep pickup and delivery. Book now.",
+    h1: "Steam Ironing Service in Hyderabad",
+    tagline: "Industrial vacuum steam pressing for a crisp, wrinkle-free wardrobe.",
+    price: "From ₹15 / Piece",
+    turnaround: "48–72 Hours",
+    whoItsFor: [
+      "Formal shirts, trousers, skirts, and blazers already washed at home",
+      "Delicate silk sarees and linen kurtas needing professional pressing",
+      "Bed covers and table linens requiring crease-free presentation",
+    ],
+    process: [
+      { step: "1. Fabric Assessment", detail: "Garments are sorted according to fabric heat tolerance (cotton, silk, linen, synthetics)." },
+      { step: "2. Vacuum Steam Pressing", detail: "High-pressure steam penetrates fabric layers while the vacuum table pulls moisture through instantly." },
+      { step: "3. Immediate Cooling & Packing", detail: "Garments cool into crisp shape immediately, locking in the wrinkle-free finish." },
+    ],
+    benefits: [
+      "No fabric shine marks or scorching on dark cottons and polyester blends",
+      "Sharp creases on formal trousers and crisp collar lines",
+      "Pressurized steam removes deep creases faster and safer than domestic irons",
+      "Available on hangers or folded neatly for quick closet storage",
+    ],
+    localContext:
+      "Convenient for working professionals across Madhapur, HITEC City, Gachibowli, and Jubilee Hills.",
+    faqs: [
+      {
+        question: "Can I give only clothes for steam ironing without washing?",
+        answer: "Yes, we accept clean garments specifically for steam ironing and deliver them crisp and wrinkle-free.",
+      },
+      {
+        question: "Does steam ironing cause burn marks on delicate fabrics?",
+        answer: "No. Industrial steam pressing uses vacuum tables and regulated steam temperatures, eliminating direct metallic heat that causes scorch or shine marks.",
+      },
+      {
+        question: "How are ironed shirts delivered?",
+        answer: "Shirts can be delivered neatly folded with collar supports in protective poly-packs or on hangers upon request.",
+      },
+    ],
+  },
+  "doorstep-pickup-delivery": {
+    slug: "doorstep-pickup-delivery",
+    title: "Doorstep Pickup & Delivery",
+    metaTitle: "Doorstep Laundry Pickup & Delivery in Hyderabad | Universal Laundry Services",
+    metaDescription:
+      "Convenient doorstep laundry pickup and delivery in Hyderabad. Free pickup on orders above ₹399. Flexible morning & evening slots across West & Central Hyderabad.",
+    h1: "Doorstep Laundry Pickup & Delivery in Hyderabad",
+    tagline: "Fresh, clean clothes delivered right back to your door without the travel hassle.",
+    price: "Free on orders above ₹399 (₹49 for smaller orders)",
+    turnaround: "Standard 72 Hours (Express Options Available)",
+    whoItsFor: [
+      "Apartment and villa residents looking for reliable laundry scheduling",
+      "Busy IT professionals who cannot visit a laundromat during regular hours",
+      "Families with large weekly laundry loads like bedsheets and curtains",
+    ],
+    process: [
+      { step: "1. Online or WhatsApp Booking", detail: "Choose your service, pickup date, and convenient 2-hour time slot." },
+      { step: "2. Prompt Doorstep Collection", detail: "Our executive arrives at your address with laundry bags and digital weighing scales." },
+      { step: "3. Central Processing", detail: "Garments are cleaned in segregated machines at our central Jubilee Hills facility." },
+      { step: "4. Scheduled Delivery", detail: "Neatly packed, fresh clothes are delivered to your door at your confirmed time." },
+    ],
+    benefits: [
+      "Free pickup and delivery across Hyderabad on orders over ₹399",
+      "Multiple convenient morning (8 AM – 11 AM) and evening (6 PM – 9 PM) slots",
+      "Real-time WhatsApp updates on order pickup, processing, and dispatch",
+      "Digital payments accepted via UPI, cash, or cards upon delivery",
+    ],
+    localContext:
+      "Covering Jubilee Hills, Banjara Hills, Madhapur, HITEC City, Gachibowli, Kondapur, Manikonda, Kukatpally, Miyapur, Kokapet, and Narsingi.",
+    faqs: [
+      {
+        question: "How do I schedule a doorstep laundry pickup?",
+        answer: "You can book directly on our website in under two minutes or message us on WhatsApp at +91 94949 13323.",
+      },
+      {
+        question: "Do I need to weigh my clothes before the executive arrives?",
+        answer: "No need to pre-weigh. Our delivery executive brings a calibrated digital weighing scale and weighs the garments in your presence.",
+      },
+      {
+        question: "What if I am not available at home during delivery?",
+        answer: "You can reschedule your delivery slot easily via WhatsApp or arrange for secure handover with your apartment security or neighbour.",
+      },
+    ],
   },
   "shoe-cleaning": {
     slug: "shoe-cleaning",
     title: "Shoe Cleaning",
-    metaTitle: "Shoe Cleaning & Sneaker Spa Hyderabad | Universal Laundry",
+    metaTitle: "Shoe Cleaning & Sneaker Spa in Hyderabad | Universal Laundry Services",
     metaDescription:
-      "Deep shoe cleaning, deodorization, and sneaker restoration in Hyderabad. Canvas, leather, and sports shoes from ₹149/pair.",
-    h1: "Professional Shoe Cleaning & Sneaker Spa in Hyderabad",
+      "Deep shoe cleaning, deodorization, and sneaker care in Hyderabad starting at ₹149/pair. Safe for leather, canvas, and sports shoes with doorstep pickup.",
+    h1: "Shoe Cleaning & Sneaker Spa in Hyderabad",
     tagline: "Deep cleaned, deodorized, and restored to like-new condition.",
     price: "Starting ₹149 / Pair",
     turnaround: "72 Hours",
     whoItsFor: [
-      "Sneakers: Nike, Adidas, Jordan, Puma, Yeezy, and lifestyle footwear",
-      "Formal leather oxfords, loafers, brogues, and heels",
-      "Sports running shoes, gym trainers, and canvas footwear",
+      "Sneakers: sports trainers, running shoes, and lifestyle footwear",
+      "Formal leather oxfords, brogues, and loafers",
+      "Canvas slip-ons and casual gym shoes",
     ],
     process: [
-      { step: "1. Dry Soil Extraction", detail: "Surface dust and grit are brushed out from soles and uppers." },
-      { step: "2. Material-Safe Foam Cleaning", detail: "Specific cleaners for leather, suede, mesh, and canvas with horsehair brushes." },
-      { step: "3. Midsole & Lace Brightening", detail: "Deep scrub of rubber midsoles and ultrasonic cleaning of laces." },
-      { step: "4. Deodorization & Conditioning", detail: "Anti-fungal UV sanitization and leather nourishment wax." },
+      { step: "1. Dry Soil Removal", detail: "Loose surface dust and mud are brushed out from soles and uppers." },
+      { step: "2. Material-Safe Foam Cleaning", detail: "Hand-brushed with specific non-abrasive cleaners for mesh, canvas, or leather." },
+      { step: "3. Midsole & Lace Brightening", detail: "Gentle scrub of rubber midsoles and clean wash of shoe laces." },
+      { step: "4. Deodorization & Conditioning", detail: "Natural odor neutralizers applied along with leather conditioning cream where applicable." },
     ],
     benefits: [
-      "Eliminates odor and prevents sole yellowing",
-      "Extends sneaker lifespan and keeps premium leather supple",
-      "Safe for delicate suede and knit fabrics",
+      "Refreshes foot odor and brightens midsoles",
+      "Gentle hand scrubbing protects stitching and delicate upper mesh",
+      "Extends footwear lifespan and maintains leather flexibility",
     ],
-    localContext:
-      "Hyderabad's go-to sneaker and footwear care service with doorstep pickup in Jubilee Hills, Madhapur, and beyond.",
+    localContext: "Doorstep shoe collection across Hyderabad neighborhoods.",
   },
   "bag-cleaning": {
     slug: "bag-cleaning",
     title: "Bag Cleaning",
-    metaTitle: "Luxury Bag Cleaning & Restoration Hyderabad | Universal Laundry",
+    metaTitle: "Handbag & Backpack Cleaning in Hyderabad | Universal Laundry Services",
     metaDescription:
-      "Hand-finished bag cleaning and leather conditioning in Hyderabad. Backpacks, travel bags, and designer handbags from ₹149/bag.",
-    h1: "Handbag & Luxury Bag Cleaning in Hyderabad",
-    tagline: "Hand-finished conditioning, polish, and restorative care.",
+      "Hand-finished bag cleaning and leather conditioning in Hyderabad from ₹149/bag. Care for backpacks, duffel bags, and designer handbags with doorstep pickup.",
+    h1: "Handbag & Backpack Cleaning in Hyderabad",
+    tagline: "Hand-finished cleaning, conditioning, and restorative care.",
     price: "Starting ₹149 / Bag",
     turnaround: "72–96 Hours",
     whoItsFor: [
-      "Leather and suede handbags, totes, and clutches",
-      "Laptop backpacks, travel duffels, and sports bags",
-      "Luxury designer bags requiring gentle conditioning",
+      "Daily work backpacks, laptop sleeves, and gym duffels",
+      "Leather and fabric handbags, totes, and clutches",
+      "Travel luggage bags and weekend carry-ons",
     ],
     process: [
-      { step: "1. Interior Sanitization", detail: "Lining is vacuumed, cleared of debris, and treated for odors." },
-      { step: "2. Exterior Hand Cleaning", detail: "Gentle non-abrasive cleaners wipe away grime, makeup, and oil stains." },
-      { step: "3. Leather Polish & Moisture Barrier", detail: "High-grade leather creams restore flexibility and water repellency." },
+      { step: "1. Interior Vacuum & Sanitization", detail: "Lining is vacuumed to remove dust and treated for inner freshness." },
+      { step: "2. Exterior Surface Cleaning", detail: "Gentle surface wiping removes grease, grime, and daily handling marks." },
+      { step: "3. Conditioning & Hardware Polish", detail: "Leather conditioning cream applied and metal zippers polished." },
     ],
     benefits: [
-      "Restores leather sheen and prevents color fading",
-      "Sanitizes inner lining without water damage",
-      "Hardware polish for zippers, buckles, and chains",
+      "Cleans inner compartments without water saturation damage",
+      "Preserves leather suppleness and color richness",
+      "Sealed packaging for safe return transit",
     ],
-    localContext:
-      "Carefully handled in Hyderabad by trained artisans with full transit insurance and sealed packaging.",
+    localContext: "Handled with care across Hyderabad with convenient doorstep pickup.",
   },
   "premium-wash": {
     slug: "premium-wash",
     title: "Premium Wash",
-    metaTitle: "Premium Garment Wash in Hyderabad | Universal Laundry",
+    metaTitle: "Premium Garment Wash in Hyderabad | Universal Laundry Services",
     metaDescription:
-      "Individual piece-by-piece gentle wash in Hyderabad with specialized fabric conditioners and gentle drying. From ₹80/piece.",
+      "Piece-by-piece gentle garment wash in Hyderabad at ₹80/piece. Special fabric conditioners, delicate cycles, and individual attention with doorstep pickup.",
     h1: "Piece-by-Piece Premium Garment Wash in Hyderabad",
     tagline: "Specialized individual attention for your finest clothes.",
     price: "₹80 / Piece",
     turnaround: "72 Hours",
     whoItsFor: [
-      "Designer shirts, fine linen trousers, and delicate tops",
-      "Embellished kurtis, modal dresses, and imported fabrics",
-      "Garments requiring gentle cycle and individual machine handling",
+      "Designer shirts, fine linen trousers, and delicate summer dresses",
+      "Embellished kurtis, modal tops, and imported cotton garments",
+      "Clothes requiring gentle cycle wash and individual machine handling",
     ],
     process: [
-      { step: "1. Pre-Wash Inspection", detail: "Fabric care labels and button strength verified prior to processing." },
-      { step: "2. Individual Delicate Wash", detail: "Processed individually with enzyme-free, gentle detergents at 30°C." },
-      { step: "3. Air Flow Drying", detail: "Drying at lower temperatures to preserve natural fabric stretch and fit." },
+      { step: "1. Pre-Wash Inspection", detail: "Care labels and button stitching are verified prior to processing." },
+      { step: "2. Individual Delicate Wash", detail: "Washed individually with gentle liquid conditioners at lower wash temperatures." },
+      { step: "3. Low-Heat Air Flow Drying", detail: "Drying at controlled lower temperatures to protect fabric stretch and shape." },
     ],
     benefits: [
-      "Guards against shrinkage, stretching, or thread unraveling",
+      "Protects against shrinkage, stretching, or thread unraveling",
       "Piece-by-piece attention to detail",
       "Gentle steam press and individual protective packaging",
     ],
-    localContext:
-      "Ideal for Hyderabad wardrobes needing higher-tier care than standard daily wash & fold.",
+    localContext: "Ideal for Hyderabad wardrobes needing higher-tier care than standard daily wash & fold.",
   },
 };
 
-/** Dynamically updates page title, meta description, and canonical link */
-export function applySeoMetadata(routeKey: string) {
-  const meta = routeSeoMap[routeKey] ?? routeSeoMap.home;
+export const routeSeoMap: Record<string, SeoRouteMeta> = {
+  home: {
+    title: "Laundry Service in Hyderabad | Doorstep Pickup & Delivery | Universal Laundry Services",
+    description:
+      "Professional laundry service in Hyderabad by Universal Laundry Services. Doorstep pickup & delivery for wash & fold, steam ironing, and dry cleaning. Easy online booking.",
+    canonical: `${SITE_URL}/`,
+    h1: "Laundry Service in Hyderabad – Fresh Clothes, Happy Life",
+  },
+  services: {
+    title: "Laundry & Dry Cleaning Services in Hyderabad | Universal Laundry Services",
+    description:
+      "Explore complete garment care services in Hyderabad: Wash & Fold, Wash & Iron, Eco Dry Cleaning, Steam Pressing, and Shoe Cleaning with doorstep pickup.",
+    canonical: `${SITE_URL}/services/`,
+    h1: "Professional Laundry & Dry Cleaning Services in Hyderabad",
+    breadcrumbs: [
+      { name: "Home", item: `${SITE_URL}/` },
+      { name: "Services", item: `${SITE_URL}/services/` },
+    ],
+  },
+  pricing: {
+    title: "Laundry Pricing in Hyderabad | Wash & Fold ₹80/KG | Universal Laundry Services",
+    description:
+      "Transparent laundry prices in Hyderabad. Wash & Fold at ₹80/KG, Wash & Steam Iron at ₹120/KG. Free doorstep pickup & delivery on orders above ₹399.",
+    canonical: `${SITE_URL}/pricing/`,
+    h1: "Transparent Laundry Prices in Hyderabad",
+    breadcrumbs: [
+      { name: "Home", item: `${SITE_URL}/` },
+      { name: "Pricing", item: `${SITE_URL}/pricing/` },
+    ],
+  },
+  about: {
+    title: "About Universal Laundry Services | Hyderabad Garment Care",
+    description:
+      "Learn about Universal Laundry Services at Jubilee Hills Road No 5, Hyderabad. Hygienic segregated washing, eco-friendly detergents, and dependable doorstep service.",
+    canonical: `${SITE_URL}/about/`,
+    h1: "About Universal Laundry Services in Hyderabad",
+    breadcrumbs: [
+      { name: "Home", item: `${SITE_URL}/` },
+      { name: "About Us", item: `${SITE_URL}/about/` },
+    ],
+  },
+  contact: {
+    title: "Contact Universal Laundry Services | Hyderabad Laundry Pickup",
+    description:
+      "Contact Universal Laundry Services in Jubilee Hills, Hyderabad. Call or WhatsApp +91 94949 13323 for doorstep laundry pickup and inquiries across Hyderabad.",
+    canonical: `${SITE_URL}/contact/`,
+    h1: "Contact Universal Laundry Services Hyderabad",
+    breadcrumbs: [
+      { name: "Home", item: `${SITE_URL}/` },
+      { name: "Contact", item: `${SITE_URL}/contact/` },
+    ],
+  },
+  booking: {
+    title: "Book Laundry Pickup Online | Universal Laundry Services Hyderabad",
+    description:
+      "Schedule your laundry pickup in Hyderabad in under 2 minutes. Select services, pick your date & time slot, and enjoy doorstep delivery.",
+    canonical: `${SITE_URL}/book/`,
+    h1: "Schedule Laundry Pickup & Delivery in Hyderabad",
+    breadcrumbs: [
+      { name: "Home", item: `${SITE_URL}/` },
+      { name: "Book", item: `${SITE_URL}/book/` },
+    ],
+  },
+};
+
+/** Client-side SEO updater */
+export function applySeoMetadata(
+  metaOrKey:
+    | string
+    | {
+        title: string;
+        description: string;
+        canonical: string;
+        jsonLd?: object | object[];
+      },
+) {
+  if (typeof document === "undefined") return;
+
+  const meta =
+    typeof metaOrKey === "string"
+      ? routeSeoMap[metaOrKey] ?? routeSeoMap.home
+      : metaOrKey;
+
   document.title = meta.title;
 
   // Meta description
@@ -283,7 +468,7 @@ export function applySeoMetadata(routeKey: string) {
   }
   descTag.setAttribute("content", meta.description);
 
-  // Canonical URL
+  // Canonical tag
   let canonicalTag = document.querySelector('link[rel="canonical"]');
   if (!canonicalTag) {
     canonicalTag = document.createElement("link");
@@ -292,7 +477,7 @@ export function applySeoMetadata(routeKey: string) {
   }
   canonicalTag.setAttribute("href", meta.canonical);
 
-  // OG Title & Description
+  // Open Graph
   const ogTitle = document.querySelector('meta[property="og:title"]');
   if (ogTitle) ogTitle.setAttribute("content", meta.title);
 
@@ -301,4 +486,16 @@ export function applySeoMetadata(routeKey: string) {
 
   const ogUrl = document.querySelector('meta[property="og:url"]');
   if (ogUrl) ogUrl.setAttribute("content", meta.canonical);
+
+  // Dynamic JSON-LD injection if provided
+  if (meta.jsonLd) {
+    let scriptTag = document.querySelector("#dynamic-jsonld") as HTMLScriptElement | null;
+    if (!scriptTag) {
+      scriptTag = document.createElement("script");
+      scriptTag.id = "dynamic-jsonld";
+      scriptTag.type = "application/ld+json";
+      document.head.appendChild(scriptTag);
+    }
+    scriptTag.textContent = JSON.stringify(meta.jsonLd);
+  }
 }

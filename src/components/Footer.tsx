@@ -6,8 +6,7 @@ import {
   Phone,
 } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
-import { contactInfo, services } from "@/data/site";
-import { navLinks } from "@/components/Navbar";
+import { contactInfo } from "@/data/site";
 import { Link } from "react-router-dom";
 
 function InstagramIcon({ className }: { className?: string }) {
@@ -47,10 +46,10 @@ const socials = [
 ];
 
 export function Footer({
-  onNavigate,
+  onNavigate: _onNavigate,
   onBook,
 }: {
-  onNavigate: (id: string) => void;
+  onNavigate?: (id: string) => void;
   onBook: () => void;
 }) {
   return (
@@ -74,7 +73,7 @@ export function Footer({
           <div className="space-y-3.5">
             <Logo light />
             <p className="text-[13px] leading-relaxed text-navy-200/80">
-              Hyderabad&apos;s trusted garment care specialist. Hygienic washing, hospital-grade sanitisation, premium steam ironing, and on-time doorstep pickup &amp; delivery.
+              Hyderabad&apos;s trusted fabric care specialist. Hygienic individual washing, premium vacuum steam ironing, and reliable doorstep pickup &amp; delivery.
             </p>
             <div className="flex items-center gap-2 pt-1">
               {socials.map((s) => (
@@ -104,17 +103,31 @@ export function Footer({
                 <span className="truncate">Quick Links</span>
               </h3>
               <ul className="space-y-1.5">
-                {navLinks.map((l) => (
-                  <li key={l.id}>
-                    <button
-                      type="button"
-                      onClick={() => onNavigate(l.id)}
-                      className="text-left text-[10px] xs:text-[11.5px] sm:text-[12.5px] text-navy-200/75 transition-colors hover:text-white active:text-leaf-300 py-0.5 leading-snug block w-full truncate"
-                    >
-                      {l.label}
-                    </button>
-                  </li>
-                ))}
+                <li>
+                  <Link to="/" className="text-left text-[10px] xs:text-[11.5px] sm:text-[12.5px] text-navy-200/75 transition-colors hover:text-white py-0.5 leading-snug block w-full truncate">
+                    Home
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/services/" className="text-left text-[10px] xs:text-[11.5px] sm:text-[12.5px] text-navy-200/75 transition-colors hover:text-white py-0.5 leading-snug block w-full truncate">
+                    Services
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/pricing/" className="text-left text-[10px] xs:text-[11.5px] sm:text-[12.5px] text-navy-200/75 transition-colors hover:text-white py-0.5 leading-snug block w-full truncate">
+                    Pricing
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/about/" className="text-left text-[10px] xs:text-[11.5px] sm:text-[12.5px] text-navy-200/75 transition-colors hover:text-white py-0.5 leading-snug block w-full truncate">
+                    About Us
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/contact/" className="text-left text-[10px] xs:text-[11.5px] sm:text-[12.5px] text-navy-200/75 transition-colors hover:text-white py-0.5 leading-snug block w-full truncate">
+                    Contact
+                  </Link>
+                </li>
               </ul>
             </nav>
 
@@ -125,21 +138,35 @@ export function Footer({
                 <span className="truncate">Services</span>
               </h3>
               <ul className="space-y-1.5">
-                {services.map((s) => (
-                  <li key={s.id}>
-                    <button
-                      type="button"
-                      onClick={onBook}
-                      className="text-left text-[10px] xs:text-[11.5px] sm:text-[12.5px] text-navy-200/75 transition-colors hover:text-white active:text-sky-300 py-0.5 leading-snug block w-full truncate"
-                    >
-                      {s.name}
-                    </button>
-                  </li>
-                ))}
+                <li>
+                  <Link to="/services/wash-and-fold/" className="text-left text-[10px] xs:text-[11.5px] sm:text-[12.5px] text-navy-200/75 transition-colors hover:text-white py-0.5 leading-snug block w-full truncate">
+                    Wash &amp; Fold
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/services/wash-and-iron/" className="text-left text-[10px] xs:text-[11.5px] sm:text-[12.5px] text-navy-200/75 transition-colors hover:text-white py-0.5 leading-snug block w-full truncate">
+                    Wash &amp; Iron
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/services/dry-cleaning/" className="text-left text-[10px] xs:text-[11.5px] sm:text-[12.5px] text-navy-200/75 transition-colors hover:text-white py-0.5 leading-snug block w-full truncate">
+                    Dry Cleaning
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/services/steam-ironing/" className="text-left text-[10px] xs:text-[11.5px] sm:text-[12.5px] text-navy-200/75 transition-colors hover:text-white py-0.5 leading-snug block w-full truncate">
+                    Steam Ironing
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/services/doorstep-pickup-delivery/" className="text-left text-[10px] xs:text-[11.5px] sm:text-[12.5px] text-navy-200/75 transition-colors hover:text-white py-0.5 leading-snug block w-full truncate">
+                    Doorstep Pickup
+                  </Link>
+                </li>
               </ul>
             </div>
 
-            {/* Col 3: Areas */}
+            {/* Col 3: Priority Areas */}
             <div className="min-w-0">
               <h3 className="font-display text-[10.5px] xs:text-[11.5px] font-bold tracking-wider text-white uppercase flex items-center gap-1 mb-2">
                 <span className="h-1.5 w-1.5 rounded-full bg-purple-400 shrink-0" />
@@ -147,14 +174,15 @@ export function Footer({
               </h3>
               <ul className="space-y-1.5">
                 {[
+                  { name: "Jubilee Hills", slug: "jubilee-hills" },
+                  { name: "Banjara Hills", slug: "banjara-hills" },
                   { name: "Madhapur", slug: "madhapur" },
                   { name: "Gachibowli", slug: "gachibowli" },
-                  { name: "Kukatpally", slug: "kukatpally" },
-                  { name: "Banjara Hills", slug: "banjara-hills" }
+                  { name: "Kondapur", slug: "kondapur" },
                 ].map((a) => (
                   <li key={a.slug}>
                     <Link
-                      to={`/areas/${a.slug}`}
+                      to={`/laundry-service-${a.slug}/`}
                       className="text-left text-[10px] xs:text-[11.5px] sm:text-[12.5px] text-navy-200/75 transition-colors hover:text-white py-0.5 leading-snug block w-full truncate"
                     >
                       {a.name}
@@ -163,10 +191,10 @@ export function Footer({
                 ))}
                 <li>
                   <Link
-                    to="/areas"
+                    to="/laundry-service-hyderabad/"
                     className="text-[10px] xs:text-[11.5px] sm:text-[12.5px] font-bold text-white transition-colors hover:text-purple-300 py-0.5 mt-1 block w-full truncate"
                   >
-                    View All Areas →
+                    All Areas →
                   </Link>
                 </li>
               </ul>
@@ -230,7 +258,7 @@ export function Footer({
             <div>
               <Logo light />
               <p className="mt-4 max-w-sm text-[13px] sm:text-[14px] leading-relaxed text-navy-200/80">
-                Hyderabad&apos;s trusted garment care specialist. Hygienic washing, hospital-grade sanitisation, premium steam ironing, and on-time doorstep pickup &amp; delivery.
+                Hyderabad&apos;s trusted fabric care specialist. Hygienic individual washing, premium vacuum steam ironing, and reliable doorstep pickup &amp; delivery.
               </p>
             </div>
 
@@ -257,21 +285,31 @@ export function Footer({
               Quick Links
             </h3>
             <ul className="mt-3.5 sm:mt-5 space-y-2 sm:space-y-2.5">
-              {navLinks.map((l) => (
-                <li key={l.id}>
-                  <button
-                    type="button"
-                    onClick={() => onNavigate(l.id)}
-                    className="group inline-flex items-center gap-1 text-[13px] sm:text-[14px] text-navy-200/70 transition-colors hover:text-white"
-                  >
-                    {l.label}
-                    <ArrowUpRight
-                      className="h-3 w-3 opacity-0 -translate-x-1 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 text-leaf-300"
-                      aria-hidden="true"
-                    />
-                  </button>
-                </li>
-              ))}
+              <li>
+                <Link to="/" className="text-[13px] sm:text-[14px] text-navy-200/70 transition-colors hover:text-white block">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link to="/services/" className="text-[13px] sm:text-[14px] text-navy-200/70 transition-colors hover:text-white block">
+                  Services
+                </Link>
+              </li>
+              <li>
+                <Link to="/pricing/" className="text-[13px] sm:text-[14px] text-navy-200/70 transition-colors hover:text-white block">
+                  Pricing
+                </Link>
+              </li>
+              <li>
+                <Link to="/about/" className="text-[13px] sm:text-[14px] text-navy-200/70 transition-colors hover:text-white block">
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact/" className="text-[13px] sm:text-[14px] text-navy-200/70 transition-colors hover:text-white block">
+                  Contact
+                </Link>
+              </li>
             </ul>
           </nav>
 
@@ -282,38 +320,58 @@ export function Footer({
               Services
             </h3>
             <ul className="mt-3.5 sm:mt-5 space-y-2 sm:space-y-2.5">
-              {services.map((s) => (
-                <li key={s.id}>
-                  <button
-                    type="button"
-                    onClick={onBook}
-                    className="text-left text-[13px] sm:text-[14px] text-navy-200/70 transition-colors hover:text-white"
-                  >
-                    {s.name}
-                  </button>
-                </li>
-              ))}
+              <li>
+                <Link to="/services/wash-and-fold/" className="text-[13px] sm:text-[14px] text-navy-200/70 transition-colors hover:text-white block">
+                  Wash &amp; Fold
+                </Link>
+              </li>
+              <li>
+                <Link to="/services/wash-and-iron/" className="text-[13px] sm:text-[14px] text-navy-200/70 transition-colors hover:text-white block">
+                  Wash &amp; Iron
+                </Link>
+              </li>
+              <li>
+                <Link to="/services/dry-cleaning/" className="text-[13px] sm:text-[14px] text-navy-200/70 transition-colors hover:text-white block">
+                  Dry Cleaning
+                </Link>
+              </li>
+              <li>
+                <Link to="/services/steam-ironing/" className="text-[13px] sm:text-[14px] text-navy-200/70 transition-colors hover:text-white block">
+                  Steam Ironing
+                </Link>
+              </li>
+              <li>
+                <Link to="/services/doorstep-pickup-delivery/" className="text-[13px] sm:text-[14px] text-navy-200/70 transition-colors hover:text-white block">
+                  Doorstep Pickup
+                </Link>
+              </li>
+              <li className="pt-1">
+                <Link to="/services/" className="text-xs font-bold text-sky-300 hover:text-white block">
+                  View All Services →
+                </Link>
+              </li>
             </ul>
           </div>
 
-          {/* Areas */}
+          {/* Priority Areas */}
           <div>
             <h3 className="font-display text-[12px] sm:text-[13px] font-bold tracking-[0.18em] text-white uppercase flex items-center gap-2">
               <span className="h-1.5 w-1.5 rounded-full bg-purple-400" />
-              Areas
+              Service Areas
             </h3>
             <ul className="mt-3.5 sm:mt-5 space-y-2 sm:space-y-2.5">
               {[
-                { name: "Madhapur", slug: "madhapur" },
-                { name: "Gachibowli", slug: "gachibowli" },
-                { name: "Kukatpally", slug: "kukatpally" },
+                { name: "Jubilee Hills", slug: "jubilee-hills" },
                 { name: "Banjara Hills", slug: "banjara-hills" },
-                { name: "Miyapur", slug: "miyapur" }
+                { name: "Madhapur", slug: "madhapur" },
+                { name: "HITEC City", slug: "hitec-city" },
+                { name: "Gachibowli", slug: "gachibowli" },
+                { name: "Kondapur", slug: "kondapur" },
               ].map((a) => (
                 <li key={a.slug}>
                   <Link
-                    to={`/areas/${a.slug}`}
-                    className="text-left text-[13px] sm:text-[14px] text-navy-200/70 transition-colors hover:text-white"
+                    to={`/laundry-service-${a.slug}/`}
+                    className="text-[13px] sm:text-[14px] text-navy-200/70 transition-colors hover:text-white block"
                   >
                     {a.name}
                   </Link>
@@ -321,10 +379,10 @@ export function Footer({
               ))}
               <li className="pt-1">
                 <Link
-                  to="/areas"
+                  to="/laundry-service-hyderabad/"
                   className="inline-flex items-center gap-1 text-[13px] sm:text-[14px] font-bold text-white transition-colors hover:text-purple-300"
                 >
-                  View All Areas <ArrowUpRight className="h-3 w-3" />
+                  All Hyderabad Areas <ArrowUpRight className="h-3 w-3" />
                 </Link>
               </li>
             </ul>

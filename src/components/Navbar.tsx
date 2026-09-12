@@ -1,17 +1,18 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, Menu, Phone, Sparkles, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Logo } from "@/components/ui/Logo";
 import { contactInfo } from "@/data/site";
 import { cn } from "@/utils/cn";
 
 export const navLinks = [
-  { id: "home", label: "Home" },
-  { id: "how-it-works", label: "How It Works" },
-  { id: "services", label: "Services" },
-  { id: "pricing", label: "Pricing" },
-  { id: "about", label: "About Us" },
-  { id: "contact", label: "Contact" },
+  { id: "home", label: "Home", path: "/" },
+  { id: "how-it-works", label: "How It Works", path: "/#how-it-works" },
+  { id: "services", label: "Services", path: "/services/" },
+  { id: "pricing", label: "Pricing", path: "/pricing/" },
+  { id: "about", label: "About Us", path: "/about/" },
+  { id: "contact", label: "Contact", path: "/contact/" },
 ] as const;
 
 export function Navbar({
@@ -25,6 +26,7 @@ export function Navbar({
   onBook: () => void;
   view: "home" | "booking";
 }) {
+  const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -72,14 +74,21 @@ export function Navbar({
         )}
       >
         {/* Logo */}
-        <button
-          type="button"
-          onClick={() => go("home")}
+        <Link
+          to="/"
+          onClick={(e) => {
+            if (location.pathname === "/") {
+              e.preventDefault();
+              go("home");
+            } else {
+              setOpen(false);
+            }
+          }}
           className="shrink-0 rounded-xl text-left transition-transform duration-300 hover:scale-[1.02] focus:outline-none"
           aria-label="Universal Laundry Services — go to home"
         >
           <Logo markClassName="h-8 w-8 xs:h-9 xs:w-9 sm:h-11 sm:w-11" />
-        </button>
+        </Link>
 
         {/* Desktop Navigation Links (>=1024px) */}
         <ul className="hidden items-center gap-1 lg:flex">
@@ -87,9 +96,16 @@ export function Navbar({
             const isActive = view === "home" && active === link.id;
             return (
               <li key={link.id}>
-                <button
-                  type="button"
-                  onClick={() => go(link.id)}
+                <Link
+                  to={link.path}
+                  onClick={(e) => {
+                    if (link.path.startsWith("/#") || (link.path === "/" && location.pathname === "/")) {
+                      e.preventDefault();
+                      go(link.id);
+                    } else {
+                      setOpen(false);
+                    }
+                  }}
                   aria-current={isActive ? "page" : undefined}
                   className={cn(
                     "group relative rounded-lg px-3.5 py-2 text-[14.5px] font-semibold transition-colors duration-300",
@@ -107,7 +123,7 @@ export function Navbar({
                         : "scale-x-0 group-hover:scale-x-100",
                     )}
                   />
-                </button>
+                </Link>
               </li>
             );
           })}
@@ -177,18 +193,25 @@ export function Navbar({
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.04 + i * 0.04, duration: 0.25 }}
                   >
-                    <button
-                      type="button"
-                      onClick={() => go(link.id)}
+                    <Link
+                      to={link.path}
+                      onClick={(e) => {
+                        if (link.path.startsWith("/#") || (link.path === "/" && location.pathname === "/")) {
+                          e.preventDefault();
+                          go(link.id);
+                        } else {
+                          setOpen(false);
+                        }
+                      }}
                       className={cn(
-                        "w-full rounded-2xl px-4 py-3 text-left text-[15px] font-bold transition-colors",
+                        "block w-full rounded-2xl px-4 py-3 text-left text-[15px] font-bold transition-colors",
                         isActive
                           ? "bg-navy-600 text-white"
                           : "text-navy-900 hover:bg-ice-50 active:bg-ice-100",
                       )}
                     >
                       {link.label}
-                    </button>
+                    </Link>
                   </motion.li>
                 );
               })}

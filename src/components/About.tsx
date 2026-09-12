@@ -13,12 +13,12 @@ const pillars = [
   {
     icon: Award,
     title: "Trained fabric experts",
-    body: "A team of 40+ laundry professionals trained on 60+ fabric types and care labels.",
+    body: "Experienced garment care professionals skilled in handling diverse fabric types and care labels.",
   },
   {
     icon: Recycle,
     title: "Eco-conscious cleaning",
-    body: "Biodegradable detergents and water-recycling systems across all our units.",
+    body: "Biodegradable, fabric-safe liquid detergents and efficient washing cycles.",
   },
 ];
 

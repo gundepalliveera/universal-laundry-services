@@ -1,4 +1,26 @@
 {
+  "redirects": [
+    {
+      "source": "/areas/:slug",
+      "destination": "/laundry-service-:slug/",
+      "permanent": true
+    },
+    {
+      "source": "/areas",
+      "destination": "/laundry-service-hyderabad/",
+      "permanent": true
+    },
+    {
+      "source": "/special-dry-cleaning",
+      "destination": "/services/dry-cleaning/",
+      "permanent": true
+    },
+    {
+      "source": "/booking",
+      "destination": "/book/",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",
