@@ -76,8 +76,8 @@ export function Contact() {
       <div className="shell">
         <SectionHeading
           eyebrow="Get in touch"
-          title="We are here to"
-          highlight="help"
+          title="Contact Universal"
+          highlight="Laundry Services"
           subtitle="Call or WhatsApp us at 9494913323. Our care team in Jubilee Hills, Hyderabad replies within minutes."
         />
 

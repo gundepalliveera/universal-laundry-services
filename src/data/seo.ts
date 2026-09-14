@@ -376,11 +376,11 @@ export const serviceDetails: Record<string, ServiceDetail> = {
 
 export const routeSeoMap: Record<string, SeoRouteMeta> = {
   home: {
-    title: "Laundry Service in Hyderabad | Doorstep Pickup & Delivery | Universal Laundry Services",
+    title: "Universal Laundry Services | Laundry Service in Hyderabad",
     description:
-      "Professional laundry service in Hyderabad by Universal Laundry Services. Doorstep pickup & delivery for wash & fold, steam ironing, and dry cleaning. Easy online booking.",
+      "Universal Laundry Services provides professional laundry pickup and delivery in Hyderabad, including wash & fold, steam ironing, premium wash, dry cleaning, shoe cleaning and bag cleaning.",
     canonical: `${SITE_URL}/`,
-    h1: "Laundry Service in Hyderabad – Fresh Clothes, Happy Life",
+    h1: "Laundry Services in Hyderabad",
   },
   services: {
     title: "Laundry & Dry Cleaning Services in Hyderabad | Universal Laundry Services",

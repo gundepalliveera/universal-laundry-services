@@ -108,7 +108,7 @@ export function HowItWorks({ onBook }: { onBook: () => void }) {
           {/* Mobile Dotted Title */}
           <div className="flex md:hidden items-center justify-center gap-3">
             <span className="h-[2px] w-10 border-t-2 border-dashed border-navy-300" aria-hidden="true" />
-            <h2 className="font-display text-2xl font-extrabold text-navy-950">How It Works</h2>
+            <h2 className="font-display text-2xl font-extrabold text-navy-950">How Our Laundry Service Works</h2>
             <span className="h-[2px] w-10 border-t-2 border-dashed border-navy-300" aria-hidden="true" />
           </div>
           <p className="mt-1 text-[13px] text-navy-900/60 md:hidden">
@@ -119,7 +119,7 @@ export function HowItWorks({ onBook }: { onBook: () => void }) {
           <div className="hidden md:block">
             <SectionHeading
               eyebrow="Simple process"
-              title="How It"
+              title="How Our Laundry Service"
               highlight="Works"
               subtitle="Four effortless steps between you and a cupboard full of fresh, perfectly folded clothes."
             />

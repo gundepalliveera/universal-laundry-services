@@ -59,7 +59,7 @@ for (const route of expectedRoutes) {
 
   // 2. Check canonical
   const canonicalMatch = html.match(/<link\s+rel="canonical"\s+href="([^"]+)"\s*\/?>/i);
-  if (!canonicalMatch || !canonicalMatch[1].startsWith('https://universallaundryservices.com/')) {
+  if (!canonicalMatch || !canonicalMatch[1].startsWith('https://www.universallaundryservices.com/')) {
     console.error(`FAIL [${route}]: Invalid or missing canonical: ${canonicalMatch?.[1]}`);
     totalFailed++;
   }
@@ -116,7 +116,7 @@ for (const route of expectedRoutes) {
 const robotsPath = path.join(distDir, 'robots.txt');
 if (fs.existsSync(robotsPath)) {
   const robots = fs.readFileSync(robotsPath, 'utf-8');
-  if (robots.includes('https://universallaundryservices.com/sitemap.xml')) {
+  if (robots.includes('https://www.universallaundryservices.com/sitemap.xml')) {
     console.log('✓ robots.txt verified with correct Sitemap URL');
   } else {
     console.error('FAIL: robots.txt missing canonical sitemap URL');
@@ -131,11 +131,11 @@ if (fs.existsSync(robotsPath)) {
 const sitemapPath = path.join(distDir, 'sitemap.xml');
 if (fs.existsSync(sitemapPath)) {
   const sitemap = fs.readFileSync(sitemapPath, 'utf-8');
-  if (sitemap.includes('https://universallaundryservices.com/')) {
+  if (sitemap.includes('https://www.universallaundryservices.com/')) {
     console.log('✓ sitemap.xml verified with canonical domain');
   }
   for (const route of expectedRoutes) {
-    const loc = `https://universallaundryservices.com${route}`;
+    const loc = `https://www.universallaundryservices.com${route}`;
     if (!sitemap.includes(loc)) {
       console.error(`FAIL: sitemap.xml missing route ${loc}`);
       totalFailed++;

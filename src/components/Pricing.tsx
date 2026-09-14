@@ -191,7 +191,15 @@ export function Pricing({
                     <div className="relative aspect-[16/10] sm:aspect-[16/10] md:h-44 w-full overflow-hidden bg-navy-50 shrink-0">
                       <img
                         src={item.image}
-                        alt={`${item.name} in Hyderabad - Universal Laundry Services`}
+                        alt={
+                          item.name === "Premium Wash"
+                            ? "Premium garment washing service"
+                            : item.name === "Shoe Cleaning"
+                              ? "Shoe cleaning service"
+                              : item.name === "Bag Cleaning"
+                                ? "Bag cleaning service"
+                                : "Dry cleaning service in Hyderabad"
+                        }
                         loading="lazy"
                         decoding="async"
                         className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-108"

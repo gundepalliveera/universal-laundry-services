@@ -61,7 +61,19 @@ function ServiceCard({
         {bgImage && (
           <img
             src={bgImage}
-            alt={`${service.name} laundry service in Hyderabad - Universal Laundry Services`}
+            alt={
+              service.id === "wash-fold"
+                ? "Wash and fold laundry service in Hyderabad"
+                : service.id === "wash-steam-iron"
+                  ? "Wash and steam ironing service"
+                  : service.id === "premium-wash"
+                    ? "Premium garment washing service"
+                    : service.id === "shoe-cleaning"
+                      ? "Shoe cleaning service"
+                      : service.id === "bag-cleaning"
+                        ? "Bag cleaning service"
+                        : "Dry cleaning service in Hyderabad"
+            }
             loading="lazy"
             decoding="async"
             className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-108"
@@ -137,8 +149,8 @@ export function Services({
       <div className="shell px-3 xs:px-4 sm:px-8">
         <SectionHeading
           eyebrow="What we do in Hyderabad"
-          title="Our Laundry & Dry Cleaning Services"
-          subtitle="Six specialised laundry services in Hyderabad handled with hospital-grade hygiene, fabric-safe detergents and trained fabric care experts."
+          title="Our Laundry Services"
+          subtitle="Six specialised laundry services in Hyderabad handled with fabric-safe detergents and trained fabric care experts."
         />
 
         <motion.div

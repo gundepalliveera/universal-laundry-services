@@ -8,27 +8,81 @@ const projectRoot = path.resolve(__dirname, "..");
 const distDir = path.resolve(projectRoot, "dist");
 
 // Base canonical domain
-const SITE_URL = "https://universallaundryservices.com";
+const SITE_URL = "https://www.universallaundryservices.com";
 
 const routes = [
   // 1. Homepage
   {
     path: "/",
-    title: "Laundry Service in Hyderabad | Doorstep Pickup & Delivery | Universal Laundry Services",
-    description: "Professional laundry service in Hyderabad by Universal Laundry Services. Doorstep pickup & delivery for wash & fold, steam ironing, and dry cleaning. Easy online booking.",
-    h1: "Laundry Service in Hyderabad – Fresh Clothes, Happy Life",
+    title: "Universal Laundry Services | Laundry Service in Hyderabad",
+    description: "Universal Laundry Services provides professional laundry pickup and delivery in Hyderabad, including wash & fold, steam ironing, premium wash, dry cleaning, shoe cleaning and bag cleaning.",
+    ogDescription: "Professional laundry pickup and delivery services in Hyderabad.",
+    twitterDescription: "Professional laundry pickup and delivery services in Hyderabad.",
+    h1: "Laundry Services in Hyderabad",
     breadcrumbs: [{ name: "Home", item: `${SITE_URL}/` }],
     contentHtml: `
       <main>
         <section>
-          <h1>Laundry Service in Hyderabad – Fresh Clothes, Happy Life</h1>
-          <p>Professional laundry care in Hyderabad, picked up and delivered to your doorstep. Wash &amp; fold, steam ironing, dry cleaning and more across Jubilee Hills, Banjara Hills, Madhapur, and your city.</p>
+          <h1>Laundry Services in Hyderabad</h1>
+          <p><strong>Fresh Clothes, Happy Life.</strong></p>
+          <p>Universal Laundry Services provides professional laundry pickup and delivery in Hyderabad, including wash &amp; fold, steam ironing, premium wash, dry cleaning, shoe cleaning and bag cleaning.</p>
           <ul>
             <li>Wash &amp; Fold from ₹80/KG</li>
             <li>Wash &amp; Steam Iron from ₹120/KG</li>
-            <li>Eco Dry Cleaning starting ₹120/piece</li>
+            <li>Premium Wash from ₹80/Piece</li>
+            <li>Shoe Cleaning from ₹150/Piece</li>
+            <li>Bag Cleaning from ₹150/Piece</li>
+            <li>Eco Dry Cleaning starting ₹120/Piece</li>
             <li>Free Doorstep Pickup on orders above ₹399</li>
           </ul>
+        </section>
+        <section>
+          <h2>Our Laundry Services</h2>
+          <p>Professional wash &amp; fold, wash &amp; steam iron, premium wash, shoe cleaning, bag cleaning, and dry cleaning in Hyderabad.</p>
+        </section>
+        <section>
+          <h2>Laundry Pickup &amp; Delivery in Hyderabad</h2>
+          <p>Universal Laundry Services provides convenient laundry pickup and delivery for customers across Hyderabad. We handle everyday laundry, wash &amp; fold, steam ironing, premium garment care, dry cleaning, shoe cleaning and bag cleaning.</p>
+        </section>
+        <section>
+          <h2>Why Choose Universal Laundry Services?</h2>
+          <ul>
+            <li>Hygienic laundry process</li>
+            <li>Fabric-safe cleaning</li>
+            <li>Professional garment care</li>
+            <li>Convenient pickup and delivery</li>
+            <li>Quality-focused service</li>
+            <li>Multiple laundry and cleaning services</li>
+          </ul>
+        </section>
+        <section>
+          <h2>How Our Laundry Service Works</h2>
+          <p>Schedule your order, doorstep collection, fabric care &amp; steam ironing, and clean delivery to your doorstep.</p>
+        </section>
+        <section>
+          <h2>Laundry Service Areas in Hyderabad</h2>
+          <p>Jubilee Hills, Banjara Hills, Madhapur, Kondapur, Gachibowli, HITEC City, Manikonda</p>
+        </section>
+        <section>
+          <h2>Frequently Asked Questions</h2>
+          <dl>
+            <dt>What laundry services does Universal Laundry Services provide in Hyderabad?</dt>
+            <dd>Universal Laundry Services provides wash &amp; fold, wash &amp; steam iron, premium garment wash, dry cleaning, shoe cleaning, and bag cleaning with doorstep pickup and delivery across Hyderabad.</dd>
+            <dt>Do you provide laundry pickup and delivery in Hyderabad?</dt>
+            <dd>Yes, we offer doorstep laundry pickup and delivery across Hyderabad including Jubilee Hills, Banjara Hills, Madhapur, Kondapur, Gachibowli, HITEC City, and Manikonda.</dd>
+            <dt>How much does laundry service cost in Hyderabad?</dt>
+            <dd>Our wash &amp; fold starts at ₹80/KG, wash &amp; steam iron at ₹120/KG, dry cleaning from ₹120/piece, premium wash from ₹80/piece, and shoe &amp; bag cleaning from ₹150/piece. Doorstep pickup is free on orders above ₹399.</dd>
+            <dt>How long does laundry service take?</dt>
+            <dd>Standard laundry turnaround is 48 to 72 hours. Express delivery options (12-hour and 24-hour turnaround) are also available.</dd>
+            <dt>Do you provide dry cleaning in Hyderabad?</dt>
+            <dd>Yes, we provide professional dry cleaning for suits, silk sarees, lehengas, blazers, and designer garments using eco-friendly cleaning methods.</dd>
+            <dt>Do you clean shoes and bags?</dt>
+            <dd>Yes, we offer specialized cleaning and conditioning for sports sneakers, formal footwear, backpacks, and handbags.</dd>
+          </dl>
+        </section>
+        <section>
+          <h2>Contact Universal Laundry Services</h2>
+          <p>Call or WhatsApp us at +91 94949 13323 for doorstep laundry pickup and inquiries across Hyderabad.</p>
         </section>
       </main>
     `,
@@ -430,7 +484,7 @@ async function prerender() {
     );
     html = html.replace(
       /<meta\s+property="og:description"\s+content=".*?"\s*\/?>/i,
-      `<meta property="og:description" content="${escapeHtml(route.description)}" />`
+      `<meta property="og:description" content="${escapeHtml(route.ogDescription || route.description)}" />`
     );
     html = html.replace(
       /<meta\s+property="og:url"\s+content=".*?"\s*\/?>/i,
@@ -444,7 +498,7 @@ async function prerender() {
     );
     html = html.replace(
       /<meta\s+name="twitter:description"\s+content=".*?"\s*\/?>/i,
-      `<meta name="twitter:description" content="${escapeHtml(route.description)}" />`
+      `<meta name="twitter:description" content="${escapeHtml(route.twitterDescription || route.description)}" />`
     );
 
     // 6. Injected static HTML for crawlers inside #root

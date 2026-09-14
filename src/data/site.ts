@@ -72,11 +72,10 @@ export function getServiceRate(
 }
 
 export const services: Service[] = [
-
   {
     id: "wash-fold",
     name: "Wash & Fold",
-    tagline: "Clean, wash, dry and neatly folded.",
+    tagline: "Professional wash and fold laundry service in Hyderabad with convenient pickup and delivery.",
     detail:
       "Sorted by colour and fabric, washed in hygienic machines, tumble dried and folded into neat stacks.",
     price: 80,
@@ -90,7 +89,7 @@ export const services: Service[] = [
   {
     id: "wash-steam-iron",
     name: "Wash & Steam Iron",
-    tagline: "Washed clean and steam pressed to perfection.",
+    tagline: "Professional washing and steam ironing service in Hyderabad for clean and neatly pressed clothes.",
     detail:
       "Full wash followed by professional steam ironing — crisp collars, sharp creases, fresh fragrance.",
     price: 120,
@@ -104,7 +103,7 @@ export const services: Service[] = [
   {
     id: "premium-wash",
     name: "Premium Wash",
-    tagline: "Gentle premium care for your finest garments.",
+    tagline: "Gentle premium garment washing and care for delicate and high-quality fabrics.",
     detail:
       "Piece-by-piece premium wash with special fabric-safe detergents and meticulous handling.",
     price: 80,
@@ -118,7 +117,7 @@ export const services: Service[] = [
   {
     id: "shoe-cleaning",
     name: "Shoe Cleaning",
-    tagline: "Deep clean for all types of shoes.",
+    tagline: "Professional shoe cleaning service for different types of footwear.",
     detail:
       "Sneakers, leather formals and sports shoes — deep cleaned, deodorised and laces brightened.",
     price: 149,
@@ -133,7 +132,7 @@ export const services: Service[] = [
   {
     id: "bag-cleaning",
     name: "Bag Cleaning",
-    tagline: "Special care for your luxury bags.",
+    tagline: "Specialized cleaning and care for everyday and luxury bags.",
     detail:
       "Hand-finished cleaning for leather, suede and canvas bags with conditioning and polish.",
     price: 149,
@@ -148,7 +147,7 @@ export const services: Service[] = [
   {
     id: "dry-cleaning",
     name: "Dry Cleaning",
-    tagline: "Expert care for delicate & designer fabrics.",
+    tagline: "Professional dry cleaning for delicate and designer garments in Hyderabad.",
     detail:
       "Eco-solvent dry cleaning for suits, silk sarees, lehengas, coats and bridal couture.",
     price: 120,
@@ -283,7 +282,7 @@ export const contactInfo = {
   email: businessConfig.email,
   address: businessConfig.address.formattedAddress,
   hours: businessConfig.openingHours.display,
-  website: "universallaundryservices.com",
+  website: "www.universallaundryservices.com",
 };
 
 export const WHATSAPP_NUMBER = businessConfig.whatsappNumber;

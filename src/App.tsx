@@ -30,12 +30,14 @@ const PricingPage = lazy(() => import("@/pages/PricingPage").then((m) => ({ defa
 const AboutPage = lazy(() => import("@/pages/AboutPage").then((m) => ({ default: m.AboutPage })));
 const ContactPage = lazy(() => import("@/pages/ContactPage").then((m) => ({ default: m.ContactPage })));
 
+import { SeoSections } from "@/components/SeoSections";
+
 function LegacyAreaRedirect() {
   const { slug } = useParams<{ slug: string }>();
   return <Navigate to={slug ? `/laundry-service-${slug}/` : "/laundry-service-hyderabad/"} replace />;
 }
 
-const sectionIds = ["home", "how-it-works", "services", "pricing", "about", "contact"];
+const sectionIds = ["home", "how-it-works", "services", "pricing", "pickup-delivery", "service-areas", "faq", "about", "contact"];
 
 function HomeView({
   onBook,
@@ -50,6 +52,7 @@ function HomeView({
       <HowItWorks onBook={onBook} />
       <Services onBook={onBook} onOpenService={onOpenService} />
       <Pricing onBook={onBook} onOpenService={onOpenService} />
+      <SeoSections onBook={onBook} />
       <About />
       <Contact />
     </main>

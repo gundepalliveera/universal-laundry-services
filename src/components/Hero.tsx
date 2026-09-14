@@ -2,7 +2,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Clock, Leaf, ShoppingBag } from "lucide-react";
 import { useRef } from "react";
 import { FeatureCard } from "@/components/FeatureCard";
-import { WaterAnimation, WaterSplash } from "@/components/WaterAnimation";
+import { WaterAnimation } from "@/components/WaterAnimation";
 import { fadeUp, staggerParent, easeOutExpo } from "@/components/ui/Reveal";
 import { featureCards } from "@/data/site";
 import heroArt from "@/assets/hero-laundry.webp";
@@ -70,10 +70,10 @@ export function Hero({ onBook }: { onBook: () => void }) {
                 Fresh Clothes, Happy Life
               </motion.span>
 
-              <h1 className="mt-5 font-display text-[48px] xl:text-[60px] leading-[1.08] font-extrabold tracking-tight text-navy-950">
-                <span className="block text-[20px] xl:text-[24px] font-bold text-navy-700 tracking-normal mb-2">
-                  Laundry Service in Hyderabad
-                </span>
+              <h1 className="mt-5 text-[20px] xl:text-[24px] font-bold text-navy-700 tracking-normal mb-2">
+                Laundry Services in Hyderabad
+              </h1>
+              <p className="font-display text-[48px] xl:text-[60px] leading-[1.08] font-extrabold tracking-tight text-navy-950">
                 {words.map((w, i) => (
                   <motion.span
                     key={w.text}
@@ -91,15 +91,13 @@ export function Hero({ onBook }: { onBook: () => void }) {
                     {w.text}
                   </motion.span>
                 ))}
-              </h1>
+              </p>
 
               <motion.p
                 variants={fadeUp}
                 className="mt-5 max-w-xl text-[17px] leading-relaxed text-navy-900/70"
               >
-                Professional laundry care in Hyderabad, picked up and delivered to your doorstep.
-                Wash &amp; fold, steam ironing, dry cleaning and more — handled by trained
-                fabric experts across Jubilee Hills, Banjara Hills, Madhapur, and your city.
+                Universal Laundry Services provides professional laundry pickup and delivery in Hyderabad, including wash &amp; fold, steam ironing, premium wash, dry cleaning, shoe cleaning and bag cleaning.
               </motion.p>
 
               <motion.div
@@ -150,9 +148,19 @@ export function Hero({ onBook }: { onBook: () => void }) {
             transition={{ duration: 0.9, ease: easeOutExpo, delay: 0.15 }}
             className="relative mx-auto w-full max-w-[560px]"
           >
-            <div className="relative aspect-[4/3.4] w-full">
-              <WaterSplash className="inset-0 h-full w-full" />
+            {/* Main Visual Composition */}
+            <div className="relative aspect-square w-full">
+              {/* Outer decorative rings */}
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 rounded-full border border-navy-100/80 bg-navy-50/30"
+              />
+              <div
+                aria-hidden="true"
+                className="absolute inset-4 rounded-full border border-dashed border-navy-200/60"
+              />
 
+              {/* Central blob container with laundry imagery */}
               <motion.div
                 animate={{ y: [0, -16, 0] }}
                 transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
@@ -160,7 +168,7 @@ export function Hero({ onBook }: { onBook: () => void }) {
               >
                 <img
                   src={heroArt}
-                  alt="Laundry basket filled with freshly folded white and blue clothes beside a detergent bottle"
+                  alt="Universal Laundry Services laundry facility"
                   className="h-full w-full object-cover mix-blend-multiply"
                   loading="eager"
                   fetchPriority="high"
@@ -223,18 +231,18 @@ export function Hero({ onBook }: { onBook: () => void }) {
           <div className="grid grid-cols-[1.1fr_0.9fr] sm:grid-cols-[1.15fr_0.85fr] items-center gap-1 sm:gap-4">
             {/* Left text column */}
             <motion.div variants={fadeUp} className="space-y-2.5 sm:space-y-3">
-              <h1 className="font-display text-[26px] xs:text-[30px] sm:text-[38px] leading-[1.08] font-extrabold tracking-tight text-navy-950">
-                <span className="block text-[12px] xs:text-[13px] sm:text-[15px] font-bold text-navy-700 tracking-normal mb-1">
-                  Laundry Service in Hyderabad
-                </span>
-                <span className="block text-navy-950">Fresh Clothes,</span>
-                <span className="block text-navy-600">Happy Life.</span>
-              </h1>
+              <div>
+                <p className="text-[12px] xs:text-[13px] sm:text-[15px] font-bold text-navy-700 tracking-normal mb-1">
+                  Laundry Services in Hyderabad
+                </p>
+                <p className="font-display text-[26px] xs:text-[30px] sm:text-[38px] leading-[1.08] font-extrabold tracking-tight text-navy-950">
+                  <span className="block text-navy-950">Fresh Clothes,</span>
+                  <span className="block text-navy-600">Happy Life.</span>
+                </p>
+              </div>
 
               <p className="text-[12px] sm:text-[14px] leading-relaxed text-navy-900/75">
-                Professional laundry care, picked up and delivered to your doorstep.
-                Wash, fold, dry cleaning, ironing and more — handled by trained
-                fabric experts across your city.
+                Universal Laundry Services provides professional laundry pickup and delivery in Hyderabad, including wash &amp; fold, steam ironing, premium wash, dry cleaning, shoe cleaning and bag cleaning.
               </p>
 
               {/* Animated Floating Express Fast 12 Hr Card */}
@@ -264,7 +272,7 @@ export function Hero({ onBook }: { onBook: () => void }) {
               >
                 <img
                   src={heroArtTransparent}
-                  alt="Universal Laundry basket filled with clean clothes and detergent"
+                  alt="Universal Laundry Services laundry pickup and delivery in Hyderabad"
                   className="w-[46vw] max-w-[210px] h-auto object-contain bg-transparent"
                   loading="eager"
                   fetchPriority="high"
