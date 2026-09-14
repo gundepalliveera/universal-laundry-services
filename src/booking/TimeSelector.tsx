@@ -4,8 +4,11 @@ import {
   CalendarDays,
   Check,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Clock,
   Info,
+  X,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useBooking } from "@/booking/BookingContext";
@@ -15,6 +18,7 @@ import {
   timeSlots,
   isSlotAvailable,
   getAvailableSlots,
+  formatPickupDate,
 } from "@/data/site";
 import { cn } from "@/utils/cn";
 
@@ -68,16 +72,76 @@ export function TimeSelector({
   const { date, slot, setDate, setSlot, pickup } = useBooking();
   const [showMoreDates, setShowMoreDates] = useState(false);
 
-  // Full pool of 8 pickup days
-  const days = useMemo(() => getPickupDays(8), []);
+  // Pool of pickup days up to 30 days
+  const days = useMemo(() => getPickupDays(30), []);
 
-  // If collapsed, display only 1 row (first 4 days); if expanded, display all 8 days
-  const visibleDays = showMoreDates ? days : days.slice(0, 4);
+  // Calendar popover viewing month state
+  const [calendarMonth, setCalendarMonth] = useState(() => {
+    if (date) {
+      const parts = date.split("-").map(Number);
+      if (parts.length === 3 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+        return new Date(parts[0], parts[1] - 1, 1);
+      }
+    }
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), 1);
+  });
+
+  // Calculate the 4 visible quick-select cards:
+  // If the currently selected date is outside the first 4 days, display it in the 4th slot so it remains highlighted
+  const visibleDays = useMemo(() => {
+    const base4 = days.slice(0, 4);
+    if (!date) return base4;
+    const isSelectedInBase4 = base4.some((d) => d.key === date);
+    if (isSelectedInBase4) return base4;
+
+    const formatted = formatPickupDate(date);
+    const selectedDayObj = days.find((d) => d.key === date) || {
+      key: date,
+      day: Number(date.split("-")[2]),
+      month: formatted.monthShort,
+      label: formatted.fullLabel,
+      weekday: formatted.fullLabel.split(", ")[1] || "",
+      short: formatted.shortWithDay.split(" · ")[1] || "",
+      relativeTag: formatted.relativeTag,
+    };
+    return [base4[0], base4[1], base4[2], selectedDayObj];
+  }, [days, date]);
+
+  // Date selection handler: sets date, resets slot if unavailable, and closes popover
+  const handleSelectDate = (newDateKey: string) => {
+    setDate(newDateKey);
+    const availableSlots = getAvailableSlots(newDateKey);
+    if (slot && !availableSlots.includes(slot)) {
+      if (availableSlots.length > 0) {
+        setSlot(availableSlots[0]);
+      }
+    }
+    setShowMoreDates(false);
+  };
+
+  // Calendar month boundary constraints
+  const now = new Date();
+  const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const maxBookingMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+
+  const viewYear = calendarMonth.getFullYear();
+  const viewMonth = calendarMonth.getMonth();
+  const firstDayOfWeek = new Date(viewYear, viewMonth, 1).getDay(); // 0 = Sunday
+  const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+
+  const todayYear = now.getFullYear();
+  const todayMonth = now.getMonth();
+  const todayDay = now.getDate();
+  const todayKey = `${todayYear}-${String(todayMonth + 1).padStart(2, "0")}-${String(todayDay).padStart(2, "0")}`;
+
+  const maxDate = new Date(todayYear, todayMonth, todayDay + 30);
+  const maxDateKey = `${maxDate.getFullYear()}-${String(maxDate.getMonth() + 1).padStart(2, "0")}-${String(maxDate.getDate()).padStart(2, "0")}`;
 
   return (
-    <div className="space-y-5 sm:space-y-7 pb-32 sm:pb-4">
-      {/* ── 1. Date Selection Container (Horizontal scroll on mobile, Grid on desktop) ────── */}
-      <section aria-labelledby="pickup-date-heading">
+    <div className="w-full max-w-full overflow-x-hidden space-y-5 sm:space-y-7 pb-32 sm:pb-4">
+      {/* ── 1. Date Selection Container (Fixed 4 cards on page, Clean popover for + More Dates) ────── */}
+      <section aria-labelledby="pickup-date-heading" className="w-full max-w-full overflow-x-hidden">
         <div className="flex items-center justify-between">
           <h3
             id="pickup-date-heading"
@@ -94,7 +158,7 @@ export function TimeSelector({
             aria-expanded={showMoreDates}
             className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-[11.5px] sm:text-[12.5px] font-bold text-navy-700 hover:text-navy-950 hover:bg-navy-50 transition-colors cursor-pointer"
           >
-            <span>{showMoreDates ? "Show Less" : "+ More Dates"}</span>
+            <span>{showMoreDates ? "Close" : "+ More Dates"}</span>
             <ChevronDown
               className={cn(
                 "h-3.5 w-3.5 text-navy-500 transition-transform duration-200",
@@ -105,115 +169,241 @@ export function TimeSelector({
           </button>
         </div>
 
-        {/* Date cards: horizontal scroll on mobile ONLY inside this container, grid on sm+ */}
-        <motion.div
-          layout
+        {/* Date cards: clean 4-column responsive grid locked to viewport width without horizontal scroll */}
+        <div
           role="radiogroup"
           aria-labelledby="pickup-date-heading"
-          className="mt-2.5 flex sm:grid sm:grid-cols-4 gap-1.5 xs:gap-2 sm:gap-2.5 overflow-x-auto no-scrollbar scroll-smooth pb-1 -mx-0.5 px-0.5"
+          className="mt-2.5 grid grid-cols-4 gap-1.5 xs:gap-2 sm:gap-2.5 w-full max-w-full"
         >
-          <AnimatePresence initial={false}>
-            {visibleDays.map((d, i) => {
-              const active = date === d.key;
-              const isToday = i === 0;
-              const isTomorrow = i === 1;
-              const availableSlotsForDay = getAvailableSlots(d.key);
-              const hasNoSlots = availableSlotsForDay.length === 0;
-              const dayTag = isToday
-                ? hasNoSlots
-                  ? "No Slots"
-                  : "Today"
-                : isTomorrow
-                ? "Tomorrow"
-                : d.weekday;
+          {visibleDays.map((d) => {
+            const active = date === d.key;
+            const isToday = d.key === todayKey;
+            const tomorrow = new Date(todayYear, todayMonth, todayDay + 1);
+            const tomorrowKey = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, "0")}-${String(tomorrow.getDate()).padStart(2, "0")}`;
+            const isTomorrow = d.key === tomorrowKey;
+            const availableSlotsForDay = getAvailableSlots(d.key);
+            const hasNoSlots = availableSlotsForDay.length === 0;
+            const dayTag = isToday
+              ? hasNoSlots
+                ? "No Slots"
+                : "Today"
+              : isTomorrow
+              ? "Tomorrow"
+              : d.short;
 
-              return (
-                <motion.button
-                  key={d.key}
-                  layout
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.2 }}
-                  type="button"
-                  role="radio"
-                  disabled={hasNoSlots}
-                  aria-disabled={hasNoSlots}
-                  aria-checked={active}
-                  aria-label={`${dayTag}, ${d.day} ${d.month}. ${active ? "Selected" : ""}`}
-                  onClick={() => {
-                    if (!hasNoSlots) setDate(d.key);
-                  }}
-                  whileHover={hasNoSlots ? undefined : { y: -2 }}
-                  whileTap={hasNoSlots ? undefined : { scale: 0.97 }}
+            return (
+              <motion.button
+                key={d.key}
+                type="button"
+                role="radio"
+                disabled={hasNoSlots}
+                aria-disabled={hasNoSlots}
+                aria-checked={active}
+                aria-label={`${dayTag}, ${d.day} ${d.month}. ${active ? "Selected" : ""}`}
+                onClick={() => {
+                  if (!hasNoSlots) handleSelectDate(d.key);
+                }}
+                whileHover={hasNoSlots ? undefined : { y: -2 }}
+                whileTap={hasNoSlots ? undefined : { scale: 0.97 }}
+                className={cn(
+                  "group relative flex flex-col items-center justify-between rounded-xl sm:rounded-2xl border p-1 xs:p-1.5 sm:p-2.5 text-center transition-all duration-200 min-h-[70px] sm:min-h-[82px] w-full min-w-0 select-none",
+                  hasNoSlots ? "opacity-45 cursor-not-allowed bg-ice-50/50 border-ice-100" : "cursor-pointer",
+                  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy-600",
+                  active
+                    ? "border-navy-600 bg-navy-600 text-white shadow-sm ring-2 ring-navy-600 ring-offset-1"
+                    : !hasNoSlots
+                    ? "border-ice-200 bg-white hover:border-navy-300 hover:bg-ice-50/50 shadow-xs text-navy-900"
+                    : "text-navy-900/40",
+                )}
+              >
+                {/* Active Checkmark Pill (top-right) */}
+                <AnimatePresence>
+                  {active && (
+                    <motion.span
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0, opacity: 0 }}
+                      transition={{ type: "spring", stiffness: 500, damping: 24 }}
+                      className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 flex h-3.5 w-3.5 sm:h-4.5 sm:w-4.5 items-center justify-center rounded-full bg-leaf-500 text-white shadow-xs"
+                    >
+                      <Check className="h-2 w-2 sm:h-3 sm:w-3 stroke-[3]" aria-hidden="true" />
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+
+                {/* Day Tag / Today / Tomorrow */}
+                <span
                   className={cn(
-                    "group relative flex flex-col items-center justify-between rounded-xl sm:rounded-2xl border p-1.5 sm:p-2.5 text-center transition-all duration-200 min-h-[70px] sm:min-h-[82px] shrink-0 w-[68px] xs:w-[74px] sm:w-auto select-none",
-                    hasNoSlots ? "opacity-45 cursor-not-allowed bg-ice-50/50 border-ice-100" : "cursor-pointer",
-                    "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy-600",
+                    "rounded-full px-1 py-0.5 text-[8px] xs:text-[9px] sm:text-[10.5px] font-bold uppercase tracking-wide leading-none truncate max-w-full",
                     active
-                      ? "border-navy-600 bg-navy-600 text-white shadow-sm ring-2 ring-navy-600 ring-offset-1"
-                      : !hasNoSlots
-                      ? "border-ice-200 bg-white hover:border-navy-300 hover:bg-ice-50/50 shadow-xs text-navy-900"
-                      : "text-navy-900/40",
+                      ? "bg-white/20 text-white"
+                      : isToday
+                      ? hasNoSlots
+                        ? "bg-gray-100 text-gray-500 border border-gray-200"
+                        : "bg-leaf-50 text-leaf-700 border border-leaf-200"
+                      : isTomorrow
+                      ? "bg-sky-50 text-navy-700 border border-sky-200"
+                      : "text-navy-900/55",
                   )}
                 >
-                  {/* Active Checkmark Pill (top-right) */}
-                  <AnimatePresence>
-                    {active && (
-                      <motion.span
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0, opacity: 0 }}
-                        transition={{ type: "spring", stiffness: 500, damping: 24 }}
-                        className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 flex h-3.5 w-3.5 sm:h-4.5 sm:w-4.5 items-center justify-center rounded-full bg-leaf-500 text-white shadow-xs"
+                  {dayTag}
+                </span>
+
+                {/* Date Number */}
+                <span
+                  className={cn(
+                    "font-display text-base xs:text-lg sm:text-xl font-extrabold leading-none my-0.5",
+                    active ? "text-white" : "text-navy-950",
+                  )}
+                >
+                  {d.day}
+                </span>
+
+                {/* Month & Short Weekday */}
+                <span
+                  className={cn(
+                    "text-[8.5px] xs:text-[9.5px] sm:text-[11px] font-semibold leading-none truncate max-w-full",
+                    active ? "text-navy-100" : "text-navy-900/50",
+                  )}
+                >
+                  {d.month} · {d.short}
+                </span>
+              </motion.button>
+            );
+          })}
+        </div>
+
+        {/* Compact dropdown/popover calendar directly below Select Pickup Date */}
+        <AnimatePresence>
+          {showMoreDates && (
+            <motion.div
+              id="more-dates-calendar"
+              initial={{ opacity: 0, height: 0, y: -6 }}
+              animate={{ opacity: 1, height: "auto", y: 0 }}
+              exit={{ opacity: 0, height: 0, y: -6 }}
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              className="overflow-hidden mt-2.5 w-full max-w-full"
+            >
+              <div className="rounded-2xl border border-ice-200 bg-white p-3 xs:p-3.5 sm:p-4 shadow-sm w-full max-w-full">
+                {/* Calendar Header: Month/Year navigation & close */}
+                <div className="flex items-center justify-between pb-2.5 border-b border-ice-100">
+                  <div className="flex items-center gap-1.5">
+                    <CalendarDays className="h-4 w-4 text-navy-600 shrink-0" aria-hidden="true" />
+                    <span className="font-display text-[13px] xs:text-[14px] font-bold text-navy-950">
+                      {calendarMonth.toLocaleDateString("en-IN", {
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setCalendarMonth(
+                          new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() - 1, 1),
+                        )
+                      }
+                      disabled={calendarMonth.getTime() <= currentMonthStart.getTime()}
+                      aria-label="Previous month"
+                      className="flex h-7 w-7 items-center justify-center rounded-lg border border-ice-200 text-navy-600 hover:bg-ice-50 disabled:opacity-25 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                    >
+                      <ChevronLeft className="h-3.5 w-3.5 stroke-[2.5]" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setCalendarMonth(
+                          new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 1),
+                        )
+                      }
+                      disabled={calendarMonth.getTime() >= maxBookingMonth.getTime()}
+                      aria-label="Next month"
+                      className="flex h-7 w-7 items-center justify-center rounded-lg border border-ice-200 text-navy-600 hover:bg-ice-50 disabled:opacity-25 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                    >
+                      <ChevronRight className="h-3.5 w-3.5 stroke-[2.5]" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowMoreDates(false)}
+                      aria-label="Close calendar"
+                      className="ml-1 flex h-7 w-7 items-center justify-center rounded-lg text-navy-400 hover:bg-navy-50 hover:text-navy-700 transition-colors cursor-pointer"
+                    >
+                      <X className="h-3.5 w-3.5 stroke-[2.5]" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Weekday headers: 7 columns */}
+                <div className="grid grid-cols-7 gap-1 pt-2 pb-1 text-center">
+                  {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((dayName) => (
+                    <span
+                      key={dayName}
+                      className="text-[10px] xs:text-[10.5px] font-bold uppercase tracking-wider text-navy-400"
+                    >
+                      {dayName}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Calendar Days Grid */}
+                <div className="grid grid-cols-7 gap-1 xs:gap-1.5 pt-1">
+                  {/* Empty cells before 1st day of month */}
+                  {Array.from({ length: firstDayOfWeek }).map((_, idx) => (
+                    <div key={`empty-${idx}`} className="h-8 xs:h-8.5 sm:h-9" />
+                  ))}
+
+                  {/* Days of month */}
+                  {Array.from({ length: daysInMonth }).map((_, idx) => {
+                    const dayNum = idx + 1;
+                    const dayKey = `${viewYear}-${String(viewMonth + 1).padStart(2, "0")}-${String(dayNum).padStart(2, "0")}`;
+                    const isPast = dayKey < todayKey;
+                    const isBeyondMax = dayKey > maxDateKey;
+                    const isToday = dayKey === todayKey;
+                    const isSelected = dayKey === date;
+                    const slotsForDay = isPast || isBeyondMax ? [] : getAvailableSlots(dayKey);
+                    const hasNoSlots = slotsForDay.length === 0;
+                    const isDisabled = isPast || isBeyondMax || hasNoSlots;
+
+                    return (
+                      <button
+                        key={dayKey}
+                        type="button"
+                        disabled={isDisabled}
+                        aria-label={`${dayNum} ${calendarMonth.toLocaleDateString("en-IN", { month: "short" })}${isSelected ? ", Selected" : ""}`}
+                        onClick={() => {
+                          if (!isDisabled) handleSelectDate(dayKey);
+                        }}
+                        className={cn(
+                          "relative flex h-8 xs:h-8.5 sm:h-9 w-full flex-col items-center justify-center rounded-lg text-[11.5px] xs:text-[12.5px] font-bold transition-all select-none",
+                          isSelected
+                            ? "bg-navy-600 text-white font-extrabold shadow-xs"
+                            : isDisabled
+                            ? "text-navy-900/20 cursor-not-allowed bg-transparent"
+                            : isToday
+                            ? "text-navy-950 bg-leaf-50/80 border border-leaf-300 hover:bg-navy-50 hover:border-navy-300 cursor-pointer"
+                            : "text-navy-900 hover:bg-ice-100 hover:text-navy-950 cursor-pointer",
+                        )}
                       >
-                        <Check className="h-2 w-2 sm:h-3 sm:w-3 stroke-[3]" aria-hidden="true" />
-                      </motion.span>
-                    )}
-                  </AnimatePresence>
+                        <span>{dayNum}</span>
+                        {isToday && !isSelected && (
+                          <span className="absolute bottom-0.5 h-1 w-1 rounded-full bg-leaf-500" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
 
-                  {/* Day Tag / Today / Tomorrow */}
-                  <span
-                    className={cn(
-                      "rounded-full px-1 py-0.5 text-[8px] xs:text-[9px] sm:text-[10.5px] font-bold uppercase tracking-wide leading-none truncate max-w-full",
-                      active
-                        ? "bg-white/20 text-white"
-                        : isToday
-                        ? hasNoSlots
-                          ? "bg-gray-100 text-gray-500 border border-gray-200"
-                          : "bg-leaf-50 text-leaf-700 border border-leaf-200"
-                        : isTomorrow
-                        ? "bg-sky-50 text-navy-700 border border-sky-200"
-                        : "text-navy-900/55",
-                    )}
-                  >
-                    {dayTag}
-                  </span>
-
-                  {/* Date Number */}
-                  <span
-                    className={cn(
-                      "font-display text-base xs:text-lg sm:text-xl font-extrabold leading-none my-0.5",
-                      active ? "text-white" : "text-navy-950",
-                    )}
-                  >
-                    {d.day}
-                  </span>
-
-                  {/* Month & Short Weekday */}
-                  <span
-                    className={cn(
-                      "text-[9px] xs:text-[9.5px] sm:text-[11px] font-semibold leading-none truncate max-w-full",
-                      active ? "text-navy-100" : "text-navy-900/50",
-                    )}
-                  >
-                    {d.month} · {d.short}
-                  </span>
-                </motion.button>
-              );
-            })}
-          </AnimatePresence>
-        </motion.div>
+                {/* Calendar helper footer */}
+                <div className="mt-2.5 pt-2 border-t border-ice-100 flex items-center justify-between text-[10.5px] xs:text-[11px] text-navy-500 font-medium">
+                  <span>Pickups available 7 days a week</span>
+                  <span className="font-semibold text-leaf-600">2-Hour Slots</span>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </section>
 
       {/* ── 2. Time Slot Grid ─────────────────────────────────────────────── */}
@@ -350,7 +540,7 @@ export function TimeSelector({
                   Selected Pickup Slot
                 </p>
                 <p className="text-[13.5px] sm:text-[14.5px] font-black text-[#0c1e40] truncate">
-                  {days.find((d) => d.key === date)?.label} · {slot}
+                  {days.find((d) => d.key === date)?.label || formatPickupDate(date).fullLabel} · {slot}
                 </p>
               </div>
             </div>

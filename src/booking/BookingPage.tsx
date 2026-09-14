@@ -120,7 +120,7 @@ export function BookingPage({ onExit }: { onExit: () => void }) {
   return (
     <main
       id="booking"
-      className="relative overflow-x-clip pt-2 sm:pt-4 md:pt-6 pb-16"
+      className="relative w-full max-w-[100vw] overflow-x-hidden pt-2 sm:pt-4 md:pt-6 pb-16"
     >
       <div
         aria-hidden="true"
@@ -169,7 +169,7 @@ export function BookingPage({ onExit }: { onExit: () => void }) {
                 exit={{ opacity: 0, x: dir * -36, scale: 0.99 }}
                 transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
               >
-                <div className="rounded-2xl sm:rounded-3xl border border-[#e2e8f0] bg-white p-3.5 xs:p-4.5 sm:p-6 shadow-xs">
+                <div className="rounded-2xl sm:rounded-3xl border border-[#e2e8f0] bg-white p-3.5 xs:p-4.5 sm:p-6 shadow-xs w-full max-w-full overflow-x-hidden">
                   <header className="mb-3.5 sm:mb-5">
                     <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-[#f0fdf4] border border-[#bbf7d0] text-[#16a34a] text-[10.5px] sm:text-xs font-black tracking-wider uppercase">
                       <Sparkles className="h-3 w-3 sm:h-3.5 sm:w-3.5 stroke-[2.5]" aria-hidden="true" />
