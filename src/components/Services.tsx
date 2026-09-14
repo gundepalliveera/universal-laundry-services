@@ -53,11 +53,11 @@ function ServiceCard({
       custom={index}
       whileHover={{ y: -6 }}
       transition={{ type: "spring", stiffness: 300, damping: 22 }}
-      className="group relative flex h-full w-full min-w-0 flex-col justify-between overflow-hidden rounded-2xl sm:rounded-3xl border border-ice-200 bg-white shadow-[0_8px_20px_-14px_rgba(15,43,120,0.12)] hover:shadow-[0_20px_40px_-16px_rgba(15,43,120,0.22)] hover:border-navy-200 transition-all duration-300 cursor-pointer"
+      className="group relative flex h-full w-full min-w-0 flex-col justify-between overflow-hidden rounded-xl xs:rounded-2xl sm:rounded-3xl border border-ice-200 bg-white shadow-[0_6px_18px_-12px_rgba(15,43,120,0.12)] hover:shadow-[0_20px_40px_-16px_rgba(15,43,120,0.22)] hover:border-navy-200 transition-all duration-300 cursor-pointer"
       onClick={() => onOpenDetails?.(slug)}
     >
       {/* Top Dedicated Photo Banner */}
-      <div className="relative h-36 sm:h-40 md:h-48 w-full overflow-hidden bg-navy-50 shrink-0">
+      <div className="relative aspect-[16/10] sm:aspect-[16/10] md:h-44 w-full overflow-hidden bg-navy-50 shrink-0">
         {bgImage && (
           <img
             src={bgImage}
@@ -74,29 +74,29 @@ function ServiceCard({
       </div>
 
       {/* Content Area */}
-      <div className="flex flex-1 flex-col justify-between p-4 sm:p-5">
+      <div className="flex flex-1 flex-col justify-between p-2.5 xs:p-3 sm:p-4 md:p-5">
         <div>
-          <h3 className="text-[16px] sm:text-lg md:text-xl font-bold text-navy-950 leading-snug">
+          <h3 className="text-[13px] xs:text-[14px] sm:text-base md:text-lg font-bold text-navy-950 leading-snug line-clamp-1 sm:line-clamp-none">
             {service.name}
           </h3>
-          <p className="mt-1.5 text-[13px] sm:text-[13.5px] md:text-[14px] leading-relaxed text-navy-900/70">
+          <p className="mt-1 text-[11px] xs:text-[11.5px] sm:text-[12.5px] md:text-[13.5px] leading-tight sm:leading-relaxed text-navy-900/65 line-clamp-2">
             {service.tagline}
           </p>
         </div>
 
         <div
-          className="mt-4 sm:mt-5 flex items-center justify-between border-t border-ice-100 pt-3"
+          className="mt-2.5 xs:mt-3 sm:mt-4 border-t border-ice-100 pt-2 sm:pt-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2"
           onClick={(e) => e.stopPropagation()}
         >
           <div>
-            <p className="text-[10.5px] sm:text-[11.5px] font-bold tracking-wide text-navy-900/50 uppercase">
+            <p className="text-[8.5px] xs:text-[9.5px] sm:text-[10.5px] font-bold tracking-wide text-navy-900/50 uppercase">
               Starting at
             </p>
-            <p className="font-display text-[16px] sm:text-lg md:text-xl font-extrabold text-navy-700 leading-none mt-0.5">
+            <p className="font-display text-[13px] xs:text-[14.5px] sm:text-base md:text-lg font-extrabold text-navy-700 leading-none mt-0.5">
               {service.priceLabel ?? (
                 <>
                   {inr(service.price)}
-                  <span className="ml-0.5 text-[11px] sm:text-xs font-semibold text-navy-900/50">
+                  <span className="ml-0.5 text-[9.5px] xs:text-[10.5px] sm:text-xs font-semibold text-navy-900/50">
                     /{service.unit}
                   </span>
                 </>
@@ -106,12 +106,12 @@ function ServiceCard({
           <button
             type="button"
             onClick={() => onSelect?.(service.id)}
-            className="inline-flex min-h-[40px] items-center justify-center gap-1.5 rounded-full bg-navy-600 hover:bg-navy-700 active:scale-95 text-white px-4 py-2 text-xs sm:text-[13px] font-bold transition-all duration-200 shadow-sm"
+            className="inline-flex min-h-[34px] xs:min-h-[36px] sm:min-h-[38px] w-full sm:w-auto items-center justify-center gap-1.5 rounded-full bg-navy-600 hover:bg-navy-700 active:scale-95 text-white px-3 sm:px-4 py-1.5 text-[11px] xs:text-[11.5px] sm:text-xs font-bold leading-none transition-all duration-200 shadow-xs whitespace-nowrap shrink-0 text-center"
             aria-label={`Book ${service.name} in Hyderabad`}
           >
-            <span>Book Now</span>
+            <span className="whitespace-nowrap leading-none text-center">Book Now</span>
             <ArrowRight
-              className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
+              className="h-3.5 w-3.5 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5"
               aria-hidden="true"
             />
           </button>
@@ -131,10 +131,10 @@ export function Services({
   return (
     <section
       id="services"
-      className="relative scroll-mt-24 overflow-hidden bg-gradient-to-b from-white via-ice-50 to-white py-10 sm:py-14 md:py-20"
+      className="relative scroll-mt-24 overflow-hidden bg-gradient-to-b from-white via-ice-50 to-white py-8 sm:py-12 md:py-20"
     >
       <WaterAnimation count={8} className="-z-10 opacity-70" seed={23} />
-      <div className="shell">
+      <div className="shell px-3 xs:px-4 sm:px-8">
         <SectionHeading
           eyebrow="What we do in Hyderabad"
           title="Our Laundry & Dry Cleaning Services"
@@ -146,7 +146,7 @@ export function Services({
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.15 }}
-          className="mt-8 sm:mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
+          className="mt-6 sm:mt-10 md:mt-12 grid grid-cols-2 lg:grid-cols-3 gap-2.5 xs:gap-3.5 sm:gap-4 md:gap-5 lg:gap-6"
         >
           {services.map((s, i) => (
             <ServiceCard

@@ -471,7 +471,7 @@ async function prerender() {
     if (bodyMarkup) {
       html = html.replace(
         '<div id="root"></div>',
-        `<div id="root"><div class="prerender-seo">${bodyMarkup}</div></div>`
+        `<div id="root"><noscript>${bodyMarkup}</noscript></div>`
       );
     }
 
