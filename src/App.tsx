@@ -7,15 +7,17 @@ import { applySeoMetadata } from "@/data/seo";
 
 import { BrowserRouter, Routes, Route, useLocation, useNavigate, Navigate, useParams } from "react-router-dom";
 
-// Lazy-loaded components below-the-fold
-const About = lazy(() => import("@/components/About").then((m) => ({ default: m.About })));
-const Contact = lazy(() => import("@/components/Contact").then((m) => ({ default: m.Contact })));
-const Footer = lazy(() => import("@/components/Footer").then((m) => ({ default: m.Footer })));
-const HowItWorks = lazy(() => import("@/components/HowItWorks").then((m) => ({ default: m.HowItWorks })));
-const MobileBottomNav = lazy(() => import("@/components/MobileBottomNav"));
-const Pricing = lazy(() => import("@/components/Pricing").then((m) => ({ default: m.Pricing })));
+// Core homepage components bundled directly to prevent Suspense fallback flash & layout shifts
+import { About } from "@/components/About";
+import { Contact } from "@/components/Contact";
+import { Footer } from "@/components/Footer";
+import { HowItWorks } from "@/components/HowItWorks";
+import MobileBottomNav from "@/components/MobileBottomNav";
+import { Pricing } from "@/components/Pricing";
+import { Services } from "@/components/Services";
+
+// Secondary and deep-link views kept code-split
 const ServiceDetailView = lazy(() => import("@/components/ServiceDetailModal").then((m) => ({ default: m.ServiceDetailView })));
-const Services = lazy(() => import("@/components/Services").then((m) => ({ default: m.Services })));
 const BookingPage = lazy(() => import("@/booking/BookingPage").then((m) => ({ default: m.BookingPage })));
 const NotFound = lazy(() => import("@/components/NotFound").then((m) => ({ default: m.NotFound })));
 
@@ -45,13 +47,11 @@ function HomeView({
   return (
     <main>
       <Hero onBook={onBook} />
-      <Suspense fallback={null}>
-        <HowItWorks onBook={onBook} />
-        <Services onBook={onBook} onOpenService={onOpenService} />
-        <Pricing onBook={onBook} onOpenService={onOpenService} />
-        <About />
-        <Contact />
-      </Suspense>
+      <HowItWorks onBook={onBook} />
+      <Services onBook={onBook} onOpenService={onOpenService} />
+      <Pricing onBook={onBook} onOpenService={onOpenService} />
+      <About />
+      <Contact />
     </main>
   );
 }
@@ -245,10 +245,10 @@ function MainLayout() {
             element={
               <motion.div
                 key="home"
-                initial={{ opacity: 0, y: 18 }}
+                initial={false}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -14, scale: 0.995 }}
-                transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
               >
                 <HomeView onBook={handleBook} onOpenService={handleOpenService} />
               </motion.div>
@@ -330,15 +330,11 @@ function MainLayout() {
         </AnimatePresence>
       </Suspense>
 
-      <Suspense fallback={null}>
-        <Footer onNavigate={handleNavigate} onBook={handleBook} />
-      </Suspense>
+      <Footer onNavigate={handleNavigate} onBook={handleBook} />
 
       {/* Floating Mobile Bottom Navigation (<1024px, home only) */}
       {location.pathname === "/" && (
-        <Suspense fallback={null}>
-          <MobileBottomNav active={active} onNavigate={handleNavigate} onBook={handleBook} />
-        </Suspense>
+        <MobileBottomNav active={active} onNavigate={handleNavigate} onBook={handleBook} />
       )}
     </div>
   );

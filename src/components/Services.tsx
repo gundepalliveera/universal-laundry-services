@@ -57,7 +57,7 @@ function ServiceCard({
       onClick={() => onOpenDetails?.(slug)}
     >
       {/* Top Dedicated Photo Banner */}
-      <div className="relative h-20 xs:h-24 sm:h-36 md:h-44 w-full overflow-hidden bg-navy-50 shrink-0">
+      <div className="relative h-36 sm:h-40 md:h-48 w-full overflow-hidden bg-navy-50 shrink-0">
         {bgImage && (
           <img
             src={bgImage}
@@ -69,34 +69,34 @@ function ServiceCard({
         )}
         <div
           aria-hidden="true"
-          className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-60 group-hover:opacity-30 transition-opacity duration-300"
+          className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent opacity-60 group-hover:opacity-30 transition-opacity duration-300"
         />
       </div>
 
       {/* Content Area */}
-      <div className="flex flex-1 flex-col justify-between p-2.5 xs:p-3 sm:p-4 md:p-5 pt-2.5 xs:pt-3.5 sm:pt-4 md:pt-4.5">
+      <div className="flex flex-1 flex-col justify-between p-4 sm:p-5">
         <div>
-          <h3 className="text-[11px] xs:text-[13px] sm:text-base md:text-lg font-bold text-navy-950 leading-snug">
+          <h3 className="text-[16px] sm:text-lg md:text-xl font-bold text-navy-950 leading-snug">
             {service.name}
           </h3>
-          <p className="mt-1 text-[8.5px] xs:text-[10.5px] sm:text-[12.5px] md:text-[13.5px] leading-tight sm:leading-relaxed text-navy-900/65 line-clamp-2 md:line-clamp-none">
+          <p className="mt-1.5 text-[13px] sm:text-[13.5px] md:text-[14px] leading-relaxed text-navy-900/70">
             {service.tagline}
           </p>
         </div>
 
         <div
-          className="mt-2.5 xs:mt-3 sm:mt-4 md:mt-5 flex flex-col xs:flex-row xs:items-center justify-between gap-1 xs:gap-0 border-t border-ice-100 pt-2 sm:pt-3"
+          className="mt-4 sm:mt-5 flex items-center justify-between border-t border-ice-100 pt-3"
           onClick={(e) => e.stopPropagation()}
         >
           <div>
-            <p className="text-[7.5px] xs:text-[9px] md:text-[10.5px] font-bold tracking-wide text-navy-900/45 uppercase">
+            <p className="text-[10.5px] sm:text-[11.5px] font-bold tracking-wide text-navy-900/50 uppercase">
               Starting at
             </p>
-            <p className="font-display text-[11px] xs:text-[13px] sm:text-base md:text-lg font-extrabold text-navy-700 leading-none mt-0.5">
+            <p className="font-display text-[16px] sm:text-lg md:text-xl font-extrabold text-navy-700 leading-none mt-0.5">
               {service.priceLabel ?? (
                 <>
                   {inr(service.price)}
-                  <span className="ml-0.5 text-[8px] xs:text-[9.5px] sm:text-[11.5px] font-semibold text-navy-900/45">
+                  <span className="ml-0.5 text-[11px] sm:text-xs font-semibold text-navy-900/50">
                     /{service.unit}
                   </span>
                 </>
@@ -106,12 +106,12 @@ function ServiceCard({
           <button
             type="button"
             onClick={() => onSelect?.(service.id)}
-            className="inline-flex items-center justify-center gap-1 rounded-full bg-navy-50 hover:bg-navy-600 text-navy-700 hover:text-white border border-ice-200 hover:border-navy-600 px-2 xs:px-2.5 sm:px-3.5 py-1 xs:py-1.5 sm:py-2 text-[9px] xs:text-[10.5px] sm:text-[12px] font-bold transition-all duration-300 shadow-sm"
+            className="inline-flex min-h-[40px] items-center justify-center gap-1.5 rounded-full bg-navy-600 hover:bg-navy-700 active:scale-95 text-white px-4 py-2 text-xs sm:text-[13px] font-bold transition-all duration-200 shadow-sm"
             aria-label={`Book ${service.name} in Hyderabad`}
           >
-            Book
+            <span>Book Now</span>
             <ArrowRight
-              className="h-3 w-3 sm:h-3.5 sm:w-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
+              className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
               aria-hidden="true"
             />
           </button>
@@ -131,7 +131,7 @@ export function Services({
   return (
     <section
       id="services"
-      className="relative scroll-mt-24 overflow-hidden bg-gradient-to-b from-white via-ice-50 to-white py-8 sm:py-12 md:py-20"
+      className="relative scroll-mt-24 overflow-hidden bg-gradient-to-b from-white via-ice-50 to-white py-10 sm:py-14 md:py-20"
     >
       <WaterAnimation count={8} className="-z-10 opacity-70" seed={23} />
       <div className="shell">
@@ -146,7 +146,7 @@ export function Services({
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.15 }}
-          className="mt-8 sm:mt-12 grid grid-cols-3 gap-2 xs:gap-3 md:grid-cols-2 md:gap-5 lg:grid-cols-3"
+          className="mt-8 sm:mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
         >
           {services.map((s, i) => (
             <ServiceCard

@@ -44,8 +44,7 @@
 
   <!-- Critical CSS to prevent Flash of Unstyled Content (FOUC) and hide pre-rendered crawler markup from visual display before React mounts -->
   <style>
-    .sr-only,
-    .prerender-seo {
+    .sr-only {
       position: absolute !important;
       width: 1px !important;
       height: 1px !important;
@@ -55,6 +54,9 @@
       clip: rect(0, 0, 0, 0) !important;
       white-space: nowrap !important;
       border: 0 !important;
+    }
+    .prerender-seo {
+      display: none !important;
     }
   </style>
 

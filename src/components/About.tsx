@@ -42,28 +42,28 @@ export function About() {
             </p>
           </div>
 
-          {/* 3 Pillars in a responsive 3-column row on mobile/tablet, stack on desktop left */}
+          {/* 3 Pillars in a clean readable layout */}
           <motion.div
             variants={staggerParent(0.1)}
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, amount: 0.2 }}
-            className="mt-6 sm:mt-8 grid grid-cols-3 gap-1.5 xs:gap-2.5 sm:gap-3 lg:grid-cols-1 lg:gap-4"
+            className="mt-6 sm:mt-8 grid grid-cols-1 gap-3 sm:gap-4"
           >
             {pillars.map((p) => (
               <motion.div
                 key={p.title}
                 variants={fadeUp}
-                className="card-soft card-hover flex flex-col lg:flex-row items-center lg:items-start gap-1.5 xs:gap-2 lg:gap-4 p-2.5 xs:p-3 sm:p-4 lg:p-5 text-center lg:text-left justify-start"
+                className="card-soft card-hover flex flex-row items-start gap-3.5 sm:gap-4 p-3.5 sm:p-4 lg:p-5 text-left justify-start"
               >
-                <span className="inline-flex h-8 w-8 xs:h-9 xs:w-9 sm:h-10 sm:w-10 lg:h-11 lg:w-11 shrink-0 items-center justify-center rounded-xl lg:rounded-2xl border border-ice-200 bg-ice-50 text-navy-600 shadow-sm">
-                  <p.icon className="h-4 w-4 xs:h-4.5 xs:w-4.5 lg:h-5 lg:w-5" aria-hidden="true" />
+                <span className="inline-flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl lg:rounded-2xl border border-ice-200 bg-ice-50 text-navy-600 shadow-sm">
+                  <p.icon className="h-5 w-5" aria-hidden="true" />
                 </span>
                 <div className="min-w-0">
-                  <h3 className="text-[10px] xs:text-[11.5px] sm:text-[13.5px] lg:text-[15.5px] font-bold text-navy-950 leading-snug">
+                  <h3 className="text-[14.5px] sm:text-[15.5px] font-bold text-navy-950 leading-snug">
                     {p.title}
                   </h3>
-                  <p className="mt-0.5 sm:mt-1 text-[8.5px] xs:text-[10px] sm:text-[12px] lg:text-[13.5px] leading-tight sm:leading-relaxed text-navy-900/60 line-clamp-2 lg:line-clamp-none">
+                  <p className="mt-1 text-[13px] sm:text-[13.5px] leading-relaxed text-navy-900/70">
                     {p.body}
                   </p>
                 </div>

@@ -160,6 +160,8 @@ export function Contact() {
                   </label>
                   <input
                     id="c-name"
+                    type="text"
+                    autoComplete="name"
                     className={`field ${errors.name ? "field-error" : ""}`}
                     placeholder="Ananya Sharma"
                     value={form.name}
@@ -177,6 +179,8 @@ export function Contact() {
                   </label>
                   <input
                     id="c-phone"
+                    type="tel"
+                    autoComplete="tel"
                     inputMode="numeric"
                     className={`field ${errors.phone ? "field-error" : ""}`}
                     placeholder="98765 43210"
@@ -197,7 +201,7 @@ export function Contact() {
                 </label>
                 <textarea
                   id="c-msg"
-                  rows={5}
+                  rows={4}
                   className={`field resize-none ${errors.message ? "field-error" : ""}`}
                   placeholder="I need a weekly wash & fold plan for a family of four..."
                   value={form.message}
@@ -211,7 +215,7 @@ export function Contact() {
               </div>
 
               <div className="mt-6 flex flex-wrap items-center gap-4">
-                <button type="submit" className="btn-primary group">
+                <button type="submit" className="btn-primary min-h-[46px] w-full sm:w-auto group">
                   Send Message
                   <ArrowRight
                     className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1.5"

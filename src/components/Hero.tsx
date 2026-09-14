@@ -77,11 +77,11 @@ export function Hero({ onBook }: { onBook: () => void }) {
                 {words.map((w, i) => (
                   <motion.span
                     key={w.text}
-                    initial={{ opacity: 0, y: 30, rotateX: -35 }}
-                    animate={{ opacity: 1, y: 0, rotateX: 0 }}
+                    initial={{ opacity: 0, y: 14 }}
+                    animate={{ opacity: 1, y: 0 }}
                     transition={{
-                      duration: 0.75,
-                      delay: 0.18 + i * 0.11,
+                      duration: 0.45,
+                      delay: i * 0.06,
                       ease: easeOutExpo,
                     }}
                     className={
@@ -223,10 +223,13 @@ export function Hero({ onBook }: { onBook: () => void }) {
           <div className="grid grid-cols-[1.1fr_0.9fr] sm:grid-cols-[1.15fr_0.85fr] items-center gap-1 sm:gap-4">
             {/* Left text column */}
             <motion.div variants={fadeUp} className="space-y-2.5 sm:space-y-3">
-              <div className="font-display text-[26px] xs:text-[30px] sm:text-[38px] leading-[1.08] font-extrabold tracking-tight text-navy-950">
+              <h1 className="font-display text-[26px] xs:text-[30px] sm:text-[38px] leading-[1.08] font-extrabold tracking-tight text-navy-950">
+                <span className="block text-[12px] xs:text-[13px] sm:text-[15px] font-bold text-navy-700 tracking-normal mb-1">
+                  Laundry Service in Hyderabad
+                </span>
                 <span className="block text-navy-950">Fresh Clothes,</span>
                 <span className="block text-navy-600">Happy Life.</span>
-              </div>
+              </h1>
 
               <p className="text-[12px] sm:text-[14px] leading-relaxed text-navy-900/75">
                 Professional laundry care, picked up and delivered to your doorstep.

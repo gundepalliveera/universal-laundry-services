@@ -156,9 +156,11 @@ export function TimeSelector({
             type="button"
             onClick={() => setShowMoreDates((v) => !v)}
             aria-expanded={showMoreDates}
-            className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-[11.5px] sm:text-[12.5px] font-bold text-navy-700 hover:text-navy-950 hover:bg-navy-50 transition-colors cursor-pointer"
+            aria-controls="more-dates-calendar"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-ice-200 bg-white px-2.5 py-1.5 text-[12px] sm:text-[13px] font-bold text-navy-700 hover:text-navy-950 hover:bg-ice-50 hover:border-navy-300 transition-all cursor-pointer shadow-xs min-h-[36px]"
           >
-            <span>{showMoreDates ? "Close" : "+ More Dates"}</span>
+            <CalendarDays className="h-3.5 w-3.5 text-navy-600" aria-hidden="true" />
+            <span>{showMoreDates ? "Close Calendar" : "+ More Dates"}</span>
             <ChevronDown
               className={cn(
                 "h-3.5 w-3.5 text-navy-500 transition-transform duration-200",
@@ -206,7 +208,7 @@ export function TimeSelector({
                 whileHover={hasNoSlots ? undefined : { y: -2 }}
                 whileTap={hasNoSlots ? undefined : { scale: 0.97 }}
                 className={cn(
-                  "group relative flex flex-col items-center justify-between rounded-xl sm:rounded-2xl border p-1 xs:p-1.5 sm:p-2.5 text-center transition-all duration-200 min-h-[70px] sm:min-h-[82px] w-full min-w-0 select-none",
+                  "group relative flex flex-col items-center justify-between rounded-xl sm:rounded-2xl border p-1.5 xs:p-2 sm:p-2.5 text-center transition-all duration-200 min-h-[72px] sm:min-h-[82px] w-full min-w-0 select-none",
                   hasNoSlots ? "opacity-45 cursor-not-allowed bg-ice-50/50 border-ice-100" : "cursor-pointer",
                   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy-600",
                   active
@@ -234,7 +236,7 @@ export function TimeSelector({
                 {/* Day Tag / Today / Tomorrow */}
                 <span
                   className={cn(
-                    "rounded-full px-1 py-0.5 text-[8px] xs:text-[9px] sm:text-[10.5px] font-bold uppercase tracking-wide leading-none truncate max-w-full",
+                    "rounded-full px-1.5 py-0.5 text-[8.5px] xs:text-[9.5px] sm:text-[10.5px] font-bold uppercase tracking-wide leading-none truncate max-w-full",
                     active
                       ? "bg-white/20 text-white"
                       : isToday
@@ -243,7 +245,7 @@ export function TimeSelector({
                         : "bg-leaf-50 text-leaf-700 border border-leaf-200"
                       : isTomorrow
                       ? "bg-sky-50 text-navy-700 border border-sky-200"
-                      : "text-navy-900/55",
+                      : "text-navy-900/60",
                   )}
                 >
                   {dayTag}
@@ -262,8 +264,8 @@ export function TimeSelector({
                 {/* Month & Short Weekday */}
                 <span
                   className={cn(
-                    "text-[8.5px] xs:text-[9.5px] sm:text-[11px] font-semibold leading-none truncate max-w-full",
-                    active ? "text-navy-100" : "text-navy-900/50",
+                    "text-[9px] xs:text-[10px] sm:text-[11px] font-semibold leading-none truncate max-w-full",
+                    active ? "text-navy-100" : "text-navy-900/60",
                   )}
                 >
                   {d.month} · {d.short}
@@ -273,31 +275,53 @@ export function TimeSelector({
           })}
         </div>
 
-        {/* Compact dropdown/popover calendar directly below Select Pickup Date */}
+        {/* Improved Overlay Dialog for More Dates: Does NOT shift unrelated content down */}
         <AnimatePresence>
           {showMoreDates && (
-            <motion.div
-              id="more-dates-calendar"
-              initial={{ opacity: 0, height: 0, y: -6 }}
-              animate={{ opacity: 1, height: "auto", y: 0 }}
-              exit={{ opacity: 0, height: 0, y: -6 }}
-              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-              className="overflow-hidden mt-2.5 w-full max-w-full"
+            <div
+              className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="more-dates-title"
             >
-              <div className="rounded-2xl border border-ice-200 bg-white p-3 xs:p-3.5 sm:p-4 shadow-sm w-full max-w-full">
-                {/* Calendar Header: Month/Year navigation & close */}
-                <div className="flex items-center justify-between pb-2.5 border-b border-ice-100">
-                  <div className="flex items-center gap-1.5">
-                    <CalendarDays className="h-4 w-4 text-navy-600 shrink-0" aria-hidden="true" />
-                    <span className="font-display text-[13px] xs:text-[14px] font-bold text-navy-950">
-                      {calendarMonth.toLocaleDateString("en-IN", {
-                        month: "long",
-                        year: "numeric",
-                      })}
-                    </span>
+              {/* Dimmed backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                onClick={() => setShowMoreDates(false)}
+                className="fixed inset-0 bg-navy-950/45 backdrop-blur-[2px]"
+                aria-hidden="true"
+              />
+
+              {/* Modal Container */}
+              <motion.div
+                id="more-dates-calendar"
+                initial={{ opacity: 0, y: 30, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 20, scale: 0.98 }}
+                transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
+                className="relative z-10 w-full max-w-md rounded-t-3xl sm:rounded-3xl border border-ice-200 bg-white p-4 sm:p-5 shadow-2xl max-h-[88vh] overflow-y-auto"
+              >
+                {/* Calendar Header */}
+                <div className="flex items-center justify-between pb-3 border-b border-ice-100">
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-navy-50 text-navy-600">
+                      <CalendarDays className="h-4 w-4" aria-hidden="true" />
+                    </div>
+                    <div>
+                      <h4 id="more-dates-title" className="font-display text-[15px] sm:text-[16px] font-bold text-navy-950">
+                        {calendarMonth.toLocaleDateString("en-IN", {
+                          month: "long",
+                          year: "numeric",
+                        })}
+                      </h4>
+                      <p className="text-[11px] text-navy-900/50">Pick any available date within 30 days</p>
+                    </div>
                   </div>
 
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1.5">
                     <button
                       type="button"
                       onClick={() =>
@@ -307,9 +331,9 @@ export function TimeSelector({
                       }
                       disabled={calendarMonth.getTime() <= currentMonthStart.getTime()}
                       aria-label="Previous month"
-                      className="flex h-7 w-7 items-center justify-center rounded-lg border border-ice-200 text-navy-600 hover:bg-ice-50 disabled:opacity-25 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                      className="flex h-8 w-8 items-center justify-center rounded-lg border border-ice-200 text-navy-600 hover:bg-ice-50 disabled:opacity-25 disabled:cursor-not-allowed transition-colors cursor-pointer"
                     >
-                      <ChevronLeft className="h-3.5 w-3.5 stroke-[2.5]" />
+                      <ChevronLeft className="h-4 w-4 stroke-[2.5]" />
                     </button>
                     <button
                       type="button"
@@ -320,38 +344,38 @@ export function TimeSelector({
                       }
                       disabled={calendarMonth.getTime() >= maxBookingMonth.getTime()}
                       aria-label="Next month"
-                      className="flex h-7 w-7 items-center justify-center rounded-lg border border-ice-200 text-navy-600 hover:bg-ice-50 disabled:opacity-25 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                      className="flex h-8 w-8 items-center justify-center rounded-lg border border-ice-200 text-navy-600 hover:bg-ice-50 disabled:opacity-25 disabled:cursor-not-allowed transition-colors cursor-pointer"
                     >
-                      <ChevronRight className="h-3.5 w-3.5 stroke-[2.5]" />
+                      <ChevronRight className="h-4 w-4 stroke-[2.5]" />
                     </button>
                     <button
                       type="button"
                       onClick={() => setShowMoreDates(false)}
                       aria-label="Close calendar"
-                      className="ml-1 flex h-7 w-7 items-center justify-center rounded-lg text-navy-400 hover:bg-navy-50 hover:text-navy-700 transition-colors cursor-pointer"
+                      className="ml-1 flex h-8 w-8 items-center justify-center rounded-lg text-navy-400 hover:bg-navy-50 hover:text-navy-700 transition-colors cursor-pointer"
                     >
-                      <X className="h-3.5 w-3.5 stroke-[2.5]" />
+                      <X className="h-4 w-4 stroke-[2.5]" />
                     </button>
                   </div>
                 </div>
 
                 {/* Weekday headers: 7 columns */}
-                <div className="grid grid-cols-7 gap-1 pt-2 pb-1 text-center">
+                <div className="grid grid-cols-7 gap-1 pt-3 pb-1 text-center">
                   {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((dayName) => (
                     <span
                       key={dayName}
-                      className="text-[10px] xs:text-[10.5px] font-bold uppercase tracking-wider text-navy-400"
+                      className="text-[11px] font-bold uppercase tracking-wider text-navy-400"
                     >
                       {dayName}
                     </span>
                   ))}
                 </div>
 
-                {/* Calendar Days Grid */}
-                <div className="grid grid-cols-7 gap-1 xs:gap-1.5 pt-1">
+                {/* Calendar Days Grid: comfortable >=40px tap targets */}
+                <div className="grid grid-cols-7 gap-1 xs:gap-1.5 pt-1.5">
                   {/* Empty cells before 1st day of month */}
                   {Array.from({ length: firstDayOfWeek }).map((_, idx) => (
-                    <div key={`empty-${idx}`} className="h-8 xs:h-8.5 sm:h-9" />
+                    <div key={`empty-${idx}`} className="h-9 xs:h-10" />
                   ))}
 
                   {/* Days of month */}
@@ -376,9 +400,9 @@ export function TimeSelector({
                           if (!isDisabled) handleSelectDate(dayKey);
                         }}
                         className={cn(
-                          "relative flex h-8 xs:h-8.5 sm:h-9 w-full flex-col items-center justify-center rounded-lg text-[11.5px] xs:text-[12.5px] font-bold transition-all select-none",
+                          "relative flex h-9 xs:h-10 w-full flex-col items-center justify-center rounded-xl text-[13px] font-bold transition-all select-none touch-manipulation",
                           isSelected
-                            ? "bg-navy-600 text-white font-extrabold shadow-xs"
+                            ? "bg-navy-600 text-white font-extrabold shadow-sm ring-2 ring-navy-600 ring-offset-1"
                             : isDisabled
                             ? "text-navy-900/20 cursor-not-allowed bg-transparent"
                             : isToday
@@ -388,7 +412,7 @@ export function TimeSelector({
                       >
                         <span>{dayNum}</span>
                         {isToday && !isSelected && (
-                          <span className="absolute bottom-0.5 h-1 w-1 rounded-full bg-leaf-500" />
+                          <span className="absolute bottom-1 h-1 w-1 rounded-full bg-leaf-500" />
                         )}
                       </button>
                     );
@@ -396,12 +420,21 @@ export function TimeSelector({
                 </div>
 
                 {/* Calendar helper footer */}
-                <div className="mt-2.5 pt-2 border-t border-ice-100 flex items-center justify-between text-[10.5px] xs:text-[11px] text-navy-500 font-medium">
-                  <span>Pickups available 7 days a week</span>
-                  <span className="font-semibold text-leaf-600">2-Hour Slots</span>
+                <div className="mt-3.5 pt-2.5 border-t border-ice-100 flex items-center justify-between text-[11.5px] text-navy-500 font-medium">
+                  <span className="flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-leaf-500 inline-block" />
+                    Available 7 days / week
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setShowMoreDates(false)}
+                    className="text-navy-700 font-bold hover:underline"
+                  >
+                    Done
+                  </button>
                 </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            </div>
           )}
         </AnimatePresence>
       </section>

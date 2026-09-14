@@ -46,7 +46,7 @@ export function Pricing({
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.15 }}
-          className="mt-8 sm:mt-12 grid grid-cols-3 gap-2 xs:gap-3 md:gap-5 md:grid-cols-3"
+          className="mt-8 sm:mt-12 grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6"
         >
           {pricingPlans.map((plan) => (
             <motion.article
@@ -55,22 +55,22 @@ export function Pricing({
               whileHover={{ y: -8 }}
               transition={{ type: "spring", stiffness: 300, damping: 22 }}
               className={cn(
-                "relative flex h-full w-full min-w-0 flex-col justify-between rounded-2xl sm:rounded-3xl border p-2.5 xs:p-3.5 sm:p-5 md:p-7 transition-all duration-300",
+                "relative flex h-full w-full min-w-0 flex-col justify-between rounded-2xl sm:rounded-3xl border p-5 sm:p-7 transition-all duration-300",
                 plan.popular
                   ? "border-navy-600 bg-gradient-to-b from-navy-700 to-navy-950 text-white shadow-[0_30px_60px_-30px_rgba(15,43,120,0.85)]"
                   : "card-soft card-hover",
               )}
             >
               {plan.popular && (
-                <span className="absolute -top-2.5 xs:-top-3 left-1/2 -translate-x-1/2 rounded-full bg-leaf-500 px-2 xs:px-3 sm:px-3.5 py-0.5 sm:py-1 text-[8.5px] xs:text-[10px] sm:text-[11px] font-extrabold tracking-wide text-white uppercase shadow-lg whitespace-nowrap">
-                  Popular
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-leaf-500 px-3.5 py-1 text-[11px] font-extrabold tracking-wide text-white uppercase shadow-lg whitespace-nowrap">
+                  Popular Choice
                 </span>
               )}
               
               <div>
                 <h3
                   className={cn(
-                    "text-[11.5px] xs:text-[13.5px] sm:text-base md:text-lg font-bold leading-snug",
+                    "text-lg sm:text-xl font-bold leading-snug",
                     plan.popular ? "text-white" : "text-navy-950",
                   )}
                 >
@@ -78,16 +78,16 @@ export function Pricing({
                 </h3>
                 <p
                   className={cn(
-                    "mt-1 sm:mt-1.5 text-[9px] xs:text-[11px] sm:text-[12.5px] md:text-[13.5px] leading-tight sm:leading-normal line-clamp-2 md:line-clamp-none",
-                    plan.popular ? "text-navy-100" : "text-navy-900/60",
+                    "mt-1.5 text-[13.5px] sm:text-[14px] leading-relaxed",
+                    plan.popular ? "text-navy-100" : "text-navy-900/65",
                   )}
                 >
                   {plan.summary}
                 </p>
-                <div className="mt-3 xs:mt-4 sm:mt-6 flex flex-col xs:flex-row xs:items-end gap-0.5 xs:gap-1.5">
+                <div className="mt-4 sm:mt-6 flex items-baseline gap-1.5">
                   <span
                     className={cn(
-                      "font-display text-lg xs:text-2xl sm:text-3xl md:text-4xl font-extrabold leading-none",
+                      "font-display text-3xl sm:text-4xl font-extrabold leading-none",
                       plan.popular ? "text-white" : "text-navy-700",
                     )}
                   >
@@ -95,7 +95,7 @@ export function Pricing({
                   </span>
                   <span
                     className={cn(
-                      "pb-0.5 sm:pb-1.5 text-[8.5px] xs:text-[10.5px] sm:text-[12px] md:text-[13px] font-semibold leading-tight",
+                      "text-xs sm:text-[13px] font-semibold",
                       plan.popular ? "text-navy-100" : "text-navy-900/50",
                     )}
                   >
@@ -103,18 +103,18 @@ export function Pricing({
                   </span>
                 </div>
 
-                <ul className="mt-3 xs:mt-4 sm:mt-6 space-y-1.5 xs:space-y-2 sm:space-y-3">
+                <ul className="mt-5 sm:mt-6 space-y-2.5 sm:space-y-3">
                   {plan.features.map((f) => (
-                    <li key={f} className="flex items-start gap-1 xs:gap-1.5 sm:gap-2.5 text-[8.5px] xs:text-[10.5px] sm:text-[12.5px] md:text-[14px] leading-tight sm:leading-normal">
+                    <li key={f} className="flex items-start gap-2.5 text-[13px] sm:text-[14px] leading-normal">
                       <span
                         className={cn(
-                          "mt-0.5 inline-flex h-3.5 w-3.5 xs:h-4 xs:w-4 sm:h-5 sm:w-5 shrink-0 items-center justify-center rounded-full",
+                          "mt-0.5 inline-flex h-4.5 w-4.5 sm:h-5 sm:w-5 shrink-0 items-center justify-center rounded-full",
                           plan.popular
                             ? "bg-leaf-500/25 text-leaf-300"
                             : "bg-leaf-50 text-leaf-600",
                         )}
                       >
-                        <Check className="h-2.5 w-2.5 xs:h-3 xs:w-3 sm:h-3.5 sm:w-3.5" aria-hidden="true" />
+                        <Check className="h-3 w-3 sm:h-3.5 sm:w-3.5 stroke-[2.5]" aria-hidden="true" />
                       </span>
                       <span className={plan.popular ? "text-navy-100" : "text-navy-900/75"}>
                         {f}
@@ -128,13 +128,13 @@ export function Pricing({
                 type="button"
                 onClick={onBook}
                 className={cn(
-                  "group mt-4 xs:mt-5 sm:mt-7 w-full py-1.5 xs:py-2 sm:py-3 px-1.5 xs:px-3 text-[10px] xs:text-[11.5px] sm:text-[13.5px] md:text-[15px] font-bold rounded-full transition-all flex items-center justify-center gap-1",
+                  "group mt-6 sm:mt-7 w-full min-h-[44px] py-3 px-4 text-sm sm:text-[15px] font-bold rounded-full transition-all flex items-center justify-center gap-2 active:scale-98",
                   plan.popular ? "btn-green shadow-md" : "btn-ghost border border-ice-300",
                 )}
               >
-                <span className="truncate">Choose</span>
+                <span>Select Plan</span>
                 <ArrowRight
-                  className="h-3 w-3 xs:h-3.5 xs:w-3.5 sm:h-4 sm:w-4 transition-transform duration-300 group-hover:translate-x-1 shrink-0"
+                  className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 shrink-0"
                   aria-hidden="true"
                 />
               </button>
@@ -164,7 +164,7 @@ export function Pricing({
               initial="hidden"
               whileInView="show"
               viewport={{ once: true, amount: 0.1 }}
-              className="mt-4 sm:mt-6 grid grid-cols-2 gap-3 sm:gap-4 md:gap-5 lg:grid-cols-3"
+              className="mt-4 sm:mt-6 grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4 md:gap-5"
             >
               {specialCleaningItems.map((item) => {
                 const itemSlugMap: Record<string, string> = {
@@ -187,7 +187,7 @@ export function Pricing({
                     className="group flex h-full w-full flex-col overflow-hidden rounded-2xl border border-ice-200 bg-white shadow-sm transition-all duration-300 hover:border-navy-200 hover:shadow-[0_16px_36px_-18px_rgba(15,43,120,0.18)] cursor-pointer"
                   >
                   {/* Photo */}
-                  <div className="relative h-28 xs:h-32 sm:h-40 md:h-44 w-full overflow-hidden bg-navy-50 shrink-0">
+                  <div className="relative h-36 xs:h-36 sm:h-40 md:h-44 w-full overflow-hidden bg-navy-50 shrink-0">
                     <img
                       src={item.image}
                       alt={`${item.name} in Hyderabad - Universal Laundry Services`}
@@ -202,12 +202,12 @@ export function Pricing({
                   </div>
 
                   {/* Content */}
-                  <div className="flex flex-1 flex-col justify-between p-3 sm:p-4">
+                  <div className="flex flex-1 flex-col justify-between p-3.5 sm:p-4">
                     <div>
-                      <p className="text-[13px] sm:text-[15px] font-bold text-navy-900 leading-snug">
+                      <p className="text-[14.5px] sm:text-[15px] font-bold text-navy-900 leading-snug">
                         {item.name}
                       </p>
-                      <p className="mt-1 text-[11px] sm:text-[12.5px] text-navy-900/55 leading-relaxed">
+                      <p className="mt-1 text-[12px] sm:text-[12.5px] text-navy-900/65 leading-relaxed">
                         {item.desc}
                       </p>
                     </div>
@@ -216,7 +216,7 @@ export function Pricing({
                         <p className="font-display text-[15px] sm:text-[17px] font-extrabold text-navy-700 leading-none">
                           {item.price}
                         </p>
-                        <p className="mt-0.5 text-[10px] sm:text-[11px] font-medium text-navy-900/45">
+                        <p className="mt-0.5 text-[10.5px] sm:text-[11px] font-medium text-navy-900/50">
                           {item.unit}
                         </p>
                       </div>
@@ -227,14 +227,14 @@ export function Pricing({
             })}
             </motion.div>
 
-            <div className="mt-5 sm:mt-6 rounded-2xl border border-ice-200 bg-ice-50/60 p-3.5 sm:p-4 text-center sm:flex sm:items-center sm:justify-between sm:text-left">
-              <p className="text-[12px] xs:text-[13.5px] font-medium text-navy-900/70">
+            <div className="mt-5 sm:mt-6 rounded-2xl border border-ice-200 bg-ice-50/60 p-3.5 sm:p-4 text-center sm:flex sm:items-center sm:justify-between sm:text-left gap-3">
+              <p className="text-[12.5px] xs:text-[13.5px] font-medium text-navy-900/75">
                 ✨ <strong className="text-navy-900">All Dry Cleaning Services Available in Hyderabad:</strong> Suits, sarees, lehengas, blankets, curtains &amp; designer wear.
               </p>
               <button
                 type="button"
                 onClick={onBook}
-                className="btn-primary mt-2.5 text-xs sm:mt-0"
+                className="btn-primary min-h-[42px] mt-2.5 text-xs sm:text-[13px] px-5 sm:mt-0 whitespace-nowrap shrink-0"
               >
                 Book Now
               </button>

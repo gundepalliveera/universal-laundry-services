@@ -95,36 +95,36 @@ export function Footer({
           <div className="h-[1px] w-full bg-white/10" aria-hidden="true" />
 
           {/* 2. Four Columns in Mobile: Quick Links | Services | Areas | Contact */}
-          <div className="grid grid-cols-2 gap-y-6 gap-x-2 xs:gap-x-3 sm:gap-x-4">
+          <div className="grid grid-cols-2 gap-y-6 gap-x-3 xs:gap-x-4 sm:gap-x-6">
             {/* Col 1: Quick Links */}
             <nav aria-label="Quick links" className="min-w-0">
-              <h3 className="font-display text-[10.5px] xs:text-[11.5px] font-bold tracking-wider text-white uppercase flex items-center gap-1 mb-2">
+              <h3 className="font-display text-[12px] xs:text-[13px] font-bold tracking-wider text-white uppercase flex items-center gap-1.5 mb-2.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-leaf-400 shrink-0" />
                 <span className="truncate">Quick Links</span>
               </h3>
-              <ul className="space-y-1.5">
+              <ul className="space-y-2">
                 <li>
-                  <Link to="/" className="text-left text-[10px] xs:text-[11.5px] sm:text-[12.5px] text-navy-200/75 transition-colors hover:text-white py-0.5 leading-snug block w-full truncate">
+                  <Link to="/" className="text-left text-[12.5px] xs:text-[13px] text-navy-200/85 transition-colors hover:text-white py-0.5 leading-snug block w-full truncate">
                     Home
                   </Link>
                 </li>
                 <li>
-                  <Link to="/services/" className="text-left text-[10px] xs:text-[11.5px] sm:text-[12.5px] text-navy-200/75 transition-colors hover:text-white py-0.5 leading-snug block w-full truncate">
+                  <Link to="/services/" className="text-left text-[12.5px] xs:text-[13px] text-navy-200/85 transition-colors hover:text-white py-0.5 leading-snug block w-full truncate">
                     Services
                   </Link>
                 </li>
                 <li>
-                  <Link to="/pricing/" className="text-left text-[10px] xs:text-[11.5px] sm:text-[12.5px] text-navy-200/75 transition-colors hover:text-white py-0.5 leading-snug block w-full truncate">
+                  <Link to="/pricing/" className="text-left text-[12.5px] xs:text-[13px] text-navy-200/85 transition-colors hover:text-white py-0.5 leading-snug block w-full truncate">
                     Pricing
                   </Link>
                 </li>
                 <li>
-                  <Link to="/about/" className="text-left text-[10px] xs:text-[11.5px] sm:text-[12.5px] text-navy-200/75 transition-colors hover:text-white py-0.5 leading-snug block w-full truncate">
+                  <Link to="/about/" className="text-left text-[12.5px] xs:text-[13px] text-navy-200/85 transition-colors hover:text-white py-0.5 leading-snug block w-full truncate">
                     About Us
                   </Link>
                 </li>
                 <li>
-                  <Link to="/contact/" className="text-left text-[10px] xs:text-[11.5px] sm:text-[12.5px] text-navy-200/75 transition-colors hover:text-white py-0.5 leading-snug block w-full truncate">
+                  <Link to="/contact/" className="text-left text-[12.5px] xs:text-[13px] text-navy-200/85 transition-colors hover:text-white py-0.5 leading-snug block w-full truncate">
                     Contact
                   </Link>
                 </li>
@@ -133,33 +133,33 @@ export function Footer({
 
             {/* Col 2: Services */}
             <div className="min-w-0">
-              <h3 className="font-display text-[10.5px] xs:text-[11.5px] font-bold tracking-wider text-white uppercase flex items-center gap-1 mb-2">
+              <h3 className="font-display text-[12px] xs:text-[13px] font-bold tracking-wider text-white uppercase flex items-center gap-1.5 mb-2.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-sky-400 shrink-0" />
                 <span className="truncate">Services</span>
               </h3>
-              <ul className="space-y-1.5">
+              <ul className="space-y-2">
                 <li>
-                  <Link to="/services/wash-and-fold/" className="text-left text-[10px] xs:text-[11.5px] sm:text-[12.5px] text-navy-200/75 transition-colors hover:text-white py-0.5 leading-snug block w-full truncate">
+                  <Link to="/services/wash-and-fold/" className="text-left text-[12.5px] xs:text-[13px] text-navy-200/85 transition-colors hover:text-white py-0.5 leading-snug block w-full truncate">
                     Wash &amp; Fold
                   </Link>
                 </li>
                 <li>
-                  <Link to="/services/wash-and-iron/" className="text-left text-[10px] xs:text-[11.5px] sm:text-[12.5px] text-navy-200/75 transition-colors hover:text-white py-0.5 leading-snug block w-full truncate">
+                  <Link to="/services/wash-and-iron/" className="text-left text-[12.5px] xs:text-[13px] text-navy-200/85 transition-colors hover:text-white py-0.5 leading-snug block w-full truncate">
                     Wash &amp; Iron
                   </Link>
                 </li>
                 <li>
-                  <Link to="/services/dry-cleaning/" className="text-left text-[10px] xs:text-[11.5px] sm:text-[12.5px] text-navy-200/75 transition-colors hover:text-white py-0.5 leading-snug block w-full truncate">
+                  <Link to="/services/dry-cleaning/" className="text-left text-[12.5px] xs:text-[13px] text-navy-200/85 transition-colors hover:text-white py-0.5 leading-snug block w-full truncate">
                     Dry Cleaning
                   </Link>
                 </li>
                 <li>
-                  <Link to="/services/steam-ironing/" className="text-left text-[10px] xs:text-[11.5px] sm:text-[12.5px] text-navy-200/75 transition-colors hover:text-white py-0.5 leading-snug block w-full truncate">
+                  <Link to="/services/steam-ironing/" className="text-left text-[12.5px] xs:text-[13px] text-navy-200/85 transition-colors hover:text-white py-0.5 leading-snug block w-full truncate">
                     Steam Ironing
                   </Link>
                 </li>
                 <li>
-                  <Link to="/services/doorstep-pickup-delivery/" className="text-left text-[10px] xs:text-[11.5px] sm:text-[12.5px] text-navy-200/75 transition-colors hover:text-white py-0.5 leading-snug block w-full truncate">
+                  <Link to="/services/doorstep-pickup-delivery/" className="text-left text-[12.5px] xs:text-[13px] text-navy-200/85 transition-colors hover:text-white py-0.5 leading-snug block w-full truncate">
                     Doorstep Pickup
                   </Link>
                 </li>
@@ -168,11 +168,11 @@ export function Footer({
 
             {/* Col 3: Priority Areas */}
             <div className="min-w-0">
-              <h3 className="font-display text-[10.5px] xs:text-[11.5px] font-bold tracking-wider text-white uppercase flex items-center gap-1 mb-2">
+              <h3 className="font-display text-[12px] xs:text-[13px] font-bold tracking-wider text-white uppercase flex items-center gap-1.5 mb-2.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-purple-400 shrink-0" />
                 <span className="truncate">Areas</span>
               </h3>
-              <ul className="space-y-1.5">
+              <ul className="space-y-2">
                 {[
                   { name: "Jubilee Hills", slug: "jubilee-hills" },
                   { name: "Banjara Hills", slug: "banjara-hills" },
@@ -183,7 +183,7 @@ export function Footer({
                   <li key={a.slug}>
                     <Link
                       to={`/laundry-service-${a.slug}/`}
-                      className="text-left text-[10px] xs:text-[11.5px] sm:text-[12.5px] text-navy-200/75 transition-colors hover:text-white py-0.5 leading-snug block w-full truncate"
+                      className="text-left text-[12.5px] xs:text-[13px] text-navy-200/85 transition-colors hover:text-white py-0.5 leading-snug block w-full truncate"
                     >
                       {a.name}
                     </Link>
@@ -192,7 +192,7 @@ export function Footer({
                 <li>
                   <Link
                     to="/laundry-service-hyderabad/"
-                    className="text-[10px] xs:text-[11.5px] sm:text-[12.5px] font-bold text-white transition-colors hover:text-purple-300 py-0.5 mt-1 block w-full truncate"
+                    className="text-[12px] xs:text-[13px] font-bold text-white transition-colors hover:text-purple-300 py-0.5 mt-1 block w-full truncate"
                   >
                     All Areas →
                   </Link>
@@ -202,19 +202,19 @@ export function Footer({
 
             {/* Col 4: Contact */}
             <div className="min-w-0">
-              <h3 className="font-display text-[10.5px] xs:text-[11.5px] font-bold tracking-wider text-white uppercase flex items-center gap-1 mb-2">
+              <h3 className="font-display text-[12px] xs:text-[13px] font-bold tracking-wider text-white uppercase flex items-center gap-1.5 mb-2.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-amber-400 shrink-0" />
                 <span className="truncate">Contact</span>
               </h3>
-              <ul className="space-y-2 text-[10px] xs:text-[11.5px] sm:text-[12.5px]">
+              <ul className="space-y-2.5 text-[12.5px] xs:text-[13px]">
                 {/* Phone */}
                 <li>
                   <a
                     href={`tel:+91${contactInfo.phone}`}
-                    className="flex items-center gap-1.5 text-navy-100 font-semibold transition-colors hover:text-leaf-300 py-0.5 truncate"
+                    className="flex items-center gap-2 text-navy-100 font-semibold transition-colors hover:text-leaf-300 py-0.5 truncate"
                   >
-                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-leaf-500/20 text-leaf-400">
-                      <Phone className="h-3 w-3" aria-hidden="true" />
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-leaf-500/20 text-leaf-400">
+                      <Phone className="h-3.5 w-3.5" aria-hidden="true" />
                     </span>
                     <span className="truncate">+91 {contactInfo.phone}</span>
                   </a>
@@ -226,10 +226,10 @@ export function Footer({
                     href={`https://wa.me/91${contactInfo.whatsapp}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 text-navy-100 font-semibold transition-colors hover:text-leaf-300 py-0.5 truncate"
+                    className="flex items-center gap-2 text-navy-100 font-semibold transition-colors hover:text-leaf-300 py-0.5 truncate"
                   >
-                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-leaf-500/20 text-leaf-400">
-                      <MessageCircle className="h-3 w-3" aria-hidden="true" />
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-leaf-500/20 text-leaf-400">
+                      <MessageCircle className="h-3.5 w-3.5" aria-hidden="true" />
                     </span>
                     <span className="truncate">WhatsApp</span>
                   </a>
@@ -237,9 +237,9 @@ export function Footer({
 
                 {/* Address */}
                 <li>
-                  <div className="flex items-start gap-1.5 text-navy-200/75 py-0.5 leading-snug">
-                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-sky-500/20 text-sky-400 mt-0.5">
-                      <MapPin className="h-3 w-3" aria-hidden="true" />
+                  <div className="flex items-start gap-2 text-navy-200/80 py-0.5 leading-snug">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-sky-500/20 text-sky-400 mt-0.5">
+                      <MapPin className="h-3.5 w-3.5" aria-hidden="true" />
                     </span>
                     <span className="line-clamp-2 xs:line-clamp-3">Jubilee Hills Rd 5, Hyderabad</span>
                   </div>
